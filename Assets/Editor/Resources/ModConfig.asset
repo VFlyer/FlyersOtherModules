@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
+  m_Name: ModConfig
+  m_EditorClassIdentifier: 
+  id: flyerModulesMisc
+  title: Flyer's Other Modules
+  description: "A collection of 6 (and possibly growing) modules made by VFlyer with
+    some modules from other ideas.\n\nMod contains 3x3 Grid, \u2756, Time Accumulation,
+    BuzzFizz, Forget It Not, 15 Mystic Lights\nThe following original ideas are by
+    the following users in this pack:\n3x3 Grid: Lumbud84\n\u2756: Mirage Xel\nTime
+    Accumulation: Kusane\nBuzzFizz: Blananas2\nForget It Not: RubyBfdi\n\nManuals
+    can be found built-in or from these temporary links:\n[url=https://docs.google.com/document/d/1PXf88BeCWxyZtG-4CZkcOSSa82t44_iE1Kv0yxF-Pkk/edit]BuzzFizz[/url]\n[url=https://docs.google.com/document/d/1SHjd27eb7opZIHZ2MiidoAduu1VgQk_viRPZcfb6PhM/edit]3x3
+    Grid[/url]\n[url=https://docs.google.com/document/d/1hswU7t6r0t2EgdjYMTZ4I35GKBhBBbRb6c8T0mGOeJE/edit]Forget
+    It Not[/url]\n[url=https://docs.google.com/document/d/1FG7G59ij2KpWeIJHkVbs-PgOIfvwK5dkdwYhzhKnEsE/edit]\u2756[/url]\n[url=https://drive.google.com/file/d/1ETvzZ4j-pRvjf5ym4Uy6L3ANVtY1y0fK/view]Time
+    Accumulation[/url]"
+  version: 1.0_01
+  outputFolder: build
+  previewImage: {fileID: 2800000, guid: 7dbc6bc78df97b44ea2dd97944ee91f1, type: 3}
