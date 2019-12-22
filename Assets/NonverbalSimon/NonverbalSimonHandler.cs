@@ -30,11 +30,13 @@ public class NonverbalSimonHandler : MonoBehaviour {
     private int modid;
     private bool isActive = false;
     private int stagesCompleted = 0;
+    private int stagesToComplete = 3;
     private bool canPlaySound = false;
 
     // Use this for initialization
     void Start() {
         modid = modid_counter++;
+        stagesToComplete = Random.Range(3,6);
         modself.OnActivate += delegate ()
         {
             // Calculate based on edgework shown.
@@ -249,7 +251,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
                 {
                     currentpos = 0;
                     stagesCompleted++;
-                    if (stagesCompleted >= 3)
+                    if (stagesCompleted >= stagesToComplete)
                     {
                         modself.HandlePass();
                         isActive = false;
