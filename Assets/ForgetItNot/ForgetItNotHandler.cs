@@ -390,7 +390,7 @@ public class ForgetItNotHandler : MonoBehaviour {
         int lastcorrectDigits = correctinputs;
         if (!(cmdlist[0].EqualsIgnoreCase("press") || cmdlist[0].EqualsIgnoreCase("submit")))// Is the starting command valid?
         {
-            yield return "senttochaterror Your command is invalid. The command must start with \"press\" or \"submit\" followed by a string of digits.";
+            yield return "sendtochaterror Your command is invalid. The command must start with \"press\" or \"submit\" followed by a string of digits.";
             yield break;
         }
         cmdlist.RemoveAt(0);
@@ -406,7 +406,7 @@ public class ForgetItNotHandler : MonoBehaviour {
                     }
                     else
                     {
-                        yield return "senttochaterror Your command is invalid. The character \""+ chrcmd + "\" is invalid.";
+                        yield return "sendtochaterror Your command is invalid. The character \""+ chrcmd[i] + "\" is invalid.";
                         yield break;
                     }
             }
@@ -418,25 +418,27 @@ public class ForgetItNotHandler : MonoBehaviour {
         }
         if (digits.Count+correctinputs > totalstages)
         {
-            yield return "senttochaterror Your command has too many digits. Please reinput the command with fewer digits.";
+            yield return "sendtochaterror Your command has too many digits. Please reinput the command with fewer digits.";
             yield break;
         }
+        yield return null;
         if (curstagenum < totalstages)
         {
             yield return "Forget It Not";
-            yield return "senttochat Too early. Don't try to press a digit until this module is ready for input.";
+            yield return "sendtochat Too early. Don't try to press a digit until this module is ready for input.";
+            
             digitSelectables[digits[0]].OnInteract();
             yield break;
         }
 
         yield return "Forget It Not";
-        yield return "senttochat This better be it! BlessRNG";
+        yield return "sendtochat This better be it! BlessRNG";
         yield return "multiple strikes";
 
         foreach (int d in digits)
         {
-            digitSelectables[d].OnInteract();
             yield return null;
+            digitSelectables[d].OnInteract();
             if (idxlit != -1)
             {
                 hasAced = false;
@@ -468,7 +470,7 @@ public class ForgetItNotHandler : MonoBehaviour {
                 {
                     if (bombInfo.GetSolvableModuleNames().Count == bombInfo.GetSolvedModuleNames().Count)
                     {
-                        yield return "sendtochat Kreygasm PraiseIt We're done! PraiseIt Kreygasm";
+                        yield return "sendtochat Kreygasm PraiseIt We're done!";
                     }
                     else
                     {
