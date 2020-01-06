@@ -11,9 +11,10 @@ public class ForgetInfinity : MonoBehaviour {
 	public KMSelectable ResetButton;
 	public KMBombModule Module;
 	public KMBombInfo Info;
-	public TextMesh Screen;
+	public TextMesh ScreenStages;
+    public TextMesh ScreenStatus;
 
-	public static string[] ignoredModules = null;
+    public static string[] ignoredModules = null;
 
 	public int[] code = {0, 0, 0, 0, 0};
 	private int codeIndex = 0;
@@ -40,6 +41,8 @@ public class ForgetInfinity : MonoBehaviour {
 	void Awake() {
 		if (ignoredModules == null)
 			ignoredModules = GetComponent<KMBossModule>().GetIgnoredModules("Forget Infinity", new string[]{
+                "14",
+                "Bamboozing Time Keeper",
                 "Cookie Jars",
                 "Cruel Purgatory",
                 "Divided Squares",
@@ -65,10 +68,10 @@ public class ForgetInfinity : MonoBehaviour {
                 "Übermodule",
                 "The Very Annoying Button",
                 "Forget Infinity" 
-
 			});
-        //"Forget" Modules excluding Forget Me Now: Requires this module to be solved without Boss Module Manager
+        //"Forget" Modules in this list, Simon's Stages, Souvenir, Tallordered Keys: Requires this module to be solved without Boss Module Manager
         //Time Keeper, Timing is Everything, Turn The Key: Bomb Timer Sensitive that can stall bombs
+        //
         //Forget Infinity: DON'T HANG BOMBS WITH DUPLICATES OF THIS
 
 	}
@@ -199,7 +202,7 @@ public class ForgetInfinity : MonoBehaviour {
                 updateScreen(stages[dec].ToArray());
             }
             Module.HandleStrike();
-            Screen.color = new UnityEngine.Color(1, 1, 1);
+            ScreenStages.color = new UnityEngine.Color(1, 1, 1);
             return;
         }
         List<int> stg = new List<int>(stages[solveStagePtr]);
@@ -248,7 +251,7 @@ public class ForgetInfinity : MonoBehaviour {
             Debug.Log("[Forget Infinity] All codes are correct! Solve!");
 			solved = true;
 			Module.HandlePass();
-			Screen.text = "XXXXX";
+			ScreenStages.text = "XXXXX";
 			return;
 		}
 		solveStagePtr++;
@@ -262,7 +265,7 @@ public class ForgetInfinity : MonoBehaviour {
 		for (int i = 0; i < 5; i++) {
 			b += a[i].ToString();
 		}
-		Screen.text = b;
+		ScreenStages.text = b;
 	}
 
 	void updateScreen() {
@@ -315,7 +318,7 @@ public class ForgetInfinity : MonoBehaviour {
         {
             Debug.Log("[Forget Infinity] going into solve mode");
             solveMode = true;
-            Screen.color = new UnityEngine.Color(0, 255, 0);
+            ScreenStages.color = new UnityEngine.Color(0, 255, 0);
             return;
         }
         
