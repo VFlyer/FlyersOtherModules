@@ -274,7 +274,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
         }
     }
 
-    public readonly string TwitchHelpMessage = "!{0} press Red/Orange/Yellow/Green/Left/Top/Bottom/Right to press the specified button in the command. Shorthand abbreviations are acceptable but account for \"r\" pressing the right button and not the red button!";
+    public readonly string TwitchHelpMessage = "!{0} press Red/Orange/Yellow/Green/Left/Top/Bottom/Right to press the specified button in the command. Presses can be combined but must be spaced out. Shorthand abbreviations are acceptable but account for \"r\" pressing the right button and not the red button!";
 
     KMSelectable[] ProcessTwitchCommand(string command)
     {

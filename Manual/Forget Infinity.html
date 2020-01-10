@@ -8,7 +8,18 @@
     <link rel="stylesheet" type="text/css" href="css/normalize.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <link rel="stylesheet" type="text/css" href="css/font.css">
+	<link href='https://fonts.googleapis.com/css?family=Special+Elite' rel='stylesheet' type='text/css'>
     <script src="js/ktane-utils.js"></script>
+	<style>
+			.verticaltext
+			{
+				position: absolute;
+				
+				transform: rotate(-90deg) translate(15%,-215%);
+				text-align: center;
+				text-orientation: mixed;
+			}
+	</style>
 </head>
 <body>
     <div id="ManualContent">
@@ -21,28 +32,20 @@
                 <div class="page-content">
                     <img src="img/Component/Forget Infinity.svg" class="diagram">
                     <h2>On the Subject of Forget Infinity</h2>
-                    <p class="flavour-text">What did this module do again? I forgot. Was it something along the lines of include X numbers?</p>
-
-                    <p>The <em>display</em> will show 5 numbers after every module solved, with some exceptions. 00000 does not count as a stage. <strong>Note these down.</strong></p>
-                    <p>After every module is solved, the module will enter input mode. <strong><em>Do not attempt to interact with the module before solving
-                        all other modules on the bomb.
+                    <p class="flavour-text">What did this module do again? I forgot. Was it something along the lines of include X numbers? And how did this pass testing!?</p>
+					<p>The <em>top display</em> will show the current stage number, the number of possible stages to generate formatted as (##/##), and a single digit which represents how many seconds left until the cooldown expires for the given stage.</p>
+                    <p>The <em>bottom display</em> will show 5 numbers after every module solved, with some exceptions. "-----" does not count as a stage. <strong>Note these down.</strong></p>
+                    <p>After a certain number of modules have solved, the module will enter input mode. <strong><em>Do not attempt to interact with the module before solving all other modules on the bomb.
                     </em></strong>Doing so will cause a strike.</p>
-                    <p>When the module is in input mode, you must input each number that was displayed on the screen in a row, following the rules below.
-                        Once all numbers have been input, the module will solve. <strong>If any of the numbers inputted were incorrect,
-                        the module will reset, and a strike will be gained.</strong>
+                    <p>When the module is in input mode, the top display will show at most 3 stages that are required to solve the module. Once all numbers have been inputted correctly, the module will solve. <strong>If any of the numbers inputted were incorrect, a strike will be gained and the inputs will clear.</strong>
                     </p>
-                    <h3>Rules to follow to calculate inputs</h3>
-                    <ul>
-                        <li>If the bomb has batteries, <strong>add the number of batteries to each digit of the code</strong> making sure to keep the number between 1 and 5 by adding or subtracting.</li>
-                        <li>If the bomb's serial number contains the characters "F" or "I", <strong>subtract 1 from each digit of the code.</strong> If doing so would put that digit
-                        below 1, replace that digit with 5 instead.</li>
-                    </ul>
-                    <p>If you have missed a stage, you may use the Reset button to enter solve mode. In solve mode, the display will be green,
-                       and you may input a base-5 number using the number pad and R (for 0). After inputting the number, press the Submit button.
-                       A strike will be gained and the display will show the stage number from that stage.
-                    </p>
+					<p>Input the correct set of inputs using the 10 digits underneath the bottom display and press the left arrow button to delete the previous input. The module will auto-submit after 5 digits have been entered.</p>
+					<p>Upon entering the correct inputs for either of the stages required, the stage that was given the correct answer will glitch out until all of the stage's answers are inputted correctly.</p>
+					<p>If you lost a given stage for the requirement, you can press the left arrow button before inputting the digits to enter recapture mode. When in recapture mode, you can use the digits to input the given stage number to check again.</p>
+					<p>Pressing the left arrow button will show the given stage again if the combination given was valid or go back to input mode if no digits were entered during this mode. You will be able to recapture any given stage at no cost if you struck on inputting any of the stages. Otherwise, a strike will be given for every recaptured stage without a free recapture. A free recapture will be indicated by the top display blinking green and while it's displaying the manditory stages.</p>
+					<p>If the module is unable to generate any number of stages on the bomb, press any button to enforce the module to solve. The displays flash red to indicate no stages being generated.</p>
                 </div>
-                <div class="page-footer relative-footer">Page 1 of 2</div>
+                <div class="page-footer relative-footer">Page 1 of 3</div>
             </div>
             <div class="page page-bg-02">
                 <div class="page-header">
@@ -50,20 +53,117 @@
                     <span class="page-header-section-title">Forget Infinity</span>
                 </div>
                 <div class="page-content">
-                    <h2>Addendum EX: Exceptions for stage advance</h2>
-                    <ul>
-                        <li>Forget Infinity</li>
-                        <li>Forget Me Not</li>
-                        <li>Forget This</li>
-                        <li>Forget Everything</li>
-                        <li>Turn The Key</li>
-                        <li>Souvenir</li>
-                        <li>The Time Keeper</li>
-                        <li>Simon's Stages</li>
-                        <li>Timing is Everything</li>
-                    </ul>
+                    <h2>Rules to Calculate Inputs</h2>
+					<p>The original digit in the given stage refers to the digit in that stage before the modifications took effect. After all of the calculations, if the value is less than 0 for the given digit, keep adding 10 until it isn't. Then, take the least significant digit in each of the values and input them.</p>
+					<h3>Calculations For All Digits</h3>
+                    <ol>
+						<li>If there is a Stereo RCA port, swap the 1st digit of the code with the 5th digit and the 2nd digit with the 4th digit.</li>
+                        <li>If the bomb has batteries, add the number of batteries to each digit of the code.</li>
+                        <li>If the bomb's serial number contains the characters "F" or "I", subtract 1 from each digit of the code for each "F" or "I" in the serial number.</li>
+						<li>Each of the 5 digits now calculated will be used as their respective values for the next set of calculations. The digit can be higher than 9 or less than 0 before the end of all calculations.</li>
+                    </ol>
+					<h3>1st Digit Calculations</h3>
+					<ol>
+						<li>Grab the 1st value from the previous calculation for all digits.</li>
+						<li>If "Needy Tetris" is present, take the original digit in this slot and add 7.</li>
+						<li>Otherwise, if the 1st value is at least 10 and that value is divisible by 2, half that value.</li>
+						<li>Otherwise, if the 1st value is less than 0, take the absolute value of that.</li>
+						<li>Otherwise, add 1.</li>
+					</ol>
+					<h3>2nd Digit Calculations</h3>
+					<ol>
+						<li>Grab the 2nd value from the previous calculation for all digits.</li>
+						<li>If there are duplicate ports on the bomb, add the number of duplicate port types on the bomb.</li>
+						<li>Otherwise, if there are no ports on the bomb, add the sum of the 3rd and 1st original digits.</li>
+						<li>Otherwise, don't modify the 2nd value.</li>
+					</ol>
                 </div>
-                <div class="page-footer relative-footer">Page 2 of 2</div>
+                <div class="page-footer relative-footer">Page 2 of 3</div>
+            </div>
+			    <div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Forget Infinity</span>
+                </div>
+                <div class="page-content">
+                    <h3>Rules to Calculate Inputs (Continued)</h3>
+					<h3>3rd Digit Calculations</h3>
+					<ol>
+						<li>Grab the 3rd value from the previous calculation for all digits.</li>
+						<li>If the other digits were swapped before, don't modify the 3rd value.</li>
+						<li>Otherwise, if the 3rd value is greater than or equal to 7, take the sum of the binary digits in the 3rd original digit.</li>
+						<li>Otherwise, if the 1st value is less than 0, take the absolute value of that.</li>
+						<li>Otherwise, take the 3rd original digit and add the smallest digit in the serial number.</li>
+						
+					</ol>
+					<h3>4th Digit Calculations</h3>
+					<ol>
+						<li>Grab the 4th value from the previous calculation for all digits.</li>
+						<li>Go through the table to modify the value based on the conditions.</li>
+						
+					</ol>
+					<h3>5th Digit Calculations</h3>
+					<ol>
+						<li>Grab the 5th value from the previous calculation for all digits.</li>
+						<li>Go through the table and stop on the first rule that applies.</li>
+						</ol>
+					<table style="width: 100%; text-align: center">
+						<tr>
+							<td colspan="2" rowspan="2" style="border-left-style: hidden;border-top-style: hidden;"></td>
+							<th colspan="5">Current Value%5</th>
+						</tr>
+						<tr>
+							<th>0</th>
+							<th>1</th>
+							<th>2</th>
+							<th>3</th>
+							<th>4</th>
+						</tr>
+						<tr>
+							<th rowspan="5" style="width: 15%"><span class="verticaltext">Stage Num%5</span></th>
+							<th>0</th>
+							<td>1</td>
+							<td>2</td>
+							<td>4</td>
+							<td>4</td>
+							<td>4</td>
+						</tr>
+						<tr>
+							<th>1</th>
+							<td>2</td>
+							<td>3</td>
+							<td>4</td>
+							<td>4</td>
+							<td>4</td>
+						</tr>
+						<tr>
+							<th>2</th>
+							<td>2</td>
+							<td>3</td>
+							<td>4</td>
+							<td>4</td>
+							<td>4</td>
+						</tr>
+						<tr>
+							<th>3</th>
+							<td>2</td>
+							<td>3</td>
+							<td>4</td>
+							<td>4</td>
+							<td>4</td>
+						</tr>
+						<tr>
+							<th>4</th>
+							<td>2</td>
+							<td>3</td>
+							<td>4</td>
+							<td>4</td>
+							<td>4</td>
+						</tr>
+					</table>
+					<p class="flavour-text">Is this Skewed Slots 2.0? Certainly doesn't smell like one... Especially what happened last time.</p>
+                </div>
+                <div class="page-footer relative-footer">Page 3 of 3</div>
             </div>
         </div>
     </div>
