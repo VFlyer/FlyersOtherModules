@@ -6,7 +6,7 @@ using System.Text;
 using System;
 
 public class ForgetInfinity : MonoBehaviour {
-	public KMSelectable[] Buttons;
+	public KMSelectable[] ButtonDigits = new KMSelectable[10];
 	public KMSelectable BackSpaceButton;
 	public KMBombModule ModSelf;
 	public KMBombInfo Info;
@@ -82,9 +82,10 @@ public class ForgetInfinity : MonoBehaviour {
             List<string> modNames = Info.GetSolvableModuleNames().Where(a => !ignoredModuleNames.Contains(a)).ToList();
             if (modNames.Count > 1)
             {
-                if (GetComponent<KMBossModule>().GetIgnoredModules("Organization").Contains("Forget Infinity") || !Info.GetSolvableModuleNames().Contains("Organization"))
+                if (!Info.GetSolvableModuleNames().Contains("Organization") || GetComponent<KMBossModule>().GetIgnoredModules("Organization").Contains("Forget Infinity"))
                 {
-
+                    stagestoGenerate = UnityEngine.Random.Range(1,modNames.Count);
+                    List<int> currentStageNumbers = new List<int>();
                     hasStarted = true;
                 }
                 else
@@ -115,6 +116,26 @@ public class ForgetInfinity : MonoBehaviour {
             }
             return false;
         };
+        for (int x = 0; x < ButtonDigits.Length; x++)
+        {
+            int y = x;
+            ButtonDigits[x].OnInteract += delegate
+            {
+                if (inFinale)
+                {
+
+                }
+                else if (autosolvable)
+                {
+                    ModSelf.HandlePass();
+                }
+                else
+                {
+                    ModSelf.HandleStrike();
+                }
+                return false;
+            };
+        }
     }
     int curdelay = 0;
     void Update()
