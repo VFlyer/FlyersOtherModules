@@ -15,7 +15,7 @@
 			{
 				position: absolute;
 				
-				transform: rotate(-90deg) translate(15%,-215%);
+				transform: rotate(-90deg) translate(10%,-225%);
 				text-align: center;
 				text-orientation: mixed;
 			}
@@ -37,12 +37,11 @@
                     <p>The <em>bottom display</em> will show 5 numbers after every module solved, with some exceptions. "-----" does not count as a stage. <strong>Note these down.</strong></p>
                     <p>After a certain number of modules have solved, the module will enter input mode. <strong><em>Do not attempt to interact with the module before solving all other modules on the bomb.
                     </em></strong>Doing so will cause a strike.</p>
-                    <p>When the module is in input mode, the top display will show at most 3 stages that are required to solve the module. Once all numbers have been inputted correctly, the module will solve. <strong>If any of the numbers inputted were incorrect for all 3 stages, a strike will be gained and the inputs will clear.</strong>
+                    <p>When the module is in input mode, the top display will show at most 3 stages that are required to solve the module. Input the correct set of inputs using the 10 digits underneath the bottom display and press the left arrow button to delete the previous input. The module will auto-submit after 5 digits have been entered.</p>
+					<p>Upon entering the correct inputs for either of the stages required, the stage that was given the correct answer will glitch out until all of the stage's answers are inputted correctly. Once all numbers have been inputted correctly, the module will solve. <strong>If any of the numbers inputted were incorrect for the required stages, a strike will be gained and the inputs will clear.</strong>
                     </p>
-					<p>Input the correct set of inputs using the 10 digits underneath the bottom display and press the left arrow button to delete the previous input. The module will auto-submit after 5 digits have been entered.</p>
-					<p>Upon entering the correct inputs for either of the stages required, the stage that was given the correct answer will glitch out until all of the stage's answers are inputted correctly.</p>
 					<p>If you lost a given stage for the requirement, you can press the left arrow button before inputting the digits to enter recapture mode. When in recapture mode, you can use the digits to input the given stage number to check again.</p>
-					<p>Pressing the left arrow button will show the given stage again if the combination given was valid or go back to input mode if no digits were entered during this mode. You will be able to recapture any given stage at no cost if you struck on inputting any of the stages. Otherwise, a strike will be given for every recaptured stage without a free recapture. A free recapture will be indicated by the top display blinking green and while it's displaying the manditory stages.</p>
+					<p>Pressing the left arrow button will show the given stage again if the combination given was valid or go back to input mode if no digits were entered during this mode. You will be able to recapture any given stage at no cost if you struck on inputting any of the required stages. Otherwise, a strike will be given for every recaptured stage without a free recapture. A free recapture will be indicated by the top display blinking green and while it's displaying the manditory stages.</p>
 					<p>If the module is unable to generate any number of stages on the bomb, press any button to enforce the module to solve. The displays flash red to indicate no stages being generated.</p>
                 </div>
                 <div class="page-footer relative-footer">Page 1 of 3</div>
@@ -54,6 +53,7 @@
                 </div>
                 <div class="page-content">
                     <h2>Rules to Calculate Inputs</h2>
+					<p class="flavour-text">Is this Skewed Slots 2.0? Certainly doesn't smell like one... Especially what happened last time.</p>
 					<p>The original digit in the given stage refers to the digit in that stage before the modifications took effect. After all of the calculations, if the value is less than 0 for the given digit, keep adding 10 until it isn't. Then, take the least significant digit in each of the values and input them.</p>
 					<h3>Calculations For All Digits</h3>
                     <ol>
@@ -105,63 +105,63 @@
 					<h3>5th Digit Calculations</h3>
 					<ol>
 						<li>Grab the 5th value from the previous calculation for all digits.</li>
-						<li>Go through the table and stop on the first rule that applies.</li>
+						<li>Go through the table underneath to get the value based on the conditions.</li>
 						</ol>
 					<table style="width: 100%; text-align: center">
 						<tr>
 							<td colspan="2" rowspan="2" style="border-left-style: hidden;border-top-style: hidden;"></td>
-							<th colspan="5">Current Value%5</th>
+							<th colspan="5">Last Digit of Serial No.</th>
 						</tr>
 						<tr>
-							<th>0</th>
-							<th>1</th>
-							<th>2</th>
-							<th>3</th>
-							<th>4</th>
+							<th>0, 1</th>
+							<th>2, 3</th>
+							<th>4, 5</th>
+							<th>6, 7</th>
+							<th>8, 9</th>
 						</tr>
 						<tr>
-							<th rowspan="5" style="width: 15%"><span class="verticaltext">Stage Num%5</span></th>
+							<th rowspan="5" style="width: 15%"><span class="verticaltext">5th Value % 5</span></th>
 							<th>0</th>
+							<td>0</td>
 							<td>1</td>
 							<td>2</td>
-							<td>4</td>
-							<td>4</td>
+							<td>3</td>
 							<td>4</td>
 						</tr>
 						<tr>
 							<th>1</th>
-							<td>2</td>
-							<td>3</td>
-							<td>4</td>
-							<td>4</td>
-							<td>4</td>
+							<td>5</td>
+							<td>6</td>
+							<td>7</td>
+							<td>8</td>
+							<td>9</td>
 						</tr>
 						<tr>
 							<th>2</th>
-							<td>2</td>
-							<td>3</td>
-							<td>4</td>
-							<td>4</td>
-							<td>4</td>
+							<td>O!</td>
+							<td>O! + 1</td>
+							<td>10 - O!</td>
+							<td>O! - 1</td>
+							<td>O!</td>
 						</tr>
 						<tr>
 							<th>3</th>
-							<td>2</td>
-							<td>3</td>
-							<td>4</td>
-							<td>4</td>
-							<td>4</td>
+							<td>9</td>
+							<td>8</td>
+							<td>7</td>
+							<td>6</td>
+							<td>5</td>
 						</tr>
 						<tr>
 							<th>4</th>
-							<td>2</td>
+							<td>4</td>
 							<td>3</td>
-							<td>4</td>
-							<td>4</td>
-							<td>4</td>
+							<td>2</td>
+							<td>1</td>
+							<td>0</td>
 						</tr>
 					</table>
-					<p class="flavour-text">Is this Skewed Slots 2.0? Certainly doesn't smell like one... Especially what happened last time.</p>
+					<p>A cell with "O!" indicates original digit in that cell. Not to be confused with 0, which is just by itself.</p>
                 </div>
                 <div class="page-footer relative-footer">Page 3 of 3</div>
             </div>
