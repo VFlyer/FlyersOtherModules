@@ -330,11 +330,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4283374344840416, guid: 197404825749db042b9fdce6822b70ae, type: 2}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4283374344840416, guid: 197404825749db042b9fdce6822b70ae, type: 2}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4283374344840416, guid: 197404825749db042b9fdce6822b70ae, type: 2}
       propertyPath: m_RootOrder

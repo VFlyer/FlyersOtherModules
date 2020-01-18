@@ -6,12 +6,17 @@ using System.Linq;
 
 public class SingularityButtonHandler : MonoBehaviour {
 
+	public GameObject disarmButtonObject, buttonFrontObject, entireModule,animatedPortion;
+	public TextMesh textDisplay;
 	public KMSelectable disarmButton, buttonFront;
 	public KMBossModule bossModule;
 	public KMBombInfo bombInfo;
 	public KMBombModule modSelf;
+	public KMAudio audioSelf;
+	public KMGameCommands gameCommands;
 
-	private static bool isSolved;
+	private bool isSolved = false;
+	private bool hasDisarmed = false;
 	private bool hasActivated = false;
 
 	private bool isPressedDisarm = false;
@@ -36,24 +41,53 @@ public class SingularityButtonHandler : MonoBehaviour {
 		"Shapes and Bombs"
 	};// Nonboss modules that are 100% dependent on solves. These CANNOT have an override for the solve condition or show up by chance. The Number will remove itself after 8 or more solves.
 
-	sealed class SingularityButtonInfo //Lock down infomation to a single bomb, hopefully.
+	protected sealed class SingularityButtonInfo //Lock down infomation to a single bomb, hopefully.
 	{
 		public List<SingularityButtonHandler> singularButtons = new List<SingularityButtonHandler>();
 		public List<int> inputs = new List<int>();
-		public List<string> buttonColors = new List<string>();
+		public List<Color> buttonColors = new List<Color>();
+		public List<string> buttonLabels = new List<string>();
 		public List<int> buttonDigits = new List<int>();
-
+		public bool canDisarm = false;
+		public string serialNum;
+		public void DisarmAll()
+		{
+			canDisarm = true;
+		}
+		public bool canModuleDisarm()
+		{
+			return canDisarm;
+		}
+		public void CauseStrike(int idx)
+		{
+			if (idx >= 0 && idx < singularButtons.Count)
+			{
+				singularButtons[idx].modSelf.HandleStrike();
+			}
+		}
+		public int CountSingularityButtons()
+		{
+			return singularButtons.Count();
+		}
+		public int getIndexOfButton(SingularityButtonHandler handler)
+		{
+			return singularButtons.IndexOf(handler);
+		}
 	}
-
+	private static readonly Dictionary<KMBomb, SingularityButtonInfo> groupedSingularityButtons = new Dictionary<KMBomb, SingularityButtonInfo>();
+	private SingularityButtonInfo singularityButtonInfo;
 	void AddOthersModulesOntoList()
 	{
 		cautionaryModules.AddRange(bossModule.GetIgnoredModules("Singularity Button", new string[]
 		{
+			"14",
 			"Cookie Jars",
 			"Divided Squares",
+			"Encryption Bingo",
 			"Forget Enigma",
 			"Forget Everything",
 			"Forget It Not",
+			"Forget Infinity",
 			"Forget Me Not",
 			"Forget Perspective",
 			"Forget Them All",
@@ -61,6 +95,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 			"Forget Us Not",
 			"Hogwarts",
 			"Organization",
+			"Simon Forgets",
 			"Simon's Stages",
 			"Tallordered Keys",
 			"The Troll",
@@ -108,7 +143,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 		{// "If you have two or more (not including repeats) out of Burglar Alarm, Safety Safe and The Jewel Vault, or if the Bomb contains three or more modules with the word 'Double' in their names..."
 			cautionaryModules.Add("Free Parking");
 			Debug.LogFormat("[Singularity Button #{0}]: Free Parking has no override active, ensure you check Free Parking's manual for other cases!", curmodID);
-		}// Add Free Parking, note that it doesn't detect if the value falls below 0 after modification.
+		}// Add Free Parking, note that it doesn't detect if the value falls below 0 after base/current modification.
 		
 		int litIndcnt = 0;
 		int offIndcnt = 0;
@@ -142,9 +177,12 @@ public class SingularityButtonHandler : MonoBehaviour {
 		// Jack-O'-Lantern, no consistent way to detect if the given module is solve dependent or not.
 		// Morse-A-Maze, no consistent way to detect if the given module is solve dependent or not.
 		// Seven Wires, chance to get specific instances NOT the 6,12,18,24,... one, no consistent way to detect if the given module is solve dependent or not.
+		// Boolean Wires, has a chance where 2 solve dependent conditions can NOT show up, no consistent way to detect if the given module is solve dependent or not.
+		// Dr Doctor, For the override, (3B 3H, LIT FRK, UNLIT TRN,Forget Me Not, LIT FRQ) and then NO Fever Symptom, has a chance to NOT show up. No consistent way to detect if the given module is solve dependent or not.
+		// Double Expert, a couple rules rely on solves but no consistent way to detect if the given module is solve dependent or not.
 		// The Stare, you can solve this without needing this to be at a multiple of 5 solves.
 		// Black Hole, you can solve this without advantagous solves.
-		// Boolean Wires, has a chance where 2 solve dependent conditions can NOT show up, no consistent way to detect if the given module is solve dependent or not.
+
 		// END CHANCE SOLVES
 	}
 
@@ -160,7 +198,13 @@ public class SingularityButtonHandler : MonoBehaviour {
 			cautionaryModules.Remove("Unrelated Anagrams");
 			Debug.LogFormat("[Singularity Button #{0}]: The bomb has exceeded a certain number of solves. Unrelated Anagrams is no longer detected!", curmodID);
 		}// Remove Unrelated Anagrams after 9 or more solves.
-		if (cautionaryModules.Contains("Free Parking") && (bombInfo.GetSolvableModuleNames().Where(a => a.Equals("Cheap Checkout") || a.Equals("Silly Slots") || a.Equals("The Jewel Vault")).Count() == bombInfo.GetSolvedModuleNames().Where(a => a.Equals("Cheap Checkout") || a.Equals("Silly Slots") || a.Equals("The Jewel Vault")).Count()))
+		int cheapCheckoutCount = bombInfo.GetSolvableModuleNames().Where(a => a.Equals("Cheap Checkout")).Count();
+		int slotsCount = bombInfo.GetSolvableModuleNames().Where(a => a.Equals("Silly Slots")).Count();
+		int jewelVaultCount = bombInfo.GetSolvableModuleNames().Where(a => a.Equals("The Jewel Vault")).Count();
+		if (cautionaryModules.Contains("Free Parking") &&
+			cheapCheckoutCount > 0 && bombInfo.GetSolvedModuleNames().Where(a => a.Equals("Cheap Checkout")).Count() >= cheapCheckoutCount &&
+			slotsCount > 0 && bombInfo.GetSolvedModuleNames().Where(a => a.Equals("Silly Slots")).Count() >= slotsCount &&
+			jewelVaultCount > 0 && bombInfo.GetSolvedModuleNames().Where(a => a.Equals("The Jewel Vault")).Count() >= jewelVaultCount)
 		{
 			cautionaryModules.Remove("Free Parking");
 			Debug.LogFormat("[Singularity Button #{0}]: Free Parking has an override active! This module is no longer detected!", curmodID);
@@ -180,27 +224,110 @@ public class SingularityButtonHandler : MonoBehaviour {
 		{
 			isPressedDisarm = false;
 			if (isSolved)
-			modSelf.HandlePass();
+			{
+				modSelf.HandlePass();
+				hasDisarmed = true;
+			}
 		};
 		buttonFront.OnInteract += delegate
 		{
+			if (!isSolved && hasActivated)
+			{
+				
+			}
 			isPressedMain = true;
 			return false;
 		};
 		buttonFront.OnInteractEnded += delegate
 		{
+			if (!isSolved && hasActivated)
+			{
+
+			}
 			isPressedMain = false;
-			
 		};
-		bombInfo.OnBombExploded += delegate {
-			isSolved = false;
-		};
-		bombInfo.OnBombSolved += delegate {
-			isSolved = false;
+		modSelf.OnActivate += delegate
+		{
+			// Setup Global Interaction
+			KMBomb bombAlone = entireModule.GetComponentInParent<KMBomb>(); // Get the bomb that the module is attached on. Required for intergration due to modified value.
+
+			if (!groupedSingularityButtons.ContainsKey(bombAlone))
+				groupedSingularityButtons[bombAlone] = new SingularityButtonInfo();
+			singularityButtonInfo = groupedSingularityButtons[bombAlone];
+			singularityButtonInfo.singularButtons.Add(this);
+
+			// Start Main Handling
+			AddOthersModulesOntoList();
+			StartCoroutine(HandleGlobalModule());
+			hasActivated = true;
 		};
 	}
-
+	IEnumerator HandleGlobalModule()
+	{
+		while (!singularityButtonInfo.canModuleDisarm())
+		{
+			UpdateCautionaryList();
+			yield return new WaitForSeconds(0);
+		}
+		isSolved = true;
+		if (!bombInfo.GetSolvableModuleNames().Where(a => cautionaryModules.Contains(a)).Any() || singularityButtonInfo.CountSingularityButtons() == 1) // Does the bomb contain any cautionary modules or is there 1 present on this bomb?
+		{
+			hasDisarmed = true;
+			modSelf.HandlePass();
+		}
+		else
+			Debug.LogFormat("[Singularity Button #{0}]: At least one cautionary module is present on the bomb. You must instead press the manual disarm button to disarm this module!", curmodID);
+		yield return null;
+	}
 	// Update is called once per frame
+	int frameMain = 45;
+	int frameDisarm = 45;
+	public int frameSwitch = 0;
+	int animLength = 30;
 	void Update () {
+		if (!hasActivated) return;
+		if (!isPressedMain)
+		{
+			frameMain = Mathf.Min(frameMain + 1, 45);
+		}
+		else
+			frameMain = Mathf.Max(frameMain - 1, 30);
+		if (!isPressedDisarm)
+		{
+			frameDisarm = Mathf.Min(frameDisarm + 1, 45);
+		}
+		else
+			frameDisarm = Mathf.Max(frameDisarm - 1, 40);
+		if (isSolved&&!hasDisarmed)
+		{
+			frameSwitch = Mathf.Min(frameSwitch + 1, animLength);
+		}
+		else
+		{
+			frameSwitch = Mathf.Max(frameSwitch - 1, 0);
+		}
+		buttonFrontObject.transform.localPosition = new Vector3(0, 0.03f * (frameMain / 45f), 0);
+		disarmButtonObject.transform.localPosition = new Vector3(0, -0.019f * (frameDisarm / 45f), 0);
+		animatedPortion.transform.localEulerAngles = new Vector3(0, 0, 180f * (frameSwitch / (float)animLength));
+	}
+
+	IEnumerator HandleForcedSolve()
+	{
+		while (frameSwitch < animLength)
+			yield return new WaitForSeconds(0);
+		disarmButton.OnInteract();
+		yield return new WaitForSeconds(0.1f);
+		disarmButton.OnInteractEnded();
+	}
+
+	void TwitchHandleForcedSolve()
+	{
+		singularityButtonInfo.DisarmAll(); // Call the protected method
+		Debug.LogFormat("[Singularity Button #{0}]: A force solve has been issued viva TP Handler. ALL Singularity Buttons will be set to a solve state because of it.", curmodID);
+		StartCoroutine(HandleForcedSolve());
+	}
+	IEnumerator ProcessTwitchCommand(string command)
+	{
+		yield return null;
 	}
 }

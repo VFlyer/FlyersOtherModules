@@ -91,11 +91,11 @@ public class ForgetInfinity : MonoBehaviour {
                     stagestoGenerate = solvablemodNames.Count > 3 ? UnityEngine.Random.Range(3, Math.Min(solvablemodNames.Count,100)) : solvablemodNames.Count - 1;
 
                     if (solvablemodNames.Count <= 100)
-                    Debug.LogFormat("[Forget Infinity {0}]: Total stages generatable: {1}", curModID, solvablemodNames.Count - 1);
-                    else Debug.LogFormat("[Forget Infinity {0}]: Too many non-ignored modules, capping at 99 total stages generatable.", curModID);
+                    Debug.LogFormat("[Forget Infinity #{0}]: Total stages generatable: {1}", curModID, solvablemodNames.Count - 1);
+                    else Debug.LogFormat("[Forget Infinity #{0}]: Too many non-ignored modules, capping at 99 total stages generatable.", curModID);
 
-                    Debug.LogFormat("[Forget Infinity {0}]: Total stages generated: {1}", curModID,stagestoGenerate);
-                    Debug.LogFormat("[Forget Infinity {0}]: All stages: ", curModID, stagestoGenerate);
+                    Debug.LogFormat("[Forget Infinity #{0}]: Total stages generated: {1}", curModID,stagestoGenerate);
+                    Debug.LogFormat("[Forget Infinity #{0}]: All stages: ", curModID, stagestoGenerate);
                     print("##|Init.|Solut");
                     
                     for (int x = 0; x < stagestoGenerate; x++)
@@ -149,25 +149,33 @@ public class ForgetInfinity : MonoBehaviour {
                             possibleStages.Add(randomStage);
                     }
                     inputStagesRequired = possibleStages.Count;
-                    Debug.LogFormat("[Forget Infinity {0}]: Stages required to solve: {1}", curModID,FormatIntListWithCommas(possibleStages.ToArray()));
+                    Debug.LogFormat("[Forget Infinity #{0}]: Stages required to solve: {1}", curModID,FormatIntListWithCommas(possibleStages.ToArray()));
                 }
                 else
                 { // Implement Failsafe to enforce this module to be solvable if Forget Infinity is NOT ignored by Organization AND Organization is present on the bomb.
-                    Debug.LogFormat("[Forget Infinity {0}]: Organization is present AND not ignoring Forget Infinity! This module can be auto-solved by pressing any button.", curModID);
+                    Debug.LogFormat("[Forget Infinity #{0}]: Organization: Why do you even exist!? No one wanted you to show up anyway!", curModID);
+                    Debug.LogFormat("[Forget Infinity #{0}]: Forget Infinity: But... I am made by a Tetris legend who has made bunch of elevator videos!", curModID);
+                    Debug.LogFormat("[Forget Infinity #{0}]: Organization: It doesn't matter! These people saw you a few times and they didn't like how you operate in the factory.", curModID);
+                    Debug.LogFormat("[Forget Infinity #{0}]: Forget Infinity: But... I am an easier module... Right?", curModID);
+                    Debug.LogFormat("[Forget Infinity #{0}]: Organization: Pff. I saw an module easier than yours and that module is more likeable than you! Get out.", curModID);
+                    Debug.LogFormat("[Forget Infinity #{0}]: Forget Infinity: But...", curModID);
+                    Debug.LogFormat("[Forget Infinity #{0}]: Organization: GET OUT! No more \"but's\"!", curModID);
+                    Debug.LogFormat("[Forget Infinity #{0}]: Organization is present AND not ignoring Forget Infinity! This module can be auto-solved by pressing any button.", curModID);
                     autosolvable = true;
                 }
             }
             else
             {
-                Debug.LogFormat("[Forget Infinity {0}]: No stages can be generated, the module can be auto-solved by pressing any button.",curModID);
+                Debug.LogFormat("[Forget Infinity #{0}]: No stages can be generated, the module can be auto-solved by pressing any button.",curModID);
                 autosolvable = true;
             }
             hasStarted = true;
         };
         BackSpaceButton.OnInteract += delegate
         {
-            if (!interactable || solved) return false;
             AudioHandler.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
+            BackSpaceButton.AddInteractionPunch();
+            if (!interactable || solved) return false;
             if (inFinale)
             {
                 if (input.Length <= 0)
@@ -182,10 +190,10 @@ public class ForgetInfinity : MonoBehaviour {
                 else
                 {
                     int stageToGrab = int.Parse(input);
-                    Debug.LogFormat("[Forget Infinity {0}]: Attempting to recapture stage {1} at a cost of a strike", curModID, stageToGrab);
+                    Debug.LogFormat("[Forget Infinity #{0}]: Attempting to recapture stage {1} at a cost of a strike", curModID, stageToGrab);
                     if (!hasStruck)
                         ModSelf.HandleStrike();
-                    else Debug.LogFormat("[Forget Infinity {0}]: The module has a free capture; consuming it.", curModID);
+                    else Debug.LogFormat("[Forget Infinity #{0}]: The module has a free capture; consuming it.", curModID);
                     hasStruck = false;
                     interactable = false;
                     isRecapturing = false;
@@ -196,14 +204,14 @@ public class ForgetInfinity : MonoBehaviour {
             }
             else if (autosolvable)
             {
-                Debug.LogFormat("[Forget Infinity {0}]: Module solved.", curModID);
                 solved = true;
                 ModSelf.HandlePass();
+                StartCoroutine(AnimateSolveAnim());
             }
             else
             {
                 ModSelf.HandleStrike();
-                Debug.LogFormat("[Forget Infinity {0}]: Defuser pressed a button before module is ready.", curModID);
+                Debug.LogFormat("[Forget Infinity #{0}]: Defuser pressed a button before module is ready.", curModID);
             }
             return false;
         };
@@ -212,8 +220,9 @@ public class ForgetInfinity : MonoBehaviour {
             int y = x;
             ButtonDigits[x].OnInteract += delegate
             {
+                AudioHandler.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
+                ButtonDigits[y].AddInteractionPunch();
                 if (!interactable || solved) return false;
-                AudioHandler.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress,transform);
                 if (inFinale)
                 {
                     if (input.Length < 5)
@@ -227,14 +236,14 @@ public class ForgetInfinity : MonoBehaviour {
                 else if (autosolvable)
                 {
                     
-                    Debug.LogFormat("[Forget Infinity {0}]: Module solved.", curModID);
                     solved = true;
                     ModSelf.HandlePass();
+                    StartCoroutine(AnimateSolveAnim());
                 }
                 else
                 {
                     ModSelf.HandleStrike();
-                    Debug.LogFormat("[Forget Infinity {0}]: Defuser pressed a button before module is ready.", curModID);
+                    Debug.LogFormat("[Forget Infinity #{0}]: Defuser pressed a button before module is ready.", curModID);
                 }
                 return false;
             };
@@ -270,12 +279,34 @@ public class ForgetInfinity : MonoBehaviour {
         }
         return output;
     }
+
+    IEnumerator AnimateSolveAnim()
+    {
+        Debug.LogFormat("[Forget Infinity #{0}]: Module solved.", curModID);
+        while (ScreenStatus.text.Length > 0)
+        {
+            ScreenStatus.text = ScreenStatus.text.Substring(0, ScreenStatus.text.Length - 1);
+            string outputDisplay = "";
+            for (int x = 0; x < ScreenStatus.text.Length; x++)
+            {
+                outputDisplay += ScreenStatus.text.Substring(x, 1).RegexMatch(@"[0-9]") ? UnityEngine.Random.Range(0, 10).ToString("0") : ScreenStatus.text.Substring(x, 1);
+            }
+            ScreenStatus.text = outputDisplay;
+            yield return new WaitForSeconds(0);
+        }
+        while (ScreenStages.text.Length > 0)
+        {
+            ScreenStages.text = ScreenStages.text.Substring(0, ScreenStages.text.Length - 1).Trim();
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
     IEnumerator ProcessSubmittion()
     {
         bool canStrike = true;
         int crtStgIdx = 0;
+        int localDelay = 89;
         ScreenStages.text = input;
-        yield return new WaitForSeconds(1);
+        
         foreach (int oneStg in possibleStages)
         {
             if (oneStg >= 0 && oneStg < stages.Count)
@@ -290,14 +321,47 @@ public class ForgetInfinity : MonoBehaviour {
         if (canStrike)
         {
             ModSelf.HandleStrike();
-            Debug.LogFormat("[Forget Infinity {0}]: {1} does not match for any of the given stages required to solve.", curModID,input);
+            Debug.LogFormat("[Forget Infinity #{0}]: {1} does not match for any of the given stages required to solve.", curModID, input);
             hasStruck = true;
             ScreenStages.color = Color.red;
-            yield return new WaitForSeconds(1);
-            ScreenStages.color = Color.white;
         }
+        else
+        {
+            possibleStages[possibleStages.IndexOf(crtStgIdx)] = -1;
 
+            if (possibleStages.TrueForAll(a => a == -1))
+            {
+                Debug.LogFormat("[Forget Infinity #{0}]: All required stages have been solved.", curModID);
+                solved = true;
+                ModSelf.HandlePass();
+                StartCoroutine(AnimateSolveAnim());
+                yield break;
+            }
+        }
+        while (localDelay >= 0)
+        {
+            string result = "";
+            for (int x = 0; x < possibleStages.Count; x++)
+            {
+                if (possibleStages[x] >= 0)
+                    result += (possibleStages[x] + 1).ToString("00") + " ";
+                else
+                    result += UnityEngine.Random.Range(0, 100).ToString("00") + " ";
+            }
+            ScreenStatus.text = result.Trim();
+            if (localDelay % 18 == 0)
+                input = input.Substring(0, input.Length - 1);
+            string inputSeq = "";
+            for (int x = 0; x < 5 - input.Length; x++)
+            {
+                inputSeq += "-";
+            }
+            ScreenStages.text = inputSeq + input;
+            yield return new WaitForSeconds(0);
+            localDelay--;
+        }
         input = "";
+        ScreenStages.color = Color.white;
         interactable = true;
         yield return null;
     }
@@ -319,7 +383,7 @@ public class ForgetInfinity : MonoBehaviour {
             }
             delayed = false;
         }
-        else Debug.LogFormat("[Forget Infinity {0}]: Stage {1} does not exist.", curModID, requiredStg);
+        else Debug.LogFormat("[Forget Infinity #{0}]: Stage {1} does not exist.", curModID, requiredStg);
         interactable = true;
         yield return null;
     }
@@ -342,7 +406,7 @@ public class ForgetInfinity : MonoBehaviour {
         else
         {
             inFinale = true;
-            Debug.LogFormat("[Forget Infinity {0}]: The module is now in its finale phase.", curModID);
+            Debug.LogFormat("[Forget Infinity #{0}]: The module is now in its finale phase.", curModID);
         }
         yield return null;
     }
@@ -357,7 +421,10 @@ public class ForgetInfinity : MonoBehaviour {
                 string result = "";
                 for (int x = 0; x < possibleStages.Count; x++)
                 {
-                    result += (possibleStages[x] + 1).ToString("00") + " ";
+                    if (possibleStages[x] >= 0)
+                        result += (possibleStages[x] + 1).ToString("00") + " ";
+                    else
+                        result += UnityEngine.Random.Range(0, 100).ToString("00") + " ";
                 }
                 ScreenStatus.text = result.Trim();
                 string inputSeq = "";
@@ -394,11 +461,21 @@ public class ForgetInfinity : MonoBehaviour {
     }
     // Twitch Plays support
 
-    public readonly string TwitchHelpMessage = "Enter the sequence with \"!{0} press 1 2 3 4 5...\". Reset with \"!{0} reset\".";
+    public readonly string TwitchHelpMessage = "Enter the sequence with \"!{0} press 01234\". To press the back space button, append as many \"back\" commands as needed to press the backspace button. 0-9 are acceptable digits. Space out the commands (digits excluded)!";
 
     public IEnumerator ProcessTwitchCommand(string cmd)
     {
+        string[] commandLower = cmd.ToLower().Split(' ');
+        List<KMSelectable> pressSet = new List<KMSelectable>();
+        
 
-        yield break;
+
+
+        yield return null;
+
+
+
+
+
     }
 }
