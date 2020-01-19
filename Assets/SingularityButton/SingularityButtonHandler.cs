@@ -52,7 +52,6 @@ public class SingularityButtonHandler : MonoBehaviour {
 		public string serialNum;
 		public void DisarmAll()
 		{
-			LogAll("A correct set of actions caused this module to be set into a solve state now.");
 			canDisarm = true;
 		}
 		public void LogAll(string text)
