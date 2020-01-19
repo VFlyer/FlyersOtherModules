@@ -1,0 +1,256 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Singularity Button — Keep Talking and Nobody Explodes Module</title>
+    <meta name="viewport" content="initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+	<link href='https://fonts.googleapis.com/css?family=Special+Elite' rel='stylesheet' type='text/css'>
+    <script src="js/ktane-utils.js"></script>
+	<style>
+		.footnote {
+            font-style: italic;
+            font-size: 12px;
+            margin-left: 00 cm;
+        }
+		div.footnote {
+                font-size: 75%;
+                margin-left: 10%;
+                margin-top: 2.5em;
+                position: relative;
+            }
+                div.footnote::before {
+                    content: '';
+                    position: absolute;
+                    left: -1em;
+                }
+                div.footnote::after {
+                    content: '';
+                    position: absolute;
+                    border-top: 1px solid #aaa;
+                    left: -1em;
+                    top: -1em;
+                    width: 15em;
+                }
+            div.footnote p {
+                margin: 0;
+            }
+	</style>
+</head>
+<body>
+    <div id="ManualContent">
+        <div class="section">
+            <div class="page page-bg-01">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+                    <img src="img/Component/Singularity%20Button.svg" class="diagram">
+                    <h2>On the Subject of Singularity Button</h2>
+                    <p class="flavour-text">Oh there is one of this. This should be easy. Wait is there more of itself?</p>
+					<p>This module consists of a singular round button with a screen at the center. The screen may or may not show a character at a certain time interval. To disarm this module, you must disarm <strong>ALL</strong> instances of Singularity Button by interacting with them in a specific way. A failed combination of actions on the buttons will cause a strike.</p>
+					<h1 style="text-align: center;margin-top: 20%">Table of Contents</h1>
+					<ol>
+						<li>Appendix: The Disarm Button</li>
+						<li>Solving 1 Singularity Button</li>
+						<li>Solving 2 Singularity Buttons</li>
+						<li>Solving 3 Singularity Buttons</li>
+						<li>Solving 4 Singularity Buttons</li>
+						<li>Solving 5 Singularity Buttons</li>
+						<li>Solving 6 Singularity Buttons</li>
+						<li>Solving 7 Singularity Buttons</li>
+						<li>Solving 8 Singularity Buttons</li>
+						<li>Solving 9 Singularity Buttons</li>
+						<li>Solving 10 Singularity Buttons</li>
+						<li>Solving 11-15 Singularity Buttons</li>
+						<li>Solving 16+ Singularity Buttons</li>
+					</ol>
+					
+                </div>
+                <div class="page-footer relative-footer">Page 1 of 14</div>
+            </div>
+            <div class="page page-bg-02">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+                    <h2>Appendix: The Disarm Button</h2>
+					<img src="img/Component/ManualDisarmButton.svg" class="diagram">
+					<p class="flavour-text">It's there for a reason.</p>
+					<p>On the back of the module is a red rectangular button that says "DISARM MODULE MANUALLY." When pressed, this will automatically disarm Singularity Button only when Singularity Buttons are put in a "solve state". By default, all Singularity Buttons will disarm itself at the same time. However, if there is at least 1 "non-unicorn" solve dependent module or major module on the bomb and there are more than 1 Singularity Button, the module will turn itself over to show that rectangular button. The module is technically solved, however there are certain modules on the bomb that do not work as intended with synchronized solves. The defuser can configure the settings to always make the module flip to the back.</p>
+					<h3>Notable Modules Detected</h3>
+					<ul style="column-count: 2">
+						<li>Blind Maze</li>
+						<li>Burglar Alarm</li>
+						<li>Colour Code</li>
+						<li>Combination Lock</li>
+						<li>Langton's Ant</li>
+						<li>The Number&dagger;</li>
+						<li>Planets</li>
+						<li>The Plunger Button</li>
+						<li>Press X</li>
+						<li>Scripting</li>
+						<li>Shapes and Bombs</li>
+						<li>14</li>
+						<li>Cookie Jars</li>
+						<li>Divided Squares</li>
+						<li>Encryption Bingo</li>
+						<li>Forget Enigma</li>
+						<li>Forget Everything</li>
+						<li>Forget It Not</li>
+						<li>Forget Me Not</li>
+						<li>Forget Perspective</li>
+						<li>Forget Them All</li>
+						<li>Forget This</li>
+						<li>Forget Us Not</li>
+						<li>Hogwarts</li>
+						<li>Organization</li>
+						<li>Simon Forgets</li>
+						<li>Simon's Stages</li>
+						<li>Tallordered Keys</li>
+						<li>The Troll</li>
+						<li>Ultimate Custom Night</li>
+						<li>Big Circle*</li>
+						<li>Modern Cipher*</li>
+						<li>Laundry*</li>
+						<li>Heraldry*</li>
+						<li>Free Parking*&dagger;</li>
+						<li>Unrelated Anagrams*&dagger;</li>
+					</ul>
+                </div>
+				<div class="footnote">
+					<p>* If a set of edgework/module relation conditons for this module is present that prevents the given module to detect solves, Singularity Button will not detect that module instead. Not all modules are exempt from this.</p>
+					<p>&dagger; These modules will stop being detected from Singularity Button if a solve dependent criteria can no longer be met.</p>
+				</div>
+                <div class="page-footer relative-footer">Page 2 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 1 Singularity Button</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 3 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 2 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 4 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 3 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 5 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 4 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 6 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 5 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 7 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 6 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 8 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 7 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 9 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 8 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 10 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 9 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 11 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 10 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 12 of 14</div>
+            </div>
+						<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 11-15 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 13 of 14</div>
+            </div>
+						<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 16+ Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 14 of 14</div>
+            </div>
+			
+        </div>
+    </div>
+</body>
+</html>

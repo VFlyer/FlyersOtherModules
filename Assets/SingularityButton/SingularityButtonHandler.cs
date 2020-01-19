@@ -7,6 +7,7 @@ using System.Linq;
 public class SingularityButtonHandler : MonoBehaviour {
 
 	public GameObject disarmButtonObject, buttonFrontObject, entireModule,animatedPortion;
+	public MeshRenderer buttonMainRenderer,buttonBacking;
 	public TextMesh textDisplay;
 	public KMSelectable disarmButton, buttonFront;
 	public KMBossModule bossModule;
@@ -15,12 +16,10 @@ public class SingularityButtonHandler : MonoBehaviour {
 	public KMAudio audioSelf;
 	public KMGameCommands gameCommands;
 
-	private bool isSolved = false;
-	private bool hasDisarmed = false;
-	private bool hasActivated = false;
+	private bool isSolved = false, hasDisarmed = false, hasActivated = false, alwaysFlipToBack = false;
+	private bool isPressedDisarm = false, isPressedMain = false;
 
-	private bool isPressedDisarm = false;
-	private bool isPressedMain = false;
+	private bool zenModeDetected = false;
 
 	public List<string> cautionaryModules = new List<string>();
 
@@ -43,25 +42,44 @@ public class SingularityButtonHandler : MonoBehaviour {
 
 	protected sealed class SingularityButtonInfo //Lock down infomation to a single bomb, hopefully.
 	{
-		public List<SingularityButtonHandler> singularButtons = new List<SingularityButtonHandler>();
+		public List<SingularityButtonHandler> singularButtons = new List<SingularityButtonHandler>();// A collection of Singularity Button Handlers on 1 module.
 		public List<int> inputs = new List<int>();
 		public List<Color> buttonColors = new List<Color>();
 		public List<string> buttonLabels = new List<string>();
 		public List<int> buttonDigits = new List<int>();
+		private List<int> idxInputs = new List<int>();
 		public bool canDisarm = false;
 		public string serialNum;
 		public void DisarmAll()
 		{
+			LogAll("A correct set of actions caused this module to be set into a solve state now.");
 			canDisarm = true;
 		}
-		public bool canModuleDisarm()
+		public void LogAll(string text)
 		{
-			return canDisarm;
+			foreach (SingularityButtonHandler singularityButton in singularButtons)
+			{
+				Debug.LogFormat("[Singularity Button #{0}]: {1}",singularityButton.curmodID,text);
+			}
 		}
-		public void CauseStrike(int idx)
+		public void LogIndividual(string text,int idx)
 		{
 			if (idx >= 0 && idx < singularButtons.Count)
 			{
+				Debug.LogFormat("[Singularity Button #{0}]: {1}", singularButtons[idx].curmodID, text);
+			}
+		}
+		public void CauseStrikeAll()
+		{
+			LogAll("An incorrect set of actions caused this module to strike.");
+			foreach (SingularityButtonHandler singularityButton in singularButtons)
+				singularityButton.modSelf.HandleStrike();
+		}
+		public void CauseStrikeIndividual(int idx)
+		{
+			if (idx >= 0 && idx < singularButtons.Count)
+			{
+				LogIndividual("An incorrect set of actions caused this module to strike.",idx);
 				singularButtons[idx].modSelf.HandleStrike();
 			}
 		}
@@ -72,6 +90,77 @@ public class SingularityButtonHandler : MonoBehaviour {
 		public int getIndexOfButton(SingularityButtonHandler handler)
 		{
 			return singularButtons.IndexOf(handler);
+		}
+		public bool IsAnyButtonHeld()
+		{
+			return !singularButtons.TrueForAll(a => !a.isPressedMain);
+		}
+		public bool IsEqualToNumberOnBomb(SingularityButtonHandler buttonHandler)
+		{
+			return CountSingularityButtons() == buttonHandler.bombInfo.GetModuleNames().Where(a => a.Equals("Singularity Button")).Count();
+		}
+		public void HandleInteraction(int idx)
+		{
+			idxInputs.Add(idx);
+		}
+		public IEnumerator StartBootUpSequence()
+		{
+			if (singularButtons.Count <= 0) yield break;
+			if (IsEqualToNumberOnBomb(singularButtons[0]))
+			{
+				yield return new WaitForSeconds(0);
+				int btnCount = CountSingularityButtons();
+				LogIndividual("Detected this many Singularity Buttons on the bomb: " + btnCount,btnCount - 1);
+				if (btnCount == 1)
+				{
+
+				}
+				else if (btnCount == 2)
+				{
+
+				}
+				else if (btnCount == 3)
+				{
+
+				}
+				else if (btnCount == 4)
+				{
+
+				}
+				else if (btnCount == 5)
+				{
+
+				}
+				else if (btnCount == 6)
+				{
+
+				}
+				else if (btnCount == 7)
+				{
+
+				}
+				else if (btnCount == 8)
+				{
+
+				}
+				else if (btnCount == 9)
+				{
+
+				}
+				else if (btnCount == 10)
+				{
+
+				}
+				else if (btnCount > 10 && btnCount < 16)
+				{
+
+				}
+				else 
+				{
+
+				}
+			}
+			yield return null;
 		}
 	}
 	private static readonly Dictionary<KMBomb, SingularityButtonInfo> groupedSingularityButtons = new Dictionary<KMBomb, SingularityButtonInfo>();
@@ -176,13 +265,13 @@ public class SingularityButtonHandler : MonoBehaviour {
 		// The Hexabutton, no consistent way to detect if the given module is solve dependent or not.
 		// Jack-O'-Lantern, no consistent way to detect if the given module is solve dependent or not.
 		// Morse-A-Maze, no consistent way to detect if the given module is solve dependent or not.
-		// Seven Wires, chance to get specific instances NOT the 6,12,18,24,... one, no consistent way to detect if the given module is solve dependent or not.
+		// Seven Wires, chance to get specific instances NOT the 6, 12, 18, 24,... one, no consistent way to detect if the given module is solve dependent or not.
 		// Boolean Wires, has a chance where 2 solve dependent conditions can NOT show up, no consistent way to detect if the given module is solve dependent or not.
 		// Dr Doctor, For the override, (3B 3H, LIT FRK, UNLIT TRN,Forget Me Not, LIT FRQ) and then NO Fever Symptom, has a chance to NOT show up. No consistent way to detect if the given module is solve dependent or not.
 		// Double Expert, a couple rules rely on solves but no consistent way to detect if the given module is solve dependent or not.
 		// The Stare, you can solve this without needing this to be at a multiple of 5 solves.
-		// Black Hole, you can solve this without advantagous solves.
-
+		// Curriculum, you can solve this without bookworm status. Bookworm status makes this module easier but is not fully needed.
+		// Challenge and Contact, after the first letter, the module can generate the 2nd letter based on solve parity. You can solve this with the remaining 2 letters having similar parities.
 		// END CHANCE SOLVES
 	}
 
@@ -217,11 +306,14 @@ public class SingularityButtonHandler : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		disarmButton.OnInteract += delegate {
+			audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
 			isPressedDisarm = true;
 			return false;
 		};
 		disarmButton.OnInteractEnded += delegate
 		{
+			disarmButton.AddInteractionPunch();
+			audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonRelease, transform);
 			isPressedDisarm = false;
 			if (isSolved)
 			{
@@ -231,6 +323,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 		};
 		buttonFront.OnInteract += delegate
 		{
+			audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, transform);
 			if (!isSolved && hasActivated)
 			{
 				
@@ -240,6 +333,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 		};
 		buttonFront.OnInteractEnded += delegate
 		{
+			audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonRelease, transform);
 			if (!isSolved && hasActivated)
 			{
 
@@ -250,6 +344,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 		{
 			// Setup Global Interaction
 			KMBomb bombAlone = entireModule.GetComponentInParent<KMBomb>(); // Get the bomb that the module is attached on. Required for intergration due to modified value.
+			//Required for Multiple Bombs stable interaction in case of different bomb seeds.
 
 			if (!groupedSingularityButtons.ContainsKey(bombAlone))
 				groupedSingularityButtons[bombAlone] = new SingularityButtonInfo();
@@ -257,6 +352,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 			singularityButtonInfo.singularButtons.Add(this);
 
 			// Start Main Handling
+			zenModeDetected = ZenModeActive;
 			AddOthersModulesOntoList();
 			StartCoroutine(HandleGlobalModule());
 			hasActivated = true;
@@ -264,17 +360,26 @@ public class SingularityButtonHandler : MonoBehaviour {
 	}
 	IEnumerator HandleGlobalModule()
 	{
-		while (!singularityButtonInfo.canModuleDisarm())
+		StartCoroutine(singularityButtonInfo.StartBootUpSequence());
+		int lastSolveCount = 0;
+		while (!singularityButtonInfo.canDisarm)
 		{
-			UpdateCautionaryList();
+			var curSolveCount = bombInfo.GetSolvedModuleNames().Count;
+			if (lastSolveCount != curSolveCount)
+			{
+				lastSolveCount = curSolveCount;
+				UpdateCautionaryList();
+			}
 			yield return new WaitForSeconds(0);
 		}
 		isSolved = true;
-		if (!bombInfo.GetSolvableModuleNames().Where(a => cautionaryModules.Contains(a)).Any() || singularityButtonInfo.CountSingularityButtons() == 1) // Does the bomb contain any cautionary modules or is there 1 present on this bomb?
-		{
+		if (!alwaysFlipToBack && (!bombInfo.GetSolvableModuleNames().Any(a => cautionaryModules.Contains(a)) || singularityButtonInfo.CountSingularityButtons() == 1))
+		{// Does the bomb contain any cautionary modules or is there 1 Singularity Button present on this bomb and does it need to flip to the back?
 			hasDisarmed = true;
 			modSelf.HandlePass();
 		}
+		else if (alwaysFlipToBack)
+			Debug.LogFormat("[Singularity Button #{0}]: A setting is enforcing the module to always flip to the back. You must instead press the manual disarm button to disarm this module!", curmodID);
 		else
 			Debug.LogFormat("[Singularity Button #{0}]: At least one cautionary module is present on the bomb. You must instead press the manual disarm button to disarm this module!", curmodID);
 		yield return null;
@@ -310,7 +415,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 		disarmButtonObject.transform.localPosition = new Vector3(0, -0.019f * (frameDisarm / 45f), 0);
 		animatedPortion.transform.localEulerAngles = new Vector3(0, 0, 180f * (frameSwitch / (float)animLength));
 	}
-
+	// Handle Twitch Plays
 	IEnumerator HandleForcedSolve()
 	{
 		while (frameSwitch < animLength)
@@ -320,14 +425,155 @@ public class SingularityButtonHandler : MonoBehaviour {
 		disarmButton.OnInteractEnded();
 	}
 
+	bool ZenModeActive;
+
 	void TwitchHandleForcedSolve()
 	{
-		singularityButtonInfo.DisarmAll(); // Call the protected method
 		Debug.LogFormat("[Singularity Button #{0}]: A force solve has been issued viva TP Handler. ALL Singularity Buttons will be set to a solve state because of it.", curmodID);
+		if (!isSolved)
+			singularityButtonInfo.DisarmAll(); // Call the protected method, if the module is not solved yet.
 		StartCoroutine(HandleForcedSolve());
 	}
+	#pragma warning disable 0414
+		string TwitchHelpMessage = "To press the disarm button: \"!{0} disarm\", To grab the current state of the button: \"!{0} state\"\n" +
+		"To tap the main button based on seconds digits: \"!{0} tap ##\"; based on the digit being present: \"!{0} tap #\"; anytime: \"!{0} tap\"\n" +
+		"To hold the main button based on seconds digits: \"!{0} hold ##\"; based on the digit being present: \"!{0} hold #\"; anytime: \"!{0} hold\"\n" +
+		"To release the main button based on seconds digits: \"!{0} release ##\"; based on the digit being present: \"!{0} release #\". Multiple time stamps based on seconds digits can be used.";
+	#pragma warning restore 0414
 	IEnumerator ProcessTwitchCommand(string command)
 	{
-		yield return null;
+		string interpetedCommand = command.ToLower();
+
+		string pressDisarm = @"^disarm$";
+		string tapTimeStamp = @"^tap( \d{2})+$", tapDigit = @"^tap( \d)?$";
+		string holdTimeStamp = @"^hold( \d{2})+$", holdDigit = @"^hold( \d)?$";
+		string releaseTimeStamp = @"^release( \d{2})+$", releaseDigit = @"^release \d$";
+		string grabState = @"^state$";
+
+		string[] commandParts = interpetedCommand.Split(' ');
+
+		if (hasDisarmed)
+		{
+			yield return "sendtochaterror Are you trying to interact the button when its already solved? You might want to think again. (This is an anarchy command prevention message.)";
+			yield break;
+		}
+
+		if (interpetedCommand.RegexMatch(grabState))
+		{
+			yield return "sendtochat This button is currently " + (isPressedMain ? "held" : "not held");
+			yield break;
+		}
+		else if (interpetedCommand.RegexMatch(pressDisarm))
+		{
+			if (!isSolved)
+			{
+				yield return "sendtochaterror The module is not solved yet! Figure out to set ALL Singularity Buttons to a solve state first.";
+				yield break;
+			}
+			while (frameSwitch < animLength)
+				yield return "trycancel";
+			yield return null;
+			yield return disarmButton;
+			yield return "solve";
+			yield return new WaitForSeconds(0.2f);
+			yield return disarmButton;
+			
+		}
+		else if (isSolved)
+		{
+			yield return "sendtochaterror The module is already put in a solve state! Check the help command for this module to figure out how to press the manual disarm button.";
+			yield break;
+		}
+		else if (singularityButtonInfo.IsAnyButtonHeld())
+		{
+			if (isPressedMain)
+			{ 
+				if (interpetedCommand.RegexMatch(releaseTimeStamp))
+				{
+					int idx = commandParts.Length - 1;
+					List<int> possibleSecondsTimer = new List<int>();
+					while (idx >= 0 && commandParts[idx].RegexMatch(@"^\d\d$"))
+					{
+						possibleSecondsTimer.Add(int.Parse(commandParts[idx]));
+						idx--;
+					}
+					while (!possibleSecondsTimer.Contains((int)bombInfo.GetTime() % 60))
+						yield return "trycancel";
+					yield return "strike";
+					yield return "solve";
+					yield return null;
+					yield return buttonFront;
+				}
+				else if (interpetedCommand.RegexMatch(releaseDigit))
+				{
+					string digitGoal = commandParts[1];
+					while (!bombInfo.GetFormattedTime().Contains(digitGoal))
+						yield return "trycancel";
+					yield return "strike";
+					yield return "solve";
+					yield return null;
+					yield return buttonFront;
+				}
+			}
+			else
+				yield return "sendtochaterror Another Singularity Button is currently held! Find the Singularity Button being held and release that first!";
+		}
+		else if (interpetedCommand.RegexMatch(tapTimeStamp))
+		{
+			int idx = commandParts.Length - 1;
+			List<int> possibleSecondsTimer = new List<int>();
+			while (idx >= 0 && commandParts[idx].RegexMatch(@"^\d\d$"))
+			{
+				possibleSecondsTimer.Add(int.Parse(commandParts[idx]));
+				idx--;
+			}
+			while (!possibleSecondsTimer.Contains((int)bombInfo.GetTime() % 60))
+				yield return "trycancel";
+			yield return null;
+			yield return buttonFront;
+			yield return buttonFront;
+			yield return "strike";
+			yield return "solve";
+		}
+		else if (interpetedCommand.RegexMatch(tapDigit))
+		{
+			if (commandParts.Length == 2)
+			{
+				string digitGoal = commandParts[1];
+				while (!bombInfo.GetFormattedTime().Contains(digitGoal))
+					yield return "trycancel";
+			}
+			yield return null;
+			yield return buttonFront;
+			yield return buttonFront;
+			yield return "strike";
+			yield return "solve";
+		}
+		else if (interpetedCommand.RegexMatch(holdTimeStamp))
+		{
+			int idx = commandParts.Length - 1;
+			List<int> possibleSecondsTimer = new List<int>();
+			while (idx >= 0 && commandParts[idx].RegexMatch(@"^\d\d$"))
+			{
+				possibleSecondsTimer.Add(int.Parse(commandParts[idx]));
+				idx--;
+			}
+			while (!possibleSecondsTimer.Contains((int)bombInfo.GetTime() % 60))
+				yield return "trycancel";
+			yield return null;
+			yield return buttonFront;
+		}
+		else if (interpetedCommand.RegexMatch(holdDigit))
+		{
+			if (commandParts.Length == 2)
+			{
+				string digitGoal = commandParts[1];
+				while (!bombInfo.GetFormattedTime().Contains(digitGoal))
+					yield return "trycancel";
+			}
+			yield return null;
+			yield return buttonFront;
+		}
+		yield break;
 	}
 }
