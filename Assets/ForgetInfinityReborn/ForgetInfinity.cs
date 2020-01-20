@@ -43,6 +43,7 @@ public class ForgetInfinity : MonoBehaviour {
 			ignoredModuleNames = GetComponent<KMBossModule>().GetIgnoredModules("Forget Infinity", new string[]{
                 "14",
                 "Bamboozling Time Keeper",
+                "Brainf---",
                 "Cookie Jars",
                 "Cruel Purgatory",
                 "Divided Squares",
@@ -59,6 +60,7 @@ public class ForgetInfinity : MonoBehaviour {
                 "Hogwarts",
                 "Organization",
                 "Purgatory",
+                "Simon Forgets",
                 "Simon's Stages",
                 "Souvenir",
                 "Tallordered Keys",
@@ -96,7 +98,6 @@ public class ForgetInfinity : MonoBehaviour {
 
                     Debug.LogFormat("[Forget Infinity #{0}]: Total stages generated: {1}", curModID,stagestoGenerate);
                     Debug.LogFormat("[Forget Infinity #{0}]: All stages: ", curModID, stagestoGenerate);
-                    print("##|Init.|Solut");
                     
                     for (int x = 0; x < stagestoGenerate; x++)
                     {
@@ -111,13 +112,18 @@ public class ForgetInfinity : MonoBehaviour {
                     }
                     for (int x = 0; x < stages.Count; x++)
                     {
+                        bool hasSwapped = false;
                         int[] finalStageNumbers = new int[5];
                         stages[x].CopyTo(finalStageNumbers, 0);
+
+                        int lastDigitInSerial = Info.GetSerialNumberNumbers().Any() ? Info.GetSerialNumberNumbers().Last() : 0;
+                        int smallestDigitInSerial = Info.GetSerialNumberNumbers().Any() ? Info.GetSerialNumberNumbers().Min() : 0;
                         // Begin Solution Calculations
                         // Culumulative Slot Calculations
                         if (Info.IsPortPresent(Port.StereoRCA))
                         {
                             finalStageNumbers = finalStageNumbers.Reverse().ToArray();
+                            hasSwapped = true;
                         }
 
                         int batterycount = Info.GetBatteryCount();
@@ -127,8 +133,58 @@ public class ForgetInfinity : MonoBehaviour {
                         int FiLetters = Info.GetSerialNumberLetters().Where(a => a.EqualsAny('F', 'I')).ToList().Count;
                         for (int idx = 0; idx < finalStageNumbers.Length; idx++)
                             finalStageNumbers[idx] -= FiLetters;
-                        //Individual Slots
-
+                        // Individual Slots
+                        // Slot 1
+                        if (solvablemodNames.Contains("Tetris"))
+                            finalStageNumbers[0] = stages[x][0] + 7;
+                        else if (finalStageNumbers[0] >= 10 && finalStageNumbers[0] % 2 == 0)
+                            finalStageNumbers[0] /= 2;
+                        else if (finalStageNumbers[0] < 0)
+                            finalStageNumbers[0] *= -1;
+                        else
+                            finalStageNumbers[0] += 1;
+                        // Slot 2
+                        if (Info.CountDuplicatePorts() > 0)
+                            finalStageNumbers[1] += Info.CountDuplicatePorts();
+                        else if (Info.GetPortCount() == 0)
+                            finalStageNumbers[1] += stages[x][0] + stages[x][2];
+                        // Slot 3
+                        if (!hasSwapped)
+                        {
+                            if (finalStageNumbers[2] >= 7)
+                            {
+                                int currentValue = stages[x][2];
+                                int finalValueSlot3 = 0;
+                                while (currentValue > 0)
+                                {
+                                    finalValueSlot3 += currentValue % 2;
+                                    currentValue /= 2;
+                                }
+                                finalStageNumbers[2] = finalValueSlot3;
+                            }
+                            else if (finalStageNumbers[2] < 3)
+                                finalStageNumbers[2] = Math.Abs(finalStageNumbers[2]);
+                            else
+                                finalStageNumbers[2] = stages[x][2] + smallestDigitInSerial;
+                        }
+                        // Slot 4
+                        if (finalStageNumbers[3] % 3 != Info.GetSolvableModuleNames().Count % 3)
+                        {
+                            if (finalStageNumbers[3] % 10 == stages[x][3])
+                                finalStageNumbers[3] += 1;
+                            else
+                                finalStageNumbers[3] = 18 - finalStageNumbers[3];
+                        }
+                        // Slot 5
+                        int[,] slotTable5th = new int[,] {
+                            { 0, 1, 2, 3, 4 },
+                            { 5, 6, 7, 8, 9 },
+                            { stages[x][4], 1 + stages[x][4], 10 - stages[x][4], stages[x][4] - 1, stages[x][4] + 5 },
+                            { 9, 8, 7, 6, 5 },
+                            { 4, 3, 2, 1, 0 }
+                        };
+                        finalStageNumbers[4] = slotTable5th[finalStageNumbers[4] % 5, lastDigitInSerial / 2];
+                        // Within 0-9
                         while (!finalStageNumbers.ToList().TrueForAll(a => a >= 0 && a <= 9))
                         {
                             for (int idx = 0; idx < finalStageNumbers.Length; idx++)
@@ -137,10 +193,9 @@ public class ForgetInfinity : MonoBehaviour {
                                 else if (finalStageNumbers[idx] > 9)
                                     finalStageNumbers[idx] -= 10;
                         }
-
                         solution.Add(finalStageNumbers);
                         // End Solution Calculations
-                        print((x+1).ToString("00")+"|"+FormatListInt(stages[x]) + "|" + FormatListInt(solution[x]));
+                        Debug.LogFormat("[Forget Infinity #{0}]: Stage {1}: Display = {2}, Answer = {3}", curModID, (x+1).ToString("00"), FormatListInt(stages[x]), FormatListInt(solution[x]));
                     }
                     while (possibleStages.Count < Math.Min(stagestoGenerate, 3))// Memoryless Randomizer Starts Here
                     {
@@ -465,17 +520,53 @@ public class ForgetInfinity : MonoBehaviour {
 
     public IEnumerator ProcessTwitchCommand(string cmd)
     {
-        string[] commandLower = cmd.ToLower().Split(' ');
+        string[] commandLowerSet = cmd.ToLower().Split(' ');
         List<KMSelectable> pressSet = new List<KMSelectable>();
+        if (commandLowerSet.Length == 0) yield break;
+        if (!commandLowerSet[0].EqualsIgnoreCase("press"))
+        {
+            yield return "sendtochaterror The command must start with \"press\", case insensitive, to interact with this module.";
+            yield break;
+        }
+        for (int x = 1; x < commandLowerSet.Length; x++)
+        {
+            if (commandLowerSet[x].RegexMatch(@"^\d+$"))
+            {
+                foreach (char onechar in commandLowerSet[x])
+                {
+                    pressSet.Add(ButtonDigits[int.Parse(onechar.ToString())]);
+                }
+            }
+            else if (commandLowerSet[x].EqualsIgnoreCase("back"))
+            {
+                pressSet.Add(BackSpaceButton);
+            }
+        }
+
+        if (pressSet.Count <= 0) yield break;
+        if (!inFinale)
+        {
+            yield return "sendtochat It's too early to do that, isn't it?";
+            yield return null;
+            pressSet[0].OnInteract();
+            yield break;
+        }
+        foreach (KMSelectable button in pressSet)
+        {
+            if (!interactable)
+            {
+                yield return "sendtochaterror The module stopped allowing inputs to process. The rest of the inputs have been voided.";
+                yield break;
+            }
+            yield return null;
+            button.OnInteract();
+            if (input.Length >= 5)
+            {
+                yield return "solve";
+                yield return "strike";
+            }
+            yield return new WaitForSeconds(0.1f);
+        }
         
-
-
-
-        yield return null;
-
-
-
-
-
     }
 }

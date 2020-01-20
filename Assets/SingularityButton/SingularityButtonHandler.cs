@@ -19,8 +19,6 @@ public class SingularityButtonHandler : MonoBehaviour {
 	private bool isSolved = false, hasDisarmed = false, hasActivated = false, alwaysFlipToBack = false;
 	private bool isPressedDisarm = false, isPressedMain = false;
 
-	private bool zenModeDetected = false;
-
 	public List<string> cautionaryModules = new List<string>();
 
 	private static int modID = 1;
@@ -42,14 +40,14 @@ public class SingularityButtonHandler : MonoBehaviour {
 
 	protected sealed class SingularityButtonInfo //Lock down infomation to a single bomb, hopefully.
 	{
-		public List<SingularityButtonHandler> singularButtons = new List<SingularityButtonHandler>();// A collection of Singularity Button Handlers on 1 module.
+		public List<SingularityButtonHandler> singularButtons = new List<SingularityButtonHandler>();// A collection of Singularity Button Handlers on 1 global handler.
 		public List<int> inputs = new List<int>();
 		public List<Color> buttonColors = new List<Color>();
 		public List<string> buttonLabels = new List<string>();
 		public List<int> buttonDigits = new List<int>();
 		private List<int> idxInputs = new List<int>();
+		private List<int> combinedValues = new List<int>();
 		public bool canDisarm = false;
-		public string serialNum;
 		public void DisarmAll()
 		{
 			canDisarm = true;
@@ -98,9 +96,15 @@ public class SingularityButtonHandler : MonoBehaviour {
 		{
 			return CountSingularityButtons() == buttonHandler.bombInfo.GetModuleNames().Where(a => a.Equals("Singularity Button")).Count();
 		}
-		public void HandleInteraction(int idx)
+		public void HandleInteraction(int idx, int value)
 		{
 			idxInputs.Add(idx);
+			combinedValues.Add(value);
+		}
+		public void ClearAllInputs()
+		{
+			idxInputs.Clear();
+			combinedValues.Clear();
 		}
 		public IEnumerator StartBootUpSequence()
 		{
@@ -109,7 +113,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 			{
 				yield return new WaitForSeconds(0);
 				int btnCount = CountSingularityButtons();
-				LogIndividual("Detected this many Singularity Buttons on the bomb: " + btnCount,btnCount - 1);
+				LogAll("Detected this many Singularity Buttons on the bomb: " + btnCount);
 				if (btnCount == 1)
 				{
 
@@ -169,6 +173,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 		cautionaryModules.AddRange(bossModule.GetIgnoredModules("Singularity Button", new string[]
 		{
 			"14",
+			"Brainf---",
 			"Cookie Jars",
 			"Divided Squares",
 			"Encryption Bingo",
@@ -266,8 +271,9 @@ public class SingularityButtonHandler : MonoBehaviour {
 		// Morse-A-Maze, no consistent way to detect if the given module is solve dependent or not.
 		// Seven Wires, chance to get specific instances NOT the 6, 12, 18, 24,... one, no consistent way to detect if the given module is solve dependent or not.
 		// Boolean Wires, has a chance where 2 solve dependent conditions can NOT show up, no consistent way to detect if the given module is solve dependent or not.
-		// Dr Doctor, For the override, (3B 3H, LIT FRK, UNLIT TRN,Forget Me Not, LIT FRQ) and then NO Fever Symptom, has a chance to NOT show up. No consistent way to detect if the given module is solve dependent or not.
+		// Dr Doctor, For the override, (3B 3H, LIT FRK, UNLIT TRN, Forget Me Not, LIT FRQ) and then NO Fever Symptom, has a chance to NOT show up. No consistent way to detect if the given module is solve dependent or not.
 		// Double Expert, a couple rules rely on solves but no consistent way to detect if the given module is solve dependent or not.
+		// Black Hole, you can solve this without advantagous solves.
 		// The Stare, you can solve this without needing this to be at a multiple of 5 solves.
 		// Curriculum, you can solve this without bookworm status. Bookworm status makes this module easier but is not fully needed.
 		// Challenge and Contact, after the first letter, the module can generate the 2nd letter based on solve parity. You can solve this with the remaining 2 letters having similar parities.
@@ -351,7 +357,6 @@ public class SingularityButtonHandler : MonoBehaviour {
 			singularityButtonInfo.singularButtons.Add(this);
 
 			// Start Main Handling
-			zenModeDetected = ZenModeActive;
 			AddOthersModulesOntoList();
 			StartCoroutine(HandleGlobalModule());
 			hasActivated = true;
@@ -372,6 +377,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 			yield return new WaitForSeconds(0);
 		}
 		isSolved = true;
+		Debug.LogFormat("[Singularity Button #{0}]: A correct set of actions caused the Singularity Buttons to enter a solve state.", curmodID);
 		if (!alwaysFlipToBack && (!bombInfo.GetSolvableModuleNames().Any(a => cautionaryModules.Contains(a)) || singularityButtonInfo.CountSingularityButtons() == 1))
 		{// Does the bomb contain any cautionary modules or is there 1 Singularity Button present on this bomb and does it need to flip to the back?
 			hasDisarmed = true;
@@ -418,13 +424,14 @@ public class SingularityButtonHandler : MonoBehaviour {
 	IEnumerator HandleForcedSolve()
 	{
 		while (frameSwitch < animLength)
+		{
+			if (hasDisarmed) yield break;
 			yield return new WaitForSeconds(0);
+		}
 		disarmButton.OnInteract();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.2f);
 		disarmButton.OnInteractEnded();
 	}
-
-	bool ZenModeActive;
 
 	void TwitchHandleForcedSolve()
 	{

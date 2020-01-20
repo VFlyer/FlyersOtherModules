@@ -54,13 +54,13 @@
                 <div class="page-content">
                     <h2>Rules to Calculate Inputs</h2>
 					<p class="flavour-text">Is this Skewed Slots 2.0? Certainly doesn't smell like one... Especially what happened last time.</p>
-					<p>The original digit in the given stage refers to the digit in that stage before the modifications took effect. After all of the calculations, if the value is less than 0 for the given digit, keep adding 10 until it isn't. Then, take the least significant digit in each of the values and input them.</p>
+					<p>The original digit in the given stage refers to the digit in that stage before the modifications took effect. After all of the calculations, if the value is less than 0 for the given digit, keep adding 10 until it isn't. Then, take the least significant digit in each of the values and input them. If there are no digits in the serial number, use 0 for any rules that need the serial number digits.</p>
 					<h3>Calculations For All Digits</h3>
                     <ol>
 						<li>If there is a Stereo RCA port, swap the 1st digit of the code with the 5th digit and the 2nd digit with the 4th digit.</li>
                         <li>If the bomb has batteries, add the number of batteries to each digit of the code.</li>
                         <li>If the bomb's serial number contains the characters "F" or "I", subtract 1 from each digit of the code for each "F" or "I" in the serial number.</li>
-						<li>Each of the 5 digits now calculated will be used as their respective values for the next set of calculations. The digit can be higher than 9 or less than 0 before the end of all calculations.</li>
+						<li>Each of the 5 digits now calculated will be used as their respective values for the next set of calculations. The digit can be higher than 9 or less than 0 at the end of "Calculations For All Digits".</li>
                     </ol>
 					<h3>1st Digit Calculations</h3>
 					<ol>
@@ -92,20 +92,21 @@
 						<li>Grab the 3rd value from the previous calculation for all digits.</li>
 						<li>If the other digits were swapped before, don't modify the 3rd value.</li>
 						<li>Otherwise, if the 3rd value is greater than or equal to 7, take the sum of the binary digits in the 3rd original digit.</li>
-						<li>Otherwise, if the 1st value is less than 0, take the absolute value of that.</li>
+						<li>Otherwise, if the 3rd value is less than 3, take the absolute value of the 3rd value.</li>
 						<li>Otherwise, take the 3rd original digit and add the smallest digit in the serial number.</li>
 						
 					</ol>
 					<h3>4th Digit Calculations</h3>
 					<ol>
 						<li>Grab the 4th value from the previous calculation for all digits.</li>
-						<li>Go through the table to modify the value based on the conditions.</li>
-						
+						<li>If the 4th value shares the same remainder with the number of solvable modules on the bomb after dividing by 3, don't modify the 4th value.</li>
+						<li>Otherwise, if the 4th original digit is equal to the least significant digit of the 4th value, add 1 to the 4th value.</li>
+						<li>Otherwise, do 18 - the 4th value.</li>
 					</ol>
 					<h3>5th Digit Calculations</h3>
 					<ol>
 						<li>Grab the 5th value from the previous calculation for all digits.</li>
-						<li>Go through the table underneath to get the value based on the conditions.</li>
+						<li>Go through the table underneath to get the digit to input based on the conditions.</li>
 						</ol>
 					<table style="width: 100%; text-align: center">
 						<tr>
@@ -142,7 +143,7 @@
 							<td>O! + 1</td>
 							<td>10 - O!</td>
 							<td>O! - 1</td>
-							<td>O!</td>
+							<td>O! + 5</td>
 						</tr>
 						<tr>
 							<th>3</th>
@@ -161,7 +162,7 @@
 							<td>0</td>
 						</tr>
 					</table>
-					<p>A cell with "O!" indicates original digit in that cell. Not to be confused with 0, which is just by itself.</p>
+					<p>A cell with "O!" indicates original digit in the 5th slot. Not to be confused with 0, which is just by itself.</p>
                 </div>
                 <div class="page-footer relative-footer">Page 3 of 3</div>
             </div>
