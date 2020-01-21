@@ -1033,7 +1033,6 @@ MonoBehaviour:
   bombInfo: {fileID: 114873876139256150}
   modSelf: {fileID: 114322943547317960}
   audioSelf: {fileID: 114914313973070090}
-  gameCommands: {fileID: 114811199802349988}
   cautionaryModules: []
   frameSwitch: 0
 --- !u!114 &114795301431554686

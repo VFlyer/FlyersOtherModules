@@ -14,7 +14,6 @@ public class SingularityButtonHandler : MonoBehaviour {
 	public KMBombInfo bombInfo;
 	public KMBombModule modSelf;
 	public KMAudio audioSelf;
-	public KMGameCommands gameCommands;
 
 	private bool isSolved = false, hasDisarmed = false, hasActivated = false, alwaysFlipToBack = false;
 	private bool isPressedDisarm = false, isPressedMain = false;
@@ -168,7 +167,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 	}
 	private static readonly Dictionary<KMBomb, SingularityButtonInfo> groupedSingularityButtons = new Dictionary<KMBomb, SingularityButtonInfo>();
 	private SingularityButtonInfo singularityButtonInfo;
-	void AddOthersModulesOntoList()
+/*	void AddOthersModulesOntoList()
 	{
 		cautionaryModules.AddRange(bossModule.GetIgnoredModules("Singularity Button", new string[]
 		{
@@ -275,7 +274,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 		// Double Expert, a couple rules rely on solves but no consistent way to detect if the given module is solve dependent or not.
 		// Black Hole, you can solve this without advantagous solves.
 		// The Stare, you can solve this without needing this to be at a multiple of 5 solves.
-		// Curriculum, you can solve this without bookworm status. Bookworm status makes this module easier but is not fully needed.
+		// Curriculum, you can solve this without bookworm. Bookworm makes Curriculum easier but is not fully needed.
 		// Challenge and Contact, after the first letter, the module can generate the 2nd letter based on solve parity. You can solve this with the remaining 2 letters having similar parities.
 		// END CHANCE SOLVES
 	}
@@ -303,7 +302,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 			cautionaryModules.Remove("Free Parking");
 			Debug.LogFormat("[Singularity Button #{0}]: Free Parking has an override active! This module is no longer detected!", curmodID);
 		}// Remove Free Parking if all Cheap Checkout's, Silly Slots', and Jewel Vault's are solved.
-	}
+	}*/
 	void Awake()
 	{
 		curmodID = modID++;
@@ -357,7 +356,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 			singularityButtonInfo.singularButtons.Add(this);
 
 			// Start Main Handling
-			AddOthersModulesOntoList();
+			//AddOthersModulesOntoList();
 			StartCoroutine(HandleGlobalModule());
 			hasActivated = true;
 		};
@@ -372,14 +371,15 @@ public class SingularityButtonHandler : MonoBehaviour {
 			if (lastSolveCount != curSolveCount)
 			{
 				lastSolveCount = curSolveCount;
-				UpdateCautionaryList();
+				//UpdateCautionaryList();
 			}
 			yield return new WaitForSeconds(0);
 		}
 		isSolved = true;
 		Debug.LogFormat("[Singularity Button #{0}]: A correct set of actions caused the Singularity Buttons to enter a solve state.", curmodID);
+		/*
 		if (!alwaysFlipToBack && (!bombInfo.GetSolvableModuleNames().Any(a => cautionaryModules.Contains(a)) || singularityButtonInfo.CountSingularityButtons() == 1))
-		{// Does the bomb contain any cautionary modules or is there 1 Singularity Button present on this bomb and does it need to flip to the back?
+		{// Does the bomb contain any cautionary modules or is there 1 Singularity Button present on this bomb and does it not need to flip to the back?
 			hasDisarmed = true;
 			modSelf.HandlePass();
 		}
@@ -387,6 +387,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 			Debug.LogFormat("[Singularity Button #{0}]: A setting is enforcing the module to always flip to the back. You must instead press the manual disarm button to disarm this module!", curmodID);
 		else
 			Debug.LogFormat("[Singularity Button #{0}]: At least one cautionary module is present on the bomb. You must instead press the manual disarm button to disarm this module!", curmodID);
+		*/
 		yield return null;
 	}
 	// Update is called once per frame
@@ -416,6 +417,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 		{
 			frameSwitch = Mathf.Max(frameSwitch - 1, 0);
 		}
+		disarmButtonObject.SetActive(frameSwitch > 0);
 		buttonFrontObject.transform.localPosition = new Vector3(0, 0.03f * (frameMain / 45f), 0);
 		disarmButtonObject.transform.localPosition = new Vector3(0, -0.019f * (frameDisarm / 45f), 0);
 		animatedPortion.transform.localEulerAngles = new Vector3(0, 0, 180f * (frameSwitch / (float)animLength));
