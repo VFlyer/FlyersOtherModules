@@ -214,7 +214,7 @@ public class SimonStagesHandler : MonoBehaviour
         {
             lightsSolved.Add(false);
         }
-        Debug.LogFormat("[Simon's Stages #{0}] Solution #{1}: {2}.", moduleId, currentLevel, string.Join(", ", currentSolutionNames.Select((x) => x).ToArray()));
+        Debug.LogFormat("[Simon Stages #{0}] Solution #{1}: {2}.", moduleId, currentLevel, string.Join(", ", currentSolutionNames.Select((x) => x).ToArray()));
         currentSolution.Clear();
         currentSolutionNames.Clear();
         DisplaySequence();
@@ -337,7 +337,7 @@ public class SimonStagesHandler : MonoBehaviour
             device.ledGlow.enabled = false;
         }
 
-        Debug.LogFormat("[Simon's Stages #{0}] The arrangement of colors is: {1} // {2}", moduleId,
+        Debug.LogFormat("[Simon Stages #{0}] The arrangement of colors is: {1} // {2}", moduleId,
             string.Join(", ", lightDevices.Take(5).Select(ld => ld.colorName).ToArray()),
             string.Join(", ", lightDevices.Skip(5).Select(ld => ld.colorName).ToArray()));
 
@@ -368,15 +368,15 @@ public class SimonStagesHandler : MonoBehaviour
         Audio.PlaySoundAtTransform("scaryRiff", transform);
         int index = 0;
         int iterations = 0;
-        while (moduleLocked && iterations < 2)
+        while (iterations < 2)
         {
-            lightDevices[index].greyBase.enabled = false;
-            lightDevices[index].ledGlow.enabled = true;
+            lightDevices[9-index].greyBase.enabled = false;
+            lightDevices[9-index].ledGlow.enabled = true;
             indicatorLights[index].glow.enabled = true;
             indicatorText.text = lightTextOptions[indicatorLights[index].colorIndex];
             yield return new WaitForSeconds(0.05f);
-            lightDevices[index].greyBase.enabled = true;
-            lightDevices[index].ledGlow.enabled = false;
+            lightDevices[9-index].greyBase.enabled = true;
+            lightDevices[9-index].ledGlow.enabled = false;
             indicatorLights[index].glow.enabled = false;
             yield return new WaitForSeconds(0.025f);
             if (index < 10 && !reverse)
@@ -395,26 +395,20 @@ public class SimonStagesHandler : MonoBehaviour
             }
             if (index < 0 && reverse)
             {
-                if (iterations == 1)
-                {
-                    moduleLocked = false;
-                }
                 reverse = false;
                 iterations++;
                 index = 1;
             }
         }
         indicatorText.text = "";
-        moduleLocked = true;
         int counter = 0;
-        while (moduleLocked)
+        while (!gameOn)
         {
             for (int i = 0; i <= 9; i++)
             {
                 lightDevices[i].greyBase.enabled = false;
                 lightDevices[i].ledGlow.enabled = true;
                 indicatorLights[i].glow.enabled = true;
-                currentLevel = Random.Range(0, 100);
             }
             yield return new WaitForSeconds(0.05f);
             for (int i = 0; i <= 9; i++)
@@ -422,14 +416,12 @@ public class SimonStagesHandler : MonoBehaviour
                 lightDevices[i].greyBase.enabled = true;
                 lightDevices[i].ledGlow.enabled = false;
                 indicatorLights[i].glow.enabled = false;
-                currentLevel = Random.Range(0, 100);
             }
             yield return new WaitForSeconds(0.05f);
             counter++;
-            if (counter == 30)
+            if (counter >= 30)
             {
                 moduleLocked = false;
-                currentLevel = 0;
                 gameOn = true;
                 GenerateSequence();
             }
@@ -446,7 +438,7 @@ public class SimonStagesHandler : MonoBehaviour
         {
             device.connectedButton.AddInteractionPunch();
             GetComponent<KMBombModule>().HandleStrike();
-            Debug.LogFormat("[Simon's Stages #{0}] Strike! The module is not yet ready to be solved.", moduleId);
+            Debug.LogFormat("[Simon Stages #{0}] Strike! The module is not yet ready to be solved.", moduleId);
             return;
         }
         moduleLocked = true;
@@ -462,12 +454,12 @@ public class SimonStagesHandler : MonoBehaviour
         {
             lightsSolved[totalPresses] = true;
             clearLights.Add(totalPresses);
-            Debug.LogFormat("[Simon's Stages #{0}] You pressed {1}. That is correct.", moduleId, device.colorName);
+            Debug.LogFormat("[Simon Stages #{0}] You pressed {1}. That is correct.", moduleId, device.colorName);
         }
         else
         {
             clearLights.Clear();
-            Debug.LogFormat("[Simon's Stages #{0}] You pressed {1}. That is incorrect.", moduleId, device.colorName);
+            Debug.LogFormat("[Simon Stages #{0}] You pressed {1}. That is incorrect.", moduleId, device.colorName);
         }
         stagePresses++;
         totalPresses++;
@@ -500,11 +492,11 @@ public class SimonStagesHandler : MonoBehaviour
                 ReCompileLists();
             }
             clearLights.Clear();
-            Debug.LogFormat("[Simon's Stages #{0}] END OF SEQUENCE {1}. The given sequence of inputs are {2}.", moduleId, absoluteLevelPosition[increaser] + 1, result);
+            Debug.LogFormat("[Simon Stages #{0}] END OF SEQUENCE {1}. The given sequence of inputs are {2}.", moduleId, absoluteLevelPosition[increaser] + 1, result);
             increaser++;
             if (totalPresses < solutionNames.Count)
             {
-                Debug.LogFormat("[Simon's Stages #{0}] STAGE {1} RESPONSE:", moduleId, absoluteLevelPosition[increaser] + 1, result);
+                Debug.LogFormat("[Simon Stages #{0}] SEQUENCE {1} RESPONSE:", moduleId, absoluteLevelPosition[increaser] + 1, result);
             }
         }
         else
@@ -553,7 +545,6 @@ public class SimonStagesHandler : MonoBehaviour
         }
         tempCurrent.Add(increaser);
         tempAbsolute.Add(absoluteLevelPosition[increaser]);
-        //stageIncreaser++;
     }
     void CheckEndGame()
     {
