@@ -375,8 +375,8 @@ public class ForgetInfinity : MonoBehaviour {
         }
         if (canStrike)
         {
+            Debug.LogFormat("[Forget Infinity #{0}]: {1} does not match for any of the remaining stages required to solve.", curModID, input);
             ModSelf.HandleStrike();
-            Debug.LogFormat("[Forget Infinity #{0}]: {1} does not match for any of the given stages required to solve.", curModID, input);
             hasStruck = true;
             ScreenStages.color = Color.red;
         }
@@ -392,6 +392,8 @@ public class ForgetInfinity : MonoBehaviour {
                 StartCoroutine(AnimateSolveAnim());
                 yield break;
             }
+            else
+                Debug.LogFormat("[Forget Infinity #{0}]: Required stage {1} has been inputted correctly.", curModID, crtStgIdx);
         }
         while (localDelay >= 0)
         {

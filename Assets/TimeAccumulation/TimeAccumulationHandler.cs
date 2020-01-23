@@ -18,8 +18,8 @@ public class TimeAccumulationHandler : MonoBehaviour {
     private int solveCount = 0;
     private int strikeCount = 0;
     private bool localstrike = false;
-    private bool canRun = false;
-    private bool isLightsFirstOn = false;
+    public bool canRun = false;
+    public bool isLightsFirstOn = false;
     private bool forwardsAnim = false;
     private int animCount = 0;
 
@@ -74,7 +74,8 @@ public class TimeAccumulationHandler : MonoBehaviour {
             forwardsAnim = false;
             audioKTANE.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonRelease, transform);
         };
-        bombInfo.OnBombExploded += delegate () {
+        bombInfo.OnBombExploded += delegate ()
+        {
             canRun = false;
         };
         bombInfo.OnBombSolved += delegate ()
@@ -98,7 +99,7 @@ public class TimeAccumulationHandler : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (canRun && bombInfo.isActiveAndEnabled)
+        if (canRun)
         {
             int cursolcnt = bombInfo.GetSolvedModuleNames().Count;
             if (cursolcnt != solveCount)
@@ -114,7 +115,8 @@ public class TimeAccumulationHandler : MonoBehaviour {
                 {
                     Debug.LogFormat("[Time Accumulation #{0}]: {1} module(s) have solved, decreasing the counter by {3}. Counter logged at {2}.", localModID, counted, value, counted * 5);
                 }
-                
+                if (cursolcnt == bombInfo.GetSolvableModuleNames().Count)
+                    canRun = false;
             }
             if (!isInTimeMode)
             {
@@ -141,14 +143,13 @@ public class TimeAccumulationHandler : MonoBehaviour {
                 StartCoroutine(HandleFlashingAnim());
                 needyModule.HandleStrike();
             }
-                textDisplay.text = (value % 100).ToString("00");
+            textDisplay.text = (value % 100).ToString("00");
         }
-        else if (bombInfo.isActiveAndEnabled&&isLightsFirstOn)
+        else if (isLightsFirstOn)
         {
-            int random = UnityEngine.Random.Range(0, 100);
-            textDisplay.text = random.ToString("00");
+            textDisplay.text = UnityEngine.Random.Range(0, 100).ToString("00");
         }
-        else if (bombInfo.isActiveAndEnabled)
+        else
         {
             textDisplay.text = "";
         }

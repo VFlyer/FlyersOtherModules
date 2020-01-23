@@ -2081,9 +2081,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4981989033071568}
   - component: {fileID: 114033880526287918}
-  - component: {fileID: 114517465199001932}
   - component: {fileID: 114102872669951970}
   - component: {fileID: 114570807744465788}
+  - component: {fileID: 114838180523700234}
   m_Layer: 0
   m_Name: SimonStages
   m_TagString: Untagged
@@ -11931,17 +11931,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShaderNames:
   - KT/Mobile/DiffuseTint
---- !u!114 &114517465199001932
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1821410175757422}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 2144496390, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114524789990581476
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -12704,6 +12693,126 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShaderNames:
   - Legacy Shaders/Transparent/Diffuse
+--- !u!114 &114838180523700234
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1821410175757422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b686d7548213564bb5f898cabddd082, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Audio: {fileID: 114033880526287918}
+  Module: {fileID: 114102872669951970}
+  lightDevices:
+  - {fileID: 114130072562871898}
+  - {fileID: 114308610880422562}
+  - {fileID: 114023528588760558}
+  - {fileID: 114033299772020966}
+  - {fileID: 114832876185175414}
+  - {fileID: 114644113507880404}
+  - {fileID: 114811345929425858}
+  - {fileID: 114745033348082942}
+  - {fileID: 114725173979991804}
+  - {fileID: 114175553051974978}
+  indicatorLights:
+  - {fileID: 114822476391073012}
+  - {fileID: 114453312948663966}
+  - {fileID: 114727078671210246}
+  - {fileID: 114419191804169000}
+  - {fileID: 114659070598005370}
+  - {fileID: 114782071728007502}
+  - {fileID: 114590635939344682}
+  - {fileID: 114462810638771194}
+  - {fileID: 114934644940850498}
+  - {fileID: 114336506498473486}
+  indicatorText: {fileID: 102008602671698180}
+  lightDeviceColorOptions:
+  - {r: 1, g: 0, b: 0, a: 0}
+  - {r: 0, g: 0, b: 1, a: 0}
+  - {r: 0.9862069, g: 1, b: 0, a: 1}
+  - {r: 1, g: 0.65882355, b: 0.03137255, a: 1}
+  - {r: 0.3921569, g: 0, b: 0.39607847, a: 1}
+  - {r: 0.1836248, g: 0.4852941, b: 0, a: 1}
+  - {r: 1, g: 0.82745105, b: 1, a: 1}
+  - {r: 0.4784314, g: 1, b: 0, a: 1}
+  - {r: 0.043137256, g: 1, b: 1, a: 1}
+  - {r: 1, g: 1, b: 1, a: 0}
+  lightBaseOptions:
+  - {fileID: 2100000, guid: 0b8345d6190d14013b825698a59f7759, type: 2}
+  - {fileID: 2100000, guid: c3e8c25400b8d457cabe09d99fa1f1f9, type: 2}
+  - {fileID: 2100000, guid: 4659d4f547d3d4bd8bc0f31048ceb950, type: 2}
+  - {fileID: 2100000, guid: 87e6e2009c503428b9144a38bc9fdf3c, type: 2}
+  - {fileID: 2100000, guid: 79b4f8f959a064085ac85a0483e701dc, type: 2}
+  - {fileID: 2100000, guid: 786c3d31185014ac2b26f9fe3e2582af, type: 2}
+  - {fileID: 2100000, guid: 65899cd7d823f409b8d87505527ab56f, type: 2}
+  - {fileID: 2100000, guid: 08a85d39bd816470fb834a4939e654a0, type: 2}
+  - {fileID: 2100000, guid: 2736b4645bbfa476a8f4e9833123f7f4, type: 2}
+  - {fileID: 2100000, guid: a086244c976384801b25627d5d4b7a92, type: 2}
+  lightTextOptions:
+  - R
+  - B
+  - Y
+  - O
+  - M
+  - G
+  - P
+  - L
+  - C
+  - W
+  lightNameOptions:
+  - red
+  - blue
+  - yellow
+  - orange
+  - magenta
+  - green
+  - pink
+  - lime
+  - cyan
+  - white
+  sfxOptions:
+  - {fileID: 8300000, guid: b55580fb5534049baabb9b5065a6ed6f, type: 3}
+  - {fileID: 8300000, guid: 890da21a4b8cf4d56b019b09af6e8724, type: 3}
+  - {fileID: 8300000, guid: 93487eb3d6cae424098ed3643b989cee, type: 3}
+  - {fileID: 8300000, guid: 6249fecaafcd6455982a347938e8f064, type: 3}
+  - {fileID: 8300000, guid: 85c5ea3ccb8f24fbaa98fd0799decc10, type: 3}
+  - {fileID: 8300000, guid: 59af786e7fd8247e4b7c26f2e7fe5024, type: 3}
+  - {fileID: 8300000, guid: 9766dce0e314142928f76ab3a552d3fe, type: 3}
+  - {fileID: 8300000, guid: 507fbebd2e55c46859e1c93a17e0c19c, type: 3}
+  - {fileID: 8300000, guid: fcc0d5242d83543188e8fbd57d503f46, type: 3}
+  - {fileID: 8300000, guid: 394f6f025b0e24346b0524bee934efd3, type: 3}
+  currentLevel: 0
+  sequences: 
+  solutionNames: []
+  sequenceLengths: 
+  solveLengths: 
+  startLocation: 
+  solutionStartLocation: 
+  currentSequence: 
+  currentSequenceNames: []
+  currentSolution: 
+  currentSolutionNames: []
+  indicatorColour: 
+  indicatorLetter: []
+  repeatedSequence: 
+  incorrectSequenceLength: 
+  incorrectIndicatorLights: 
+  incorrectIndicatorLetter: []
+  incorrectSequenceStartLocation: 
+  tempCorrectSolution: []
+  incorrectSolutionStartLocation: 
+  incorrectSolveLengths: 
+  tempCurrent: 
+  clearLights: 
+  completeLights: 
+  absoluteLevelPosition: 
+  tempAbsolute: 
+  increaser: 0
+  lightsSolved: 
+  stagesSolved: 
 --- !u!114 &114841028785949954
 MonoBehaviour:
   m_ObjectHideFlags: 1
