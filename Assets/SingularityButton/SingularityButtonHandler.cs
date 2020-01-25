@@ -15,27 +15,14 @@ public class SingularityButtonHandler : MonoBehaviour {
 	public KMBombModule modSelf;
 	public KMAudio audioSelf;
 
-	private bool isSolved = false, hasDisarmed = false, hasActivated = false, alwaysFlipToBack = false;
+	private bool isSolved = false, hasDisarmed = false, hasActivated = false;
+	//private bool alwaysFlipToBack = false;
 	private bool isPressedDisarm = false, isPressedMain = false;
 
 	public List<string> cautionaryModules = new List<string>();
 
 	private static int modID = 1;
 	private int curmodID;
-
-	public readonly List<string> otherSolveDependModNames = new List<string>() {
-		"Blind Maze",
-		"Burglar Alarm",
-		"Colour Code",
-		"Combination Lock",
-		"Langton's Ant",
-		"The Number",
-		"Planets",
-		"The Plunger Button",
-		"Press X",
-		"Scripting",
-		"Shapes and Bombs"
-	};// Nonboss modules that are 100% dependent on solves. These CANNOT have an override for the solve condition or show up by chance. The Number will remove itself after 8 or more solves.
 
 	protected sealed class SingularityButtonInfo //Lock down infomation to a single bomb, hopefully.
 	{
@@ -47,6 +34,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 		private List<int> idxInputs = new List<int>();
 		private List<int> combinedValues = new List<int>();
 		public bool canDisarm = false;
+
 		public void DisarmAll()
 		{
 			canDisarm = true;
@@ -58,7 +46,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 				Debug.LogFormat("[Singularity Button #{0}]: {1}",singularityButton.curmodID,text);
 			}
 		}
-		public void LogIndividual(string text,int idx)
+		public void LogIndividual(string text, int idx)
 		{
 			if (idx >= 0 && idx < singularButtons.Count)
 			{
@@ -113,9 +101,10 @@ public class SingularityButtonHandler : MonoBehaviour {
 				yield return new WaitForSeconds(0);
 				int btnCount = CountSingularityButtons();
 				LogAll("Detected this many Singularity Buttons on the bomb: " + btnCount);
+				
 				if (btnCount == 1)
 				{
-
+					singularButtons[0].buttonMainRenderer.material.color = Color.blue;
 				}
 				else if (btnCount == 2)
 				{
@@ -167,7 +156,23 @@ public class SingularityButtonHandler : MonoBehaviour {
 	}
 	private static readonly Dictionary<KMBomb, SingularityButtonInfo> groupedSingularityButtons = new Dictionary<KMBomb, SingularityButtonInfo>();
 	private SingularityButtonInfo singularityButtonInfo;
-/*	void AddOthersModulesOntoList()
+	// Commented out because of some solve dependent modules not being easily detectable.
+	/*
+	public readonly List<string> otherSolveDependModNames = new List<string>() {
+		"Blind Maze",
+		"Burglar Alarm",
+		"Colour Code",
+		"Combination Lock",
+		"Langton's Ant",
+		"The Number",
+		"Planets",
+		"The Plunger Button",
+		"Press X",
+		"Scripting",
+		"Shapes and Bombs"
+	};// Nonboss modules that are 100% dependent on solves. These CANNOT have an override for the solve condition or show up by chance. The Number will remove itself after 8 or more solves.
+
+	void AddOthersModulesOntoList()
 	{
 		cautionaryModules.AddRange(bossModule.GetIgnoredModules("Singularity Button", new string[]
 		{
@@ -236,7 +241,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 			cautionaryModules.Add("Free Parking");
 			Debug.LogFormat("[Singularity Button #{0}]: Free Parking has no override active, ensure you check Free Parking's manual for other cases!", curmodID);
 		}// Add Free Parking, note that it doesn't detect if the value falls below 0 after base/current modification.
-		
+
 		int litIndcnt = 0;
 		int offIndcnt = 0;
 		foreach (string litind in bombInfo.GetOnIndicators())
@@ -377,6 +382,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 		}
 		isSolved = true;
 		Debug.LogFormat("[Singularity Button #{0}]: A correct set of actions caused the Singularity Buttons to enter a solve state.", curmodID);
+		// Commented out because of some solve dependent modules not being easily detectable.
 		/*
 		if (!alwaysFlipToBack && (!bombInfo.GetSolvableModuleNames().Any(a => cautionaryModules.Contains(a)) || singularityButtonInfo.CountSingularityButtons() == 1))
 		{// Does the bomb contain any cautionary modules or is there 1 Singularity Button present on this bomb and does it not need to flip to the back?

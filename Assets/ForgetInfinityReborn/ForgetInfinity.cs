@@ -74,157 +74,170 @@ public class ForgetInfinity : MonoBehaviour {
             }).ToList();
         if (organIgnoredModNames == null)
             organIgnoredModNames = GetComponent<KMBossModule>().GetIgnoredModules("Organization").ToList();
-        //"Forget" Modules in this list, Simon's Stages, Souvenir, Tallordered Keys: Requires this module to be solved without Boss Module Manager
-        //Time Keeper, Timing is Everything, Turn The Key: Bomb Timer Sensitive that can stall bombs
-        //
-        //Forget Infinity: DON'T HANG BOMBS WITH DUPLICATES OF THIS
+        //See Forget It Not's ignore list for reasons
         curModID = modID++;
 	}
     void Start()
     {
         ModSelf.OnActivate += delegate
         {
-            List<string> solvablemodNames = Info.GetSolvableModuleNames().Where(a => !ignoredModuleNames.Contains(a)).ToList();
-            List<string> allModNames = Info.GetModuleNames().ToList();
-            if (solvablemodNames.Count > 1)
+            try
             {
-                if (!allModNames.Contains("Organization") || organIgnoredModNames.Contains("Forget Infinity"))
+                List<string> solvablemodNames = Info.GetSolvableModuleNames().Where(a => !ignoredModuleNames.Contains(a)).ToList();
+                List<string> allModNames = Info.GetModuleNames().ToList();
+                if (solvablemodNames.Count > 1)
                 {
-                    stagestoGenerate = solvablemodNames.Count > 3 ? UnityEngine.Random.Range(3, Math.Min(solvablemodNames.Count,100)) : solvablemodNames.Count - 1;
-
-                    if (solvablemodNames.Count <= 100)
-                    Debug.LogFormat("[Forget Infinity #{0}]: Total stages generatable: {1}", curModID, solvablemodNames.Count - 1);
-                    else Debug.LogFormat("[Forget Infinity #{0}]: Too many non-ignored modules, capping at 99 total stages generatable.", curModID);
-
-                    Debug.LogFormat("[Forget Infinity #{0}]: Total stages generated: {1}", curModID,stagestoGenerate);
-                    Debug.LogFormat("[Forget Infinity #{0}]: All stages: ", curModID, stagestoGenerate);
-                    
-                    for (int x = 0; x < stagestoGenerate; x++)
+                    if (!allModNames.Contains("Organization") || organIgnoredModNames.Contains("Forget Infinity"))
                     {
-                        int[] output = new int[5];
-                        do
-                            for (int a = 0; a < output.Length; a++)
-                            {
-                                output[a] = UnityEngine.Random.Range(0, 10);
-                            }
-                        while (stages.Count > 0 && stages.Contains(output));
-                        stages.Add(output);
-                    }
-                    for (int x = 0; x < stages.Count; x++)
-                    {
-                        bool hasSwapped = false;
-                        int[] finalStageNumbers = new int[5];
-                        stages[x].CopyTo(finalStageNumbers, 0);
+                        stagestoGenerate = solvablemodNames.Count > 3 ? UnityEngine.Random.Range(3, Math.Min(solvablemodNames.Count, 100)) : solvablemodNames.Count - 1;
 
-                        int lastDigitInSerial = Info.GetSerialNumberNumbers().Any() ? Info.GetSerialNumberNumbers().Last() : 0;
-                        int smallestDigitInSerial = Info.GetSerialNumberNumbers().Any() ? Info.GetSerialNumberNumbers().Min() : 0;
-                        // Begin Solution Calculations
-                        // Culumulative Slot Calculations
-                        if (Info.IsPortPresent(Port.StereoRCA))
+                        if (solvablemodNames.Count <= 100)
+                            Debug.LogFormat("[Forget Infinity #{0}]: Total stages generatable: {1}", curModID, solvablemodNames.Count - 1);
+                        else Debug.LogFormat("[Forget Infinity #{0}]: Too many non-ignored modules, capping at 99 total stages generatable.", curModID);
+
+                        Debug.LogFormat("[Forget Infinity #{0}]: Total stages generated: {1}", curModID, stagestoGenerate);
+                        Debug.LogFormat("[Forget Infinity #{0}]: All stages: ", curModID, stagestoGenerate);
+
+                        for (int x = 0; x < stagestoGenerate; x++)
                         {
-                            finalStageNumbers = finalStageNumbers.Reverse().ToArray();
-                            hasSwapped = true;
-                        }
-
-                        int batterycount = Info.GetBatteryCount();
-                        for (int idx = 0; idx < finalStageNumbers.Length; idx++)
-                            finalStageNumbers[idx] += batterycount;
-
-                        int FiLetters = Info.GetSerialNumberLetters().Where(a => a.EqualsAny('F', 'I')).ToList().Count;
-                        for (int idx = 0; idx < finalStageNumbers.Length; idx++)
-                            finalStageNumbers[idx] -= FiLetters;
-                        // Individual Slots
-                        // Slot 1
-                        if (solvablemodNames.Contains("Tetris"))
-                            finalStageNumbers[0] = stages[x][0] + 7;
-                        else if (finalStageNumbers[0] >= 10 && finalStageNumbers[0] % 2 == 0)
-                            finalStageNumbers[0] /= 2;
-                        else if (finalStageNumbers[0] < 0)
-                            finalStageNumbers[0] *= -1;
-                        else
-                            finalStageNumbers[0] += 1;
-                        // Slot 2
-                        if (Info.CountDuplicatePorts() > 0)
-                            finalStageNumbers[1] += Info.CountDuplicatePorts();
-                        else if (Info.GetPortCount() == 0)
-                            finalStageNumbers[1] += stages[x][0] + stages[x][2];
-                        // Slot 3
-                        if (!hasSwapped)
-                        {
-                            if (finalStageNumbers[2] >= 7)
-                            {
-                                int currentValue = stages[x][2];
-                                int finalValueSlot3 = 0;
-                                while (currentValue > 0)
+                            int[] output = new int[5];
+                            do
+                                for (int a = 0; a < output.Length; a++)
                                 {
-                                    finalValueSlot3 += currentValue % 2;
-                                    currentValue /= 2;
+                                    output[a] = UnityEngine.Random.Range(0, 10);
                                 }
-                                finalStageNumbers[2] = finalValueSlot3;
-                            }
-                            else if (finalStageNumbers[2] < 3)
-                                finalStageNumbers[2] = Math.Abs(finalStageNumbers[2]);
-                            else
-                                finalStageNumbers[2] = stages[x][2] + smallestDigitInSerial;
+                            while (stages.Count > 0 && stages.Contains(output));
+                            stages.Add(output);
                         }
-                        // Slot 4
-                        if (finalStageNumbers[3] % 3 != Info.GetSolvableModuleNames().Count % 3)
+                        for (int x = 0; x < stages.Count; x++)
                         {
-                            if (finalStageNumbers[3] % 10 == stages[x][3])
-                                finalStageNumbers[3] += 1;
+                            bool hasSwapped = false;
+                            int[] finalStageNumbers = new int[5];
+                            stages[x].CopyTo(finalStageNumbers, 0);
+
+                            int lastDigitInSerial = Info.GetSerialNumberNumbers().Any() ? Info.GetSerialNumberNumbers().Last() : 0;
+                            int smallestDigitInSerial = Info.GetSerialNumberNumbers().Any() ? Info.GetSerialNumberNumbers().Min() : 0;
+                            int largestDigitInSerial = Info.GetSerialNumberNumbers().Any() ? Info.GetSerialNumberNumbers().Max() : 0;
+                            // Begin Solution Calculations
+                            // Culumulative Slot Calculations
+                            if (Info.IsPortPresent(Port.StereoRCA))
+                            {
+                                finalStageNumbers = finalStageNumbers.Reverse().ToArray();
+                                hasSwapped = true;
+                            }
+
+                            int batterycount = Info.GetBatteryCount();
+                            for (int idx = 0; idx < finalStageNumbers.Length; idx++)
+                                finalStageNumbers[idx] += batterycount;
+
+                            int FiLetters = Info.GetSerialNumberLetters().Where(a => a.EqualsAny('F', 'I')).ToList().Count;
+                            for (int idx = 0; idx < finalStageNumbers.Length; idx++)
+                                finalStageNumbers[idx] -= FiLetters;
+                            // Individual Slots
+                            // Slot 1
+                            if (solvablemodNames.Contains("Tetris"))
+                                finalStageNumbers[0] = stages[x][0] + 7;
+                            else if (finalStageNumbers[0] >= 10 && finalStageNumbers[0] % 2 == 0)
+                                finalStageNumbers[0] /= 2;
+                            else if (finalStageNumbers[0] < 0)
+                                finalStageNumbers[0] *= -1;
                             else
+                                finalStageNumbers[0] += 1;
+                            // Slot 2
+                            if (Info.CountDuplicatePorts() > 0)
+                                finalStageNumbers[1] += Info.CountDuplicatePorts();
+                            else if (Info.GetPortCount() == 0)
+                                finalStageNumbers[1] += stages[x][0] + stages[x][2];
+                            // Slot 3
+                            if (!hasSwapped)
+                            {
+                                if (finalStageNumbers[2] >= 7)
+                                {
+                                    int currentValue = stages[x][2];
+                                    int finalValueSlot3 = 0;
+                                    while (currentValue > 0)
+                                    {
+                                        finalValueSlot3 += currentValue % 2;
+                                        currentValue /= 2;
+                                    }
+                                    finalStageNumbers[2] = finalValueSlot3;
+                                }
+                                else if (finalStageNumbers[2] < 3)
+                                    finalStageNumbers[2] = Math.Abs(finalStageNumbers[2]);
+                                else
+                                    finalStageNumbers[2] = stages[x][2] + smallestDigitInSerial;
+                            }
+                            // Slot 4
+                            if (finalStageNumbers[3] < 0)
+                                finalStageNumbers[3] += largestDigitInSerial;
+                            else if (finalStageNumbers[3] % 3 != Info.GetSolvableModuleNames().Count % 3)
                                 finalStageNumbers[3] = 18 - finalStageNumbers[3];
-                        }
-                        // Slot 5
-                        int[,] slotTable5th = new int[,] {
+                            // Slot 5
+                            int[,] slotTable5th = new int[,] {
                             { 0, 1, 2, 3, 4 },
                             { 5, 6, 7, 8, 9 },
-                            { stages[x][4], 1 + stages[x][4], 10 - stages[x][4], stages[x][4] - 1, stages[x][4] + 5 },
+                            { stages[x][4], 1 + stages[x][4], 9 - stages[x][4], stages[x][4] - 1, stages[x][4] + 5 },
                             { 9, 8, 7, 6, 5 },
                             { 4, 3, 2, 1, 0 }
                         };
-                        finalStageNumbers[4] = slotTable5th[finalStageNumbers[4] % 5, lastDigitInSerial / 2];
-                        // Within 0-9
-                        while (!finalStageNumbers.ToList().TrueForAll(a => a >= 0 && a <= 9))
-                        {
-                            for (int idx = 0; idx < finalStageNumbers.Length; idx++)
-                                if (finalStageNumbers[idx] < 0)
-                                    finalStageNumbers[idx] += 10;
-                                else if (finalStageNumbers[idx] > 9)
-                                    finalStageNumbers[idx] -= 10;
+                            int rowCellToGrab = finalStageNumbers[4] - (Mathf.FloorToInt(finalStageNumbers[4] / 5.0f) * 5);
+                            finalStageNumbers[4] = slotTable5th[rowCellToGrab, lastDigitInSerial / 2];
+                            // Within 0-9
+                            while (!finalStageNumbers.ToList().TrueForAll(a => a >= 0 && a <= 9))
+                            {
+                                for (int idx = 0; idx < finalStageNumbers.Length; idx++)
+                                    if (finalStageNumbers[idx] < 0)
+                                        finalStageNumbers[idx] += 10;
+                                    else if (finalStageNumbers[idx] > 9)
+                                        finalStageNumbers[idx] -= 10;
+                            }
+                            solution.Add(finalStageNumbers);
+                            // End Solution Calculations
+                            Debug.LogFormat("[Forget Infinity #{0}]: Stage {1}: Display = {2}, Answer = {3}", curModID, (x + 1).ToString("00"), FormatListInt(stages[x]), FormatListInt(solution[x]));
                         }
-                        solution.Add(finalStageNumbers);
-                        // End Solution Calculations
-                        Debug.LogFormat("[Forget Infinity #{0}]: Stage {1}: Display = {2}, Answer = {3}", curModID, (x+1).ToString("00"), FormatListInt(stages[x]), FormatListInt(solution[x]));
+                        while (possibleStages.Count < Math.Min(stagestoGenerate, 3))// Memoryless Randomizer Starts Here
+                        {
+                            int randomStage = UnityEngine.Random.Range(0, stagestoGenerate);
+                            if (!possibleStages.Contains(randomStage))
+                                possibleStages.Add(randomStage);
+                        }
+                        inputStagesRequired = possibleStages.Count;
+                        Debug.LogFormat("[Forget Infinity #{0}]: Stages required to solve: {1}", curModID, FormatIntListWithCommas(possibleStages.ToArray()));
                     }
-                    while (possibleStages.Count < Math.Min(stagestoGenerate, 3))// Memoryless Randomizer Starts Here
-                    {
-                        int randomStage = UnityEngine.Random.Range(0,stagestoGenerate);
-                        if (!possibleStages.Contains(randomStage))
-                            possibleStages.Add(randomStage);
+                    else
+                    { // Implement Failsafe to enforce this module to be solvable if Forget Infinity is NOT ignored by Organization AND Organization is present on the bomb.
+                        Debug.LogFormat("[Forget Infinity #{0}]: Organization: Why do you even exist!? No one wanted you to show up anyway!", curModID);
+                        Debug.LogFormat("[Forget Infinity #{0}]: Forget Infinity: But... I am made by a Tetris legend who has made bunch of Tetris bootleg videos!", curModID);
+                        Debug.LogFormat("[Forget Infinity #{0}]: Organization: It doesn't matter! These people saw you a few times and they didn't like how you operate in the factory.", curModID);
+                        Debug.LogFormat("[Forget Infinity #{0}]: Forget Infinity: But... I am an easier module... Right?", curModID);
+                        Debug.LogFormat("[Forget Infinity #{0}]: Organization: Pff. I saw an module easier than yours and that module is more likeable than you! Get out.", curModID);
+                        Debug.LogFormat("[Forget Infinity #{0}]: Forget Infinity: But...", curModID);
+                        Debug.LogFormat("[Forget Infinity #{0}]: Organization: GET OUT! No more \"but's\"!", curModID);
+                        Debug.LogFormat("[Forget Infinity #{0}]: Organization is present AND not ignoring Forget Infinity! This module can be auto-solved by pressing any button.", curModID);
+                        autosolvable = true;
                     }
-                    inputStagesRequired = possibleStages.Count;
-                    Debug.LogFormat("[Forget Infinity #{0}]: Stages required to solve: {1}", curModID,FormatIntListWithCommas(possibleStages.ToArray()));
                 }
                 else
-                { // Implement Failsafe to enforce this module to be solvable if Forget Infinity is NOT ignored by Organization AND Organization is present on the bomb.
-                    Debug.LogFormat("[Forget Infinity #{0}]: Organization: Why do you even exist!? No one wanted you to show up anyway!", curModID);
-                    Debug.LogFormat("[Forget Infinity #{0}]: Forget Infinity: But... I am made by a Tetris legend who has made bunch of elevator videos!", curModID);
-                    Debug.LogFormat("[Forget Infinity #{0}]: Organization: It doesn't matter! These people saw you a few times and they didn't like how you operate in the factory.", curModID);
-                    Debug.LogFormat("[Forget Infinity #{0}]: Forget Infinity: But... I am an easier module... Right?", curModID);
-                    Debug.LogFormat("[Forget Infinity #{0}]: Organization: Pff. I saw an module easier than yours and that module is more likeable than you! Get out.", curModID);
-                    Debug.LogFormat("[Forget Infinity #{0}]: Forget Infinity: But...", curModID);
-                    Debug.LogFormat("[Forget Infinity #{0}]: Organization: GET OUT! No more \"but's\"!", curModID);
-                    Debug.LogFormat("[Forget Infinity #{0}]: Organization is present AND not ignoring Forget Infinity! This module can be auto-solved by pressing any button.", curModID);
+                {
+                    Debug.LogFormat("[Forget Infinity #{0}]: No stages can be generated, the module can be auto-solved by pressing any button.", curModID);
                     autosolvable = true;
                 }
             }
-            else
+            catch
             {
-                Debug.LogFormat("[Forget Infinity #{0}]: No stages can be generated, the module can be auto-solved by pressing any button.",curModID);
+                Debug.LogFormat("[Forget Infinity #{0}]: Looks like you found a bug, the module has been automatically primed to auto-solve because of this.", curModID);
+                Debug.LogFormat("[Forget Infinity #{0}]: For reference, the module's display stages were the following: ", curModID);
+                for (int x = 0; x < stages.Count; x++)
+                {
+                    Debug.LogFormat("[Forget Infinity #{0}]: Stage {1}: Display = {2}", curModID, x + 1, FormatListInt(stages[x]));
+                }
+                Debug.LogFormat("[Forget Infinity #{0}]: Please report this log to VFlyer so that he can get this fixed.", curModID);
                 autosolvable = true;
             }
-            hasStarted = true;
+            finally
+            {
+                hasStarted = true;
+            }
         };
         BackSpaceButton.OnInteract += delegate
         {
@@ -393,7 +406,7 @@ public class ForgetInfinity : MonoBehaviour {
                 yield break;
             }
             else
-                Debug.LogFormat("[Forget Infinity #{0}]: Required stage {1} has been inputted correctly.", curModID, crtStgIdx);
+                Debug.LogFormat("[Forget Infinity #{0}]: Required stage {1} has been inputted correctly.", curModID, crtStgIdx + 1);
         }
         while (localDelay >= 0)
         {

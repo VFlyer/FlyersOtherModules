@@ -15,7 +15,7 @@
 			{
 				position: absolute;
 				
-				transform: rotate(-90deg) translate(10%,-225%);
+				transform: rotate(-90deg) translate(17.5%,-135%);
 				text-align: center;
 				text-orientation: mixed;
 			}
@@ -30,7 +30,7 @@
                     <span class="page-header-section-title">Forget Infinity</span>
                 </div>
                 <div class="page-content">
-                    <img src="img/Component/Forget Infinity.svg" class="diagram">
+                    <img src="img/Component/Forget%20Infinity%20(Revised).svg" class="diagram">
                     <h2>On the Subject of Forget Infinity</h2>
                     <p class="flavour-text">What did this module do again? I forgot. Was it something along the lines of include X numbers? And how did this pass testing!?</p>
 					<p>The <em>top display</em> will show the current stage number, the number of possible stages to generate formatted as (##/##), and a single digit which represents how many seconds left until the cooldown expires for the given stage.</p>
@@ -99,8 +99,9 @@
 					<h3>4th Digit Calculations</h3>
 					<ol>
 						<li>Grab the 4th value from the previous calculation for all digits.</li>
-						<li>If the 4th value shares the same remainder with the number of solvable modules on the bomb after dividing by 3, don't modify the 4th value.</li>
-						<li>Otherwise, if the 4th original digit is equal to the least significant digit of the 4th value, add 1 to the 4th value.</li>
+						
+						<li>If the 4th value is less than 0, add the largest digit in the serial number.</li>
+						<li>Otherwise, if the 4th value shares the same remainder with the number of solvable modules on the bomb after dividing by 3, don't modify the 4th value.</li>
 						<li>Otherwise, do 18 - the 4th value.</li>
 					</ol>
 					<h3>5th Digit Calculations</h3>
@@ -121,7 +122,7 @@
 							<th>8, 9</th>
 						</tr>
 						<tr>
-							<th rowspan="5" style="width: 15%"><span class="verticaltext">5th Value % 5</span></th>
+							<th rowspan="5" style="width: 15%"><span class="verticaltext">5th Value % 5<br>(Or within 0-4)</span></th>
 							<th>0</th>
 							<td>0</td>
 							<td>1</td>
@@ -141,7 +142,7 @@
 							<th>2</th>
 							<td>O!</td>
 							<td>O! + 1</td>
-							<td>10 - O!</td>
+							<td>9 - O!</td>
 							<td>O! - 1</td>
 							<td>O! + 5</td>
 						</tr>
