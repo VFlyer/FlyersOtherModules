@@ -8,16 +8,19 @@ public class SingularityButtonHandler : MonoBehaviour {
 
 	public GameObject disarmButtonObject, buttonFrontObject, entireModule,animatedPortion;
 	public MeshRenderer buttonMainRenderer,buttonBacking;
-	public TextMesh textDisplay;
+	public TextMesh textDisplay, textColorblind;
 	public KMSelectable disarmButton, buttonFront;
 	public KMBossModule bossModule;
 	public KMBombInfo bombInfo;
 	public KMBombModule modSelf;
+	public KMColorblindMode colorblindMode;
 	public KMAudio audioSelf;
 
-	private bool isSolved = false, hasDisarmed = false, hasActivated = false;
+
+
+	private bool isSolved, hasDisarmed, hasActivated, colorblindDetected;
 	//private bool alwaysFlipToBack = false;
-	private bool isPressedDisarm = false, isPressedMain = false;
+	private bool isPressedDisarm, isPressedMain;
 
 	public List<string> cautionaryModules = new List<string>();
 
@@ -27,12 +30,12 @@ public class SingularityButtonHandler : MonoBehaviour {
 	protected sealed class SingularityButtonInfo //Lock down infomation to a single bomb, hopefully.
 	{
 		public List<SingularityButtonHandler> singularButtons = new List<SingularityButtonHandler>();// A collection of Singularity Button Handlers on 1 global handler.
-		public List<int> inputs = new List<int>();
+
 		public List<Color> buttonColors = new List<Color>();
 		public List<string> buttonLabels = new List<string>();
 		public List<int> buttonDigits = new List<int>();
 		private List<int> idxInputs = new List<int>();
-		private List<int> combinedValues = new List<int>();
+		public List<int> inputs = new List<int>();
 		public bool canDisarm = false;
 
 		public void DisarmAll()
@@ -53,6 +56,10 @@ public class SingularityButtonHandler : MonoBehaviour {
 				Debug.LogFormat("[Singularity Button #{0}]: {1}", singularButtons[idx].curmodID, text);
 			}
 		}
+		public void LogIndividual(string text, SingularityButtonHandler handler)
+		{
+			Debug.LogFormat("[Singularity Button #{0}]: {1}", handler.curmodID, text);
+		}
 		public void CauseStrikeAll()
 		{
 			LogAll("An incorrect set of actions caused this module to strike.");
@@ -67,6 +74,11 @@ public class SingularityButtonHandler : MonoBehaviour {
 				singularButtons[idx].modSelf.HandleStrike();
 			}
 		}
+		public void CauseStrikeIndividual(SingularityButtonHandler handler)
+		{
+			LogIndividual("An incorrect set of actions caused this module to strike.", handler);
+			handler.modSelf.HandleStrike();
+		}
 		public int CountSingularityButtons()
 		{
 			return singularButtons.Count();
@@ -79,6 +91,17 @@ public class SingularityButtonHandler : MonoBehaviour {
 		{
 			return !singularButtons.TrueForAll(a => !a.isPressedMain);
 		}
+		public string GrabColorofButton(int idx)
+		{
+			if (idx < 0 || idx > singularButtons.Count) return "";
+			int grabbedIndex = referenceList.IndexOf(singularButtons[idx].buttonMainRenderer.material.color);
+			return grabbedIndex >= 0 && grabbedIndex < referenceListNames.Length ? referenceListNames[grabbedIndex] : "some other color";
+		}
+		public string GrabColorofButton(SingularityButtonHandler handler)
+		{
+			int grabbedIndex = referenceList.IndexOf(handler.buttonMainRenderer.material.color);
+			return grabbedIndex >= 0 && grabbedIndex < referenceListNames.Length ? referenceListNames[grabbedIndex] : "some other color";
+		}
 		public bool IsEqualToNumberOnBomb(SingularityButtonHandler buttonHandler)
 		{
 			return CountSingularityButtons() == buttonHandler.bombInfo.GetModuleNames().Where(a => a.Equals("Singularity Button")).Count();
@@ -86,7 +109,12 @@ public class SingularityButtonHandler : MonoBehaviour {
 		public void HandleInteraction(int idx, int value)
 		{
 			idxInputs.Add(idx);
-			combinedValues.Add(value);
+			inputs.Add(value);
+		}
+		public void HandleInteraction(SingularityButtonHandler handler, int value)
+		{
+			idxInputs.Add(singularButtons.IndexOf(handler));
+			inputs.Add(value);
 		}
 		public void ClearAllInputs()
 		{
@@ -98,10 +126,12 @@ public class SingularityButtonHandler : MonoBehaviour {
 			if (singularButtons.Count <= 0) yield break;
 			if (IsEqualToNumberOnBomb(singularButtons[0]))
 			{
-				yield return new WaitForSeconds(0);
 				int btnCount = CountSingularityButtons();
 				LogAll("Detected this many Singularity Buttons on the bomb: " + btnCount);
-				
+				foreach (SingularityButtonHandler singularity in singularButtons)
+				{
+					LogIndividual(LogManualChallengePhrases[Random.Range(0, LogManualChallengePhrases.Length)],singularity);
+				}
 				if (btnCount == 1)
 				{
 					singularButtons[0].buttonMainRenderer.material.color = Color.blue;
@@ -313,6 +343,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 		curmodID = modID++;
 	}
 	// Use this for initialization
+	bool onHoldState;
 	void Start () {
 		disarmButton.OnInteract += delegate {
 			audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
@@ -321,7 +352,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 		};
 		disarmButton.OnInteractEnded += delegate
 		{
-			disarmButton.AddInteractionPunch();
+			disarmButton.AddInteractionPunch(1f);
 			audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonRelease, transform);
 			isPressedDisarm = false;
 			if (isSolved)
@@ -335,17 +366,19 @@ public class SingularityButtonHandler : MonoBehaviour {
 			audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, transform);
 			if (!isSolved && hasActivated)
 			{
-				
+				singularityButtonInfo.HandleInteraction(this, ((int)bombInfo.GetTime()) % 60);
 			}
 			isPressedMain = true;
+			onHoldState = hasActivated;
 			return false;
 		};
 		buttonFront.OnInteractEnded += delegate
 		{
 			audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonRelease, transform);
-			if (!isSolved && hasActivated)
+			buttonFront.AddInteractionPunch();
+			if (!isSolved && hasActivated && onHoldState)
 			{
-
+				singularityButtonInfo.HandleInteraction(this, ((int)bombInfo.GetTime()) % 60);
 			}
 			isPressedMain = false;
 		};
@@ -359,7 +392,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 				groupedSingularityButtons[bombAlone] = new SingularityButtonInfo();
 			singularityButtonInfo = groupedSingularityButtons[bombAlone];
 			singularityButtonInfo.singularButtons.Add(this);
-
+			colorblindDetected = colorblindMode.ColorblindModeActive;
 			// Start Main Handling
 			//AddOthersModulesOntoList();
 			StartCoroutine(HandleGlobalModule());
@@ -381,6 +414,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 			yield return new WaitForSeconds(0);
 		}
 		isSolved = true;
+		audioSelf.PlaySoundAtTransform("paul368_sfx-door-open", transform);
 		Debug.LogFormat("[Singularity Button #{0}]: A correct set of actions caused the Singularity Buttons to enter a solve state.", curmodID);
 		// Commented out because of some solve dependent modules not being easily detectable.
 		/*
@@ -427,6 +461,11 @@ public class SingularityButtonHandler : MonoBehaviour {
 		buttonFrontObject.transform.localPosition = new Vector3(0, 0.03f * (frameMain / 45f), 0);
 		disarmButtonObject.transform.localPosition = new Vector3(0, -0.019f * (frameDisarm / 45f), 0);
 		animatedPortion.transform.localEulerAngles = new Vector3(0, 0, 180f * (frameSwitch / (float)animLength));
+		textColorblind.gameObject.SetActive(colorblindDetected);
+		if (colorblindDetected)
+		{
+			textColorblind.text = singularityButtonInfo.GrabColorofButton(this).ToUpper();
+		}
 	}
 	// Handle Twitch Plays
 	IEnumerator HandleForcedSolve()
@@ -449,10 +488,11 @@ public class SingularityButtonHandler : MonoBehaviour {
 		StartCoroutine(HandleForcedSolve());
 	}
 	#pragma warning disable 0414
-		string TwitchHelpMessage = "To press the disarm button: \"!{0} disarm\", To grab the current state of the button: \"!{0} state\"\n" +
+		string TwitchHelpMessage = "To press the disarm button: \"!{0} disarm\", To grab the info of the button: \"!{0} state/color\"\n" +
 		"To tap the main button based on seconds digits: \"!{0} tap ##\"; based on the digit being present: \"!{0} tap #\"; anytime: \"!{0} tap\"\n" +
 		"To hold the main button based on seconds digits: \"!{0} hold ##\"; based on the digit being present: \"!{0} hold #\"; anytime: \"!{0} hold\"\n" +
-		"To release the main button based on seconds digits: \"!{0} release ##\"; based on the digit being present: \"!{0} release #\". Multiple time stamps based on seconds digits can be used.";
+		"To release the main button based on seconds digits: \"!{0} release ##\"; based on the digit being present: \"!{0} release #\". Multiple time stamps based on seconds digits can be used.\n" +
+		"To interact with the button based on even/odd conditions \"!{0} hold/tap/release even/odd\"";
 	#pragma warning restore 0414
 	IEnumerator ProcessTwitchCommand(string command)
 	{
@@ -462,19 +502,14 @@ public class SingularityButtonHandler : MonoBehaviour {
 		string tapTimeStamp = @"^tap( \d{2})+$", tapDigit = @"^tap( \d)?$";
 		string holdTimeStamp = @"^hold( \d{2})+$", holdDigit = @"^hold( \d)?$";
 		string releaseTimeStamp = @"^release( \d{2})+$", releaseDigit = @"^release \d$";
-		string grabState = @"^state$";
+		string tapTimeParity = @"^tap (at |on )?(even|odd)$", releaseTimeParity = @"^release (at |on )?(even|odd)$", holdTimeParity = @"^hold (at |on )?(even|odd)$";
+		string grabState = @" ^ state$", grabColor = @"^color$", enableColorblind = @"^colou?rblind$";
 
 		string[] commandParts = interpetedCommand.Split(' ');
 
 		if (hasDisarmed)
 		{
 			yield return "sendtochaterror Are you trying to interact the button when its already solved? You might want to think again. (This is an anarchy command prevention message.)";
-			yield break;
-		}
-
-		if (interpetedCommand.RegexMatch(grabState))
-		{
-			yield return "sendtochat This button is currently " + (isPressedMain ? "held" : "not held");
 			yield break;
 		}
 		else if (interpetedCommand.RegexMatch(pressDisarm))
@@ -498,6 +533,21 @@ public class SingularityButtonHandler : MonoBehaviour {
 			yield return "sendtochaterror The module is already put in a solve state! Check the help command for this module to figure out how to press the manual disarm button.";
 			yield break;
 		}
+		else if (interpetedCommand.RegexMatch(grabState))
+		{
+			yield return "sendtochat This button is currently " + (isPressedMain ? "held" : "not held");
+			yield break;
+		}
+		else if (interpetedCommand.RegexMatch(enableColorblind))
+		{
+			yield return null;
+			colorblindDetected = true;
+		}
+		else if (interpetedCommand.RegexMatch(grabColor))
+		{
+			yield return "sendtochat The color of this button is " + singularityButtonInfo.GrabColorofButton(this);
+			yield break;
+		}
 		else if (singularityButtonInfo.IsAnyButtonHeld())
 		{
 			if (isPressedMain)
@@ -511,22 +561,36 @@ public class SingularityButtonHandler : MonoBehaviour {
 						possibleSecondsTimer.Add(int.Parse(commandParts[idx]));
 						idx--;
 					}
-					while (!possibleSecondsTimer.Contains((int)bombInfo.GetTime() % 60))
+					do
 						yield return "trycancel";
-					yield return "strike";
-					yield return "solve";
+					while (!possibleSecondsTimer.Contains((int)bombInfo.GetTime() % 60));
 					yield return null;
 					yield return buttonFront;
+					yield return "strike";
+					yield return "solve";
+
+				}
+				else if (interpetedCommand.RegexMatch(releaseTimeParity))
+				{
+					bool requireEven = interpetedCommand[interpetedCommand.Length - 1].Equals("even");
+					do
+						yield return "trycancel";
+					while ((int)bombInfo.GetTime() % 2 == 0 == requireEven);
+					yield return null;
+					yield return buttonFront;
+					yield return "strike";
+					yield return "solve";
 				}
 				else if (interpetedCommand.RegexMatch(releaseDigit))
 				{
 					string digitGoal = commandParts[1];
-					while (!bombInfo.GetFormattedTime().Contains(digitGoal))
+					do
 						yield return "trycancel";
-					yield return "strike";
-					yield return "solve";
+					while (!((int)bombInfo.GetTime() % 60).ToString().Contains(digitGoal));
 					yield return null;
 					yield return buttonFront;
+					yield return "strike";
+					yield return "solve";
 				}
 			}
 			else
@@ -541,8 +605,22 @@ public class SingularityButtonHandler : MonoBehaviour {
 				possibleSecondsTimer.Add(int.Parse(commandParts[idx]));
 				idx--;
 			}
-			while (!possibleSecondsTimer.Contains((int)bombInfo.GetTime() % 60))
+			do
 				yield return "trycancel";
+			while (!possibleSecondsTimer.Contains((int)bombInfo.GetTime() % 60));
+				
+			yield return null;
+			yield return buttonFront;
+			yield return buttonFront;
+			yield return "strike";
+			yield return "solve";
+		}
+		else if (interpetedCommand.RegexMatch(tapTimeParity))
+		{
+			bool requireEven = interpetedCommand[interpetedCommand.Length - 1].Equals("even");
+			do
+				yield return "trycancel";
+			while ((int)bombInfo.GetTime() % 2 == 0 == requireEven);
 			yield return null;
 			yield return buttonFront;
 			yield return buttonFront;
@@ -554,8 +632,9 @@ public class SingularityButtonHandler : MonoBehaviour {
 			if (commandParts.Length == 2)
 			{
 				string digitGoal = commandParts[1];
-				while (!bombInfo.GetFormattedTime().Contains(digitGoal))
+				do {
 					yield return "trycancel";
+				} while (!((int)bombInfo.GetTime() % 60).ToString().Contains(digitGoal));
 			}
 			yield return null;
 			yield return buttonFront;
@@ -572,8 +651,18 @@ public class SingularityButtonHandler : MonoBehaviour {
 				possibleSecondsTimer.Add(int.Parse(commandParts[idx]));
 				idx--;
 			}
-			while (!possibleSecondsTimer.Contains((int)bombInfo.GetTime() % 60))
+			do
 				yield return "trycancel";
+			while (!possibleSecondsTimer.Contains((int)bombInfo.GetTime() % 60));
+			yield return null;
+			yield return buttonFront;
+		}
+		else if (interpetedCommand.RegexMatch(holdTimeParity))
+		{
+			bool requireEven = interpetedCommand[interpetedCommand.Length - 1].Equals("even");
+			do
+				yield return "trycancel";
+			while ((int)bombInfo.GetTime() % 2 == 0 == requireEven);
 			yield return null;
 			yield return buttonFront;
 		}
@@ -582,8 +671,9 @@ public class SingularityButtonHandler : MonoBehaviour {
 			if (commandParts.Length == 2)
 			{
 				string digitGoal = commandParts[1];
-				while (!bombInfo.GetFormattedTime().Contains(digitGoal))
+				do {
 					yield return "trycancel";
+				} while (!((int)bombInfo.GetTime() % 60).ToString().Contains(digitGoal));
 			}
 			yield return null;
 			yield return buttonFront;
