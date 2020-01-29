@@ -39,6 +39,7 @@ GameObject:
   - component: {fileID: 4525828637959394}
   - component: {fileID: 23090322484507000}
   - component: {fileID: 102595761767704022}
+  - component: {fileID: 114421381264287150}
   m_Layer: 0
   m_Name: ColorblindText
   m_TagString: Untagged
@@ -980,6 +981,19 @@ MonoBehaviour:
   m_Script: {fileID: -381104716, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114421381264287150
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1098375043305042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShaderNames:
+  - GUI/KT 3D Text
 --- !u!114 &114434412719025116
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -992,7 +1006,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShaderNames:
-  - Standard
+  - Legacy Shaders/Diffuse
 --- !u!114 &114496371291726258
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1081,7 +1095,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShaderNames:
-  - KT/Mobile/DiffuseTint
+  - Legacy Shaders/Diffuse
 --- !u!114 &114729989583243230
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -119,7 +119,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 		public void ClearAllInputs()
 		{
 			idxInputs.Clear();
-			combinedValues.Clear();
+			inputs.Clear();
 		}
 		public IEnumerator StartBootUpSequence()
 		{
@@ -366,7 +366,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 			audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, transform);
 			if (!isSolved && hasActivated)
 			{
-				singularityButtonInfo.HandleInteraction(this, ((int)bombInfo.GetTime()) % 60);
+				singularityButtonInfo.HandleInteraction(this, (int)bombInfo.GetTime());
 			}
 			isPressedMain = true;
 			onHoldState = hasActivated;
@@ -378,7 +378,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 			buttonFront.AddInteractionPunch();
 			if (!isSolved && hasActivated && onHoldState)
 			{
-				singularityButtonInfo.HandleInteraction(this, ((int)bombInfo.GetTime()) % 60);
+				singularityButtonInfo.HandleInteraction(this, (int)bombInfo.GetTime());
 			}
 			isPressedMain = false;
 		};
@@ -458,6 +458,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 			frameSwitch = Mathf.Max(frameSwitch - 1, 0);
 		}
 		disarmButtonObject.SetActive(frameSwitch > 0);
+		buttonFrontObject.SetActive(frameSwitch < animLength);
 		buttonFrontObject.transform.localPosition = new Vector3(0, 0.03f * (frameMain / 45f), 0);
 		disarmButtonObject.transform.localPosition = new Vector3(0, -0.019f * (frameDisarm / 45f), 0);
 		animatedPortion.transform.localEulerAngles = new Vector3(0, 0, 180f * (frameSwitch / (float)animLength));

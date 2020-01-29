@@ -334,7 +334,6 @@ public class SimonStagesHandler : MonoBehaviour
         {
             return;
         }
-        StopCoroutine(RepeatSequence());
         canPlaySound = true;
         moduleLocked = true;
         if (totalPresses == 0)
@@ -443,7 +442,6 @@ public class SimonStagesHandler : MonoBehaviour
                 totalPresses = 0;
                 stagePresses = 0;
                 increaser = 0;
-                isRepeating = false;
                 GenerateSequence();
                 moduleLocked = true;
                 clearLights.Clear();
@@ -459,7 +457,8 @@ public class SimonStagesHandler : MonoBehaviour
         }
         checking = false;
     }
-    bool isRepeating = false;
+    int lastLevel = 0;
+    bool isRepeating;
     IEnumerator RepeatSequence()
     {
         isRepeating = true;
@@ -470,73 +469,79 @@ public class SimonStagesHandler : MonoBehaviour
             device.ledGlow.enabled = false;
             device.greyBase.enabled = true;
         }
-        int lastLevel = currentLevel;
-        int j = 0;
-        int k = 0;
-        for (int i = 0; i < sequences.Count; i++)
+        lastLevel = currentLevel;
+        while (lastLevel == currentLevel && totalPresses <= 0)
         {
-                
-            indicatorText.text = indicatorLetter[j];
-            indicatorLights[indicatorColour[j]].glow.enabled = true;
-            if (canPlaySound)
+            moduleLocked = true;
+            int j = 0;
+            int k = 0;
+            for (int i = 0; i < sequences.Count; i++)
             {
-                Audio.PlaySoundAtTransform(lightDevices[sequences[i]].connectedSound.name, transform);
-            }
-            if (totalPresses > 0)
-            {
-                break;
-            }
-            lightDevices[sequences[i]].ledGlow.enabled = true;
-            lightDevices[sequences[i]].greyBase.enabled = false;
-            yield return new WaitForSeconds(0.5f);
-            if (totalPresses > 0)
-            {
-                break;
-            }
-            lightDevices[sequences[i]].ledGlow.enabled = false;
-            lightDevices[sequences[i]].greyBase.enabled = true;
-            if (totalPresses > 0)
-            {
-                break;
-            }
-            yield return new WaitForSeconds(0.25f);
-            if (sequenceLengths[j] - 1 == k)
-            {
-                j++;
-                k = 0;
-                foreach (IndicatorInformation indic in indicatorLights)
+
+                indicatorText.text = indicatorLetter[j];
+                indicatorLights[indicatorColour[j]].glow.enabled = true;
+                if (canPlaySound)
                 {
-                    indic.glow.enabled = false;
+                    Audio.PlaySoundAtTransform(lightDevices[sequences[i]].connectedSound.name, transform);
+                }
+                lightDevices[sequences[i]].ledGlow.enabled = true;
+                lightDevices[sequences[i]].greyBase.enabled = false;
+                yield return new WaitForSeconds(0.4f);
+                if (totalPresses > 0 || lastLevel != currentLevel)
+                {
+                    break;
+                }
+                lightDevices[sequences[i]].ledGlow.enabled = false;
+                lightDevices[sequences[i]].greyBase.enabled = true;
+                if (totalPresses > 0)
+                {
+                    break;
+                }
+                yield return new WaitForSeconds(0.25f);
+                if (sequenceLengths[j] - 1 == k)
+                {
+                    j++;
+                    k = 0;
+                    foreach (IndicatorInformation indic in indicatorLights)
+                    {
+                        indic.glow.enabled = false;
+                    }
+                }
+                else
+                {
+                    k++;
                 }
             }
-            else
+            foreach (LightInformation device in lightDevices)
             {
-                k++;
+                device.ledGlow.enabled = false;
+                device.greyBase.enabled = true;
+            }
+            indicatorText.text = "";
+            j = 0;
+            foreach (IndicatorInformation indic in indicatorLights)
+            {
+                indic.glow.enabled = false;
+            }
+            moduleLocked = false;
+            for (int x = 0; x < 5; x++)
+            {
+                yield return new WaitForSeconds(1f);
+                if (totalPresses > 0 || lastLevel != currentLevel)
+                {
+                    break;
+                }
             }
         }
-        foreach (LightInformation device in lightDevices)
-        {
-            device.ledGlow.enabled = false;
-            device.greyBase.enabled = true;
-        }
-        indicatorText.text = "";
-        j = 0;
-        foreach (IndicatorInformation indic in indicatorLights)
-        {
-            indic.glow.enabled = false;
-        }
-        moduleLocked = false;
-        yield return new WaitForSeconds(5f);
-        if (totalPresses <= 0 && isRepeating && lastLevel == currentLevel)
-        {
-            isRepeating = false;
-        }
+        isRepeating = false;
     }
 
     void Update()
     {
-        if (totalPresses <= 0 && !isRepeating && gameOn && !moduleLocked)
+        if (totalPresses <= 0 && gameOn && !moduleLocked && !isRepeating)
+        {
             StartCoroutine(RepeatSequence());
+        }
     }
 
     IEnumerator PressFlash(LightInformation device)
