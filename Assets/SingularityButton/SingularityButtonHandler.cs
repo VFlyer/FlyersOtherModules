@@ -19,10 +19,9 @@ public class SingularityButtonHandler : MonoBehaviour {
 
 
 	private bool isSolved, hasDisarmed, hasActivated, colorblindDetected;
-	//private bool alwaysFlipToBack = false;
 	private bool isPressedDisarm, isPressedMain;
 
-	public List<string> cautionaryModules = new List<string>();
+	
 
 	private static int modID = 1;
 	private int curmodID;
@@ -188,6 +187,8 @@ public class SingularityButtonHandler : MonoBehaviour {
 	private SingularityButtonInfo singularityButtonInfo;
 	// Commented out because of some solve dependent modules not being easily detectable.
 	/*
+	private bool alwaysFlipToBack = false;
+	public List<string> cautionaryModules = new List<string>();
 	public readonly List<string> otherSolveDependModNames = new List<string>() {
 		"Blind Maze",
 		"Burglar Alarm",

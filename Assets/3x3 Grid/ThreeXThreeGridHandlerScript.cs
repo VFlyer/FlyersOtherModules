@@ -185,7 +185,7 @@ public class ThreeXThreeGridHandlerScript : MonoBehaviour {
         }
     }
     // TP commands
-    public readonly string TwitchHelpMessage = "Press a button with “!{0} tl” or “!{0} 1”. Buttons are tl, tm, tr, ml, mm, mr, bl, bm, br, or numbered 1–9 in reading order. \"press\" is optional.";
+    public readonly string TwitchHelpMessage = "Press a button with “!{0} tl” or “!{0} 1”. Buttons are tl, tm, tr, ml, mm, mr, bl, bm, br, or numbered 1–9 in reading order. Commands can be chained but must be spaced out. \"press\" is optional.";
     KMSelectable[] ProcessTwitchCommand(string input)
     {
         string locinput = input.RegexMatch(@"^press\s") ? input.Substring(6).ToLower() : input.ToLower(); // Filter out "press " if necessary.

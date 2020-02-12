@@ -373,7 +373,8 @@ public class ForgetItNotHandler : MonoBehaviour {
         yield return null;
     }
     #pragma warning disable 0414
-    string TwitchHelpMessage = "Enter the Forget It Not sequence with \"!{0} press 531820...\" or \"!{0} submit 531820...\". The sequence length depends on how many stages were shown on the module. You may use spaces and commas in the digit sequence.";
+        string TwitchHelpMessage = "Enter the Forget It Not sequence with \"!{0} press 531820...\" or \"!{0} submit 531820...\". The sequence length depends on how many stages were shown on the module. You may use spaces and commas in the digit sequence.";
+        bool TwitchShouldCancelCommand;
     #pragma warning restore 0414
 
     public void TwitchHandleForcedSolve() {
@@ -430,13 +431,36 @@ public class ForgetItNotHandler : MonoBehaviour {
             digitSelectables[digits[0]].OnInteract();
             yield break;
         }
-
+        // Assign Mode for inputting
+        string mode = "DEFAULT";
+        if (bombInfo.GetTime() > Mathf.Max(totalstages * 5 / 2, 120))
+            switch (Random.Range(0, 2))
+            {
+                case 0:
+                    mode = "PATIENT";
+                    break;
+                default:
+                    break;
+            }
+        else
+        {
+            mode = "PANIC";
+        }
         yield return "Forget It Not";
-        yield return "sendtochat This better be it! BlessRNG";
+        yield return !mode.EqualsIgnoreCase("PANIC") ? "sendtochat This better be it! BlessRNG" : "sendtochat panicBasket Got to get this out now!";
         yield return "multiple strikes";
-
+        int patientDigitsLeft = Random.Range(Mathf.Min(totalstages / 50, 1), 6);
         foreach (int d in digits)
         {
+            if (patientDigitsLeft > 0 && mode.EqualsIgnoreCase("PATIENT"))
+                patientDigitsLeft = Mathf.Max(0, patientDigitsLeft - 1);
+            else if (!mode.EqualsIgnoreCase("PANIC") && TwitchShouldCancelCommand)
+            {
+                mode = "PANIC";
+                yield return "sendtochat I'm hurrying already!";
+            }
+            else
+                mode = "NORMAL";
             yield return null;
             digitSelectables[d].OnInteract();
             if (idxlit != -1)
@@ -445,6 +469,10 @@ public class ForgetItNotHandler : MonoBehaviour {
                 if (correctinputs - lastcorrectDigits <= 5)
                 {
                     yield return "sendtochat DansGame Oh come on!";
+                }
+                else if (correctinputs * 10 >= 9 * totalstages)
+                {
+                    yield return "sendtochat DansGame The end is right there!! Why!?";
                 }
                 else
                 {
@@ -479,7 +507,7 @@ public class ForgetItNotHandler : MonoBehaviour {
                 }
                 break;
             }
-            yield return new WaitForSeconds(0f);
+            yield return new WaitForSeconds(mode.EqualsIgnoreCase("PANIC") || TwitchShouldCancelCommand ? 0f : mode.EqualsIgnoreCase("PATIENT") && patientDigitsLeft > 0 ? 1f : 0.1f);
         }
         yield return "end multiple strikes";
         yield break;

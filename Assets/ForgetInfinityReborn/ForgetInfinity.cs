@@ -31,9 +31,6 @@ public class ForgetInfinity : MonoBehaviour {
     private int stagestoGenerate = 0;
     private int currentStage = 0;
 
-    
-    private int inputStagesRequired = 0;
-
     private static int modID = 1;
     private static int curModID;
 
@@ -201,7 +198,6 @@ public class ForgetInfinity : MonoBehaviour {
                             if (!possibleStages.Contains(randomStage))
                                 possibleStages.Add(randomStage);
                         }
-                        inputStagesRequired = possibleStages.Count;
                         Debug.LogFormat("[Forget Infinity #{0}]: Stages required to solve: {1}", curModID, FormatIntListWithCommas(possibleStages.ToArray()));
                     }
                     else
@@ -420,7 +416,10 @@ public class ForgetInfinity : MonoBehaviour {
             }
             ScreenStatus.text = result.Trim();
             if (localDelay % 18 == 0)
+            {
                 input = input.Substring(0, input.Length - 1);
+                AudioHandler.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey,transform);
+            }
             string inputSeq = "";
             for (int x = 0; x < 5 - input.Length; x++)
             {
@@ -555,6 +554,11 @@ public class ForgetInfinity : MonoBehaviour {
             else if (commandLowerSet[x].EqualsIgnoreCase("back"))
             {
                 pressSet.Add(BackSpaceButton);
+            }
+            else
+            {
+                yield return "sendtochaterror Your command is invalid. The section \"" + commandLowerSet[x] + "\" is not valid";
+                yield break;
             }
         }
 

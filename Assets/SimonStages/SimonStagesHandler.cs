@@ -486,7 +486,7 @@ public class SimonStagesHandler : MonoBehaviour
                 }
                 lightDevices[sequences[i]].ledGlow.enabled = true;
                 lightDevices[sequences[i]].greyBase.enabled = false;
-                yield return new WaitForSeconds(0.4f);
+                yield return new WaitForSeconds(0.5f);
                 if (totalPresses > 0 || lastLevel != currentLevel)
                 {
                     break;

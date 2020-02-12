@@ -30,7 +30,7 @@ public class BuzzFizzHandler : MonoBehaviour {
 
         needyModule.OnNeedyActivation += delegate ()
         {
-            targetnumber = Random.Range(0, 2147483647);
+            targetnumber = Random.Range(0, int.MaxValue);
             textnumber.text = targetnumber.ToString();
 
             goalVal += targetnumber % 3 == 0 ? 1 : 0;
@@ -83,23 +83,24 @@ public class BuzzFizzHandler : MonoBehaviour {
         while (needyModule.GetNeedyTimeRemaining() > 0)
         {
             textnumber.color = Color.clear;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.25f);
             textnumber.color = Color.red;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.25f);
         }
         textnumber.color = Color.white;
         textnumber.text = "Pending...";
         yield return null;
     }
-    public readonly string TwitchHelpMessage = "To turn the dial a specific number of times, do \"!{0} turn #\". The dial turns # % 4 times based on the command inputted. (4n turns will turn the dial 4 times.)";
+    public readonly string TwitchHelpMessage = "To turn the dial a specific number of times, do \"!{0} turn/rotate #\". The dial turns # % 4 times based on the command inputted. (4n turns will turn the dial 4 times.)";
     KMSelectable[] ProcessTwitchCommand(string input)
     {
-        string locinput = input;
-        if (locinput.RegexMatch(@"^turn\s\d+$"))
+
+        string locinput = input.ToLower();
+        string[] interepetedCommand = input.Split(' ');
+        if (locinput.RegexMatch(@"^(turn|rotate) \d+$"))
         {
-            string turnCntStr = locinput.Substring(5).Trim();
             List<KMSelectable> output = new List<KMSelectable>();
-            int tctemp = int.Parse(turnCntStr) % 4;
+            int tctemp = int.Parse(interepetedCommand[1]) % 4;
             int turnCount = tctemp == 0 ? 4 : tctemp;
             for (int x = 0; x < turnCount; x++)
                 output.Add(dialSelect);
