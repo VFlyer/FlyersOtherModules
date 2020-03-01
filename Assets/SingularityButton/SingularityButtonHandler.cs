@@ -399,6 +399,10 @@ public class SingularityButtonHandler : MonoBehaviour {
 			StartCoroutine(HandleGlobalModule());
 			hasActivated = true;
 		};
+		bombInfo.OnBombExploded += delegate
+		{
+			singularityButtonInfo.StopAll();
+		};
 	}
 	IEnumerator HandleGlobalModule()
 	{

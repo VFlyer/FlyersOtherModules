@@ -452,15 +452,17 @@ public class ForgetItNotHandler : MonoBehaviour {
         int patientDigitsLeft = Random.Range(Mathf.Min(totalstages / 50, 1), 6);
         foreach (int d in digits)
         {
-            if (patientDigitsLeft > 0 && mode.EqualsIgnoreCase("PATIENT"))
-                patientDigitsLeft = Mathf.Max(0, patientDigitsLeft - 1);
-            else if (!mode.EqualsIgnoreCase("PANIC") && TwitchShouldCancelCommand)
+            if (!mode.EqualsIgnoreCase("PANIC") && TwitchShouldCancelCommand)
             {
                 mode = "PANIC";
                 yield return "sendtochat I'm hurrying already!";
             }
-            else
-                mode = "NORMAL";
+            else if (mode.EqualsIgnoreCase("PATIENT"))
+            {
+                patientDigitsLeft = Mathf.Max(0, patientDigitsLeft - 1);
+                if (patientDigitsLeft <= 0)
+                    mode = "NORMAL";
+            }
             yield return null;
             digitSelectables[d].OnInteract();
             if (idxlit != -1)

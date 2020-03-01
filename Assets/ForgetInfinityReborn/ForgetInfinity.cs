@@ -22,8 +22,8 @@ public class ForgetInfinity : MonoBehaviour {
 
     private bool solved = false, inFinale = false, hasStarted = false, isRecapturing = false, autosolvable = false, delayed = false, hasStruck = false,interactable = true;
 
-    public List<int[]> stages = new List<int[]>();
-    public List<int[]> solution = new List<int[]>();
+    public List<int[]> stages = new List<int[]>();// The displayed values for each of the given stages
+    public List<int[]> solution = new List<int[]>();// The solution for each of the given stages
     public List<int> possibleStages = new List<int>();
 
     public string input = "";
@@ -34,6 +34,9 @@ public class ForgetInfinity : MonoBehaviour {
     private static int modID = 1;
     private static int curModID;
 
+    private float PPAScaling;
+    private ForgetInfintySettings FIConfig = new ForgetInfintySettings();
+    public KMModSettings modSettings;
 	// Use this for initialization
 	void Awake() {
 		if (ignoredModuleNames == null)
@@ -73,7 +76,23 @@ public class ForgetInfinity : MonoBehaviour {
             organIgnoredModNames = GetComponent<KMBossModule>().GetIgnoredModules("Organization").ToList();
         //See Forget It Not's ignore list for reasons
         curModID = modID++;
-	}
+        try
+        {
+            ModConfig<ForgetInfintySettings> modConfig = new ModConfig<ForgetInfintySettings>("ForgetInfintySettings");
+            // Read from settings file, or create one if one doesn't exist
+            FIConfig = modConfig.Settings;
+            // Update settings file incase of error during read
+            modConfig.Settings = FIConfig;
+            modSettings.RefreshSettings();
+
+            PPAScaling = FIConfig.PPAScaleFactor;
+        }
+        catch
+        {
+            Debug.LogErrorFormat("[Forget Infinty #{0}]: The settings for Forget Infinty does not exist! The module will use default settings instead.", curModID);
+            PPAScaling = 0.5f;
+        }
+    }
     void Start()
     {
         ModSelf.OnActivate += delegate
@@ -190,7 +209,7 @@ public class ForgetInfinity : MonoBehaviour {
                             }
                             solution.Add(finalStageNumbers);
                             // End Solution Calculations
-                            Debug.LogFormat("[Forget Infinity #{0}]: Stage {1}: Display = {2}, Answer = {3}", curModID, (x + 1).ToString("00"), FormatListInt(stages[x]), FormatListInt(solution[x]));
+                            Debug.LogFormat("[Forget Infinity #{0}]: Stage {1}: Display = {2}, Answer = {3}", curModID, (x + 1).ToString("00"), stages[x].Join(""), solution[x].Join(""));
                         }
                         while (possibleStages.Count < Math.Min(stagestoGenerate, 3))// Memoryless Randomizer Starts Here
                         {
@@ -225,7 +244,7 @@ public class ForgetInfinity : MonoBehaviour {
                 Debug.LogFormat("[Forget Infinity #{0}]: For reference, the module's display stages were the following: ", curModID);
                 for (int x = 0; x < stages.Count; x++)
                 {
-                    Debug.LogFormat("[Forget Infinity #{0}]: Stage {1}: Display = {2}", curModID, x + 1, FormatListInt(stages[x]));
+                    Debug.LogFormat("[Forget Infinity #{0}]: Stage {1}: Display = {2}", curModID, x + 1, stages[x].Join(""));
                 }
                 Debug.LogFormat("[Forget Infinity #{0}]: Please report this log to VFlyer so that he can get this fixed.", curModID);
                 autosolvable = true;
@@ -528,6 +547,26 @@ public class ForgetInfinity : MonoBehaviour {
             }
         }
     }
+    // Mod Settings
+    public class ForgetInfintySettings
+    {
+        public float PPAScaleFactor = 0.5f;
+    }
+    static readonly Dictionary<string, object>[] TweaksEditorSettings = new Dictionary<string, object>[]
+      {
+            new Dictionary<string, object>
+            {
+                { "Filename", "ForgetInfintySettings.json" },
+                { "Name", "Forget Infinty Settings" },
+                { "Listing", new List<Dictionary<string, object>>{
+                    new Dictionary<string, object>
+                    {
+                        { "Key", "PPAScaleFactor" },
+                        { "Text", "The scale factor of the number of points to award based on how many stages were grabbed from this module." },
+                    },
+                } }
+            }
+      };
     // Twitch Plays support
 
     public readonly string TwitchHelpMessage = "Enter the sequence with \"!{0} press 01234\". To press the back space button, append as many \"back\" commands as needed to press the backspace button. 0-9 are acceptable digits. Space out the commands (digits excluded)!";
@@ -581,6 +620,8 @@ public class ForgetInfinity : MonoBehaviour {
             button.OnInteract();
             if (input.Length >= 5)
             {
+                if (possibleStages.Count == 1 && input.Equals(solution[possibleStages.Where(a => a != -1).ToArray()[0]]))
+                    yield return "awardpoints " + Math.Min(Mathf.RoundToInt(PPAScaling * stagestoGenerate), 1).ToString();
                 yield return "solve";
                 yield return "strike";
             }

@@ -19,7 +19,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
     public AudioClip[] sfxs = new AudioClip[4];
 
 
-    private List<int> flashes = new List<int>();
+    private List<int> flashes = new List<int>(); // A list of all flashes in ther serial number
     private int[] correctInputs = new int[] {-1,-1,-1,-1}; // For Red, Orange, Yellow, Green flashes respecitvely
     private int currentpos = 0;
     private readonly string[] colorlist = new string[] { "Red", "Orange", "Yellow", "Green" };
@@ -253,6 +253,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
                     stagesCompleted++;
                     if (stagesCompleted >= stagesToComplete)
                     {
+                        QuickDebug("Enough stages have been completed to disarm the module.");
                         modself.HandlePass();
                         isActive = false;
                         canPlaySound = false;
@@ -268,7 +269,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
             else
             {
                 modself.HandleStrike();
-                QuickDebug("The defuser pressed " + colorlist[input] + " which is wrong for the input in position " + (currentpos+1).ToString());
+                QuickDebug("The defuser pressed " + colorlist[input] + " which is wrong for the " + new string[] { "1st", "2nd", "3rd", "4th", "5th" }[currentpos] + " flash.");
                 currentpos = 0;
             }
         }
