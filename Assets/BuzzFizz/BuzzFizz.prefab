@@ -251,13 +251,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1501517320093858}
-  m_LocalRotation: {x: 1, y: 0, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
+  m_LocalScale: {x: 1.1, y: 0.2, z: 1.1}
   m_Children: []
   m_Father: {fileID: 4263933377759682}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4022831184128306
 Transform:
   m_ObjectHideFlags: 1
@@ -434,7 +434,7 @@ MeshRenderer:
   m_GameObject: {fileID: 1417828705421694}
   m_Enabled: 1
   m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -779,7 +779,7 @@ MeshFilter:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1417828705421694}
-  m_Mesh: {fileID: 4300000, guid: 3ab0153cd3782b94f875e418d3d86910, type: 3}
+  m_Mesh: {fileID: 4300000, guid: a8c9a4743cc150b4a8395fe0fd4f2eea, type: 3}
 --- !u!33 &33867666021869078
 MeshFilter:
   m_ObjectHideFlags: 1
@@ -1000,7 +1000,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HighlightScale: {x: 1, y: 1, z: 1}
-  OutlineAmount: 0.01
+  OutlineAmount: 0
 --- !u!114 &114317589517073680
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1131,7 +1131,7 @@ MonoBehaviour:
   Children:
   - {fileID: 114813024004810584}
   IsPassThrough: 0
-  ChildRowLength: 0
+  ChildRowLength: 1
   Highlight: {fileID: 114486948399744274}
   SelectableColliders: []
   DefaultSelectableIndex: 0

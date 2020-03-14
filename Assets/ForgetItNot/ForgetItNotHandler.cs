@@ -438,6 +438,7 @@ public class ForgetItNotHandler : MonoBehaviour {
             {
                 case 0:
                     mode = "PATIENT";
+                    yield return "waiting music";
                     break;
                 default:
                     break;
@@ -447,21 +448,25 @@ public class ForgetItNotHandler : MonoBehaviour {
             mode = "PANIC";
         }
         yield return "Forget It Not";
-        yield return !mode.EqualsIgnoreCase("PANIC") ? "sendtochat This better be it! BlessRNG" : "sendtochat panicBasket Got to get this out now!";
         yield return "multiple strikes";
+        yield return !mode.EqualsIgnoreCase("PANIC") ? "sendtochat This better be it! BlessRNG" : "sendtochat panicBasket Got to get this out now!";
         int patientDigitsLeft = Random.Range(Mathf.Min(totalstages / 50, 1), 6);
         foreach (int d in digits)
         {
             if (!mode.EqualsIgnoreCase("PANIC") && TwitchShouldCancelCommand)
             {
                 mode = "PANIC";
+                yield return "end waiting music";
                 yield return "sendtochat I'm hurrying already!";
             }
             else if (mode.EqualsIgnoreCase("PATIENT"))
             {
                 patientDigitsLeft = Mathf.Max(0, patientDigitsLeft - 1);
                 if (patientDigitsLeft <= 0)
+                {
                     mode = "NORMAL";
+                    yield return "end waiting music";
+                }
             }
             yield return null;
             digitSelectables[d].OnInteract();
@@ -489,7 +494,14 @@ public class ForgetItNotHandler : MonoBehaviour {
                 {
                     if (totalstages >= 15)
                     {
-                        yield return "sendtochat PogChamp Aced it!";
+                        if (bombInfo.GetSolvableModuleNames().Count == bombInfo.GetSolvedModuleNames().Count)
+                        {
+                            yield return "sendtochat PogChamp PraiseIt And that's how it's done!";
+                        }
+                        else
+                        {
+                            yield return "sendtochat PogChamp Aced it!";
+                        }
                     }
                     else
                     {
@@ -512,6 +524,7 @@ public class ForgetItNotHandler : MonoBehaviour {
             yield return new WaitForSeconds(mode.EqualsIgnoreCase("PANIC") || TwitchShouldCancelCommand ? 0f : mode.EqualsIgnoreCase("PATIENT") && patientDigitsLeft > 0 ? 1f : 0.1f);
         }
         yield return "end multiple strikes";
+        yield return "end waiting music";
         yield break;
     }
 }

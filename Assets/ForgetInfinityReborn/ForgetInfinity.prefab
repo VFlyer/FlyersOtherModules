@@ -591,6 +591,7 @@ GameObject:
   - component: {fileID: 114914418868027122}
   - component: {fileID: 114342518043364706}
   - component: {fileID: 114236355989890292}
+  - component: {fileID: 114090981709117726}
   - component: {fileID: 114822710477493832}
   m_Layer: 0
   m_Name: ForgetInfinity
@@ -4163,6 +4164,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShaderNames:
   - GUI/KT 3D Text
+--- !u!114 &114090981709117726
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1476077361405888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -289456416, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Settings: 
+  SettingsPath: 
 --- !u!114 &114102410984527514
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4981,6 +4995,7 @@ MonoBehaviour:
   ScreenStatus: {fileID: 102035332844151032}
   possibleStages: 
   input: 
+  modSettings: {fileID: 114090981709117726}
 --- !u!114 &114833321758913032
 MonoBehaviour:
   m_ObjectHideFlags: 1

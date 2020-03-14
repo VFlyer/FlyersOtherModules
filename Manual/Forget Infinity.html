@@ -11,6 +11,10 @@
 	<link href='https://fonts.googleapis.com/css?family=Special+Elite' rel='stylesheet' type='text/css'>
     <script src="js/ktane-utils.js"></script>
 	<style>
+			.table
+		{
+			empty-cells: hide;
+		}
 			.verticaltext
 			{
 				position: absolute;
@@ -42,7 +46,7 @@
                     </p>
 					<p>If you lost a given stage for the requirement, you can press the left arrow button before inputting the digits to enter recapture mode. When in recapture mode, you can use the digits to input the given stage number to check again.</p>
 					<p>Pressing the left arrow button will show the given stage again if the combination given was valid or go back to input mode if no digits were entered during this mode. You will be able to recapture any given stage at no cost if you struck on inputting any of the required stages. Otherwise, a strike will be given for every recaptured stage without a free recapture. A free recapture will be indicated by the top display blinking green and while it's displaying the manditory stages.</p>
-					<p>If the module is unable to generate any number of stages on the bomb, press any button to enforce the module to solve. The displays flash red to indicate no stages being generated.</p>
+					<p>If the module is unable to generate any number of stages on the bomb, press any button to enforce the module to solve. The displays flash red to indicate no stages being generated or being unable to create the solution for any stage.</p>
                 </div>
                 <div class="page-footer relative-footer">Page 1 of 3</div>
             </div>
@@ -59,7 +63,7 @@
                     <ol>
 						<li>If there is a Stereo RCA port, swap the 1st digit of the code with the 5th digit and the 2nd digit with the 4th digit.</li>
                         <li>If the bomb has batteries, add the number of batteries to each digit of the code.</li>
-                        <li>If the bomb's serial number contains the characters "F" or "I", subtract 1 from each digit of the code for each "F" or "I" in the serial number.</li>
+                        <li>If the bomb's serial number contains the characters "F" or "I", subtract the number of letters in the serial number from each digit.</li>
 						<li>Each of the 5 digits now calculated will be used as their respective values for the next set of calculations. The digit can be higher than 9 or less than 0 at the end of "Calculations For All Digits".</li>
                     </ol>
 					<h3>1st Digit Calculations</h3>
@@ -67,7 +71,7 @@
 						<li>Grab the 1st value from the previous calculation for all digits.</li>
 						<li>If "Needy Tetris" is present, take the original digit in this slot and add 7.</li>
 						<li>Otherwise, if the 1st value is at least 10 and that value is divisible by 2, half that value.</li>
-						<li>Otherwise, if the 1st value is less than 0, take the absolute value of that.</li>
+						<li>Otherwise, if the 1st value is less than 5, add the last digit in the serial number.</li>
 						<li>Otherwise, add 1.</li>
 					</ol>
 					<h3>2nd Digit Calculations</h3>
@@ -75,7 +79,7 @@
 						<li>Grab the 2nd value from the previous calculation for all digits.</li>
 						<li>If there are duplicate ports on the bomb, add the number of duplicate port types on the bomb.</li>
 						<li>Otherwise, if there are no ports on the bomb, add the sum of the 3rd and 1st original digits.</li>
-						<li>Otherwise, don't modify the 2nd value.</li>
+						<li>Otherwise, add the number of ports.</li>
 					</ol>
                 </div>
                 <div class="page-footer relative-footer">Page 2 of 3</div>
@@ -101,7 +105,7 @@
 						<li>Grab the 4th value from the previous calculation for all digits.</li>
 						
 						<li>If the 4th value is less than 0, add the largest digit in the serial number.</li>
-						<li>Otherwise, if the 4th value shares the same remainder with the number of solvable modules on the bomb after dividing by 3, don't modify the 4th value.</li>
+						<li>Otherwise, if 5 or fewer stages were generated, don't modify the 4th value.</li>
 						<li>Otherwise, do 18 - the 4th value.</li>
 					</ol>
 					<h3>5th Digit Calculations</h3>
@@ -112,7 +116,7 @@
 					<table style="width: 100%; text-align: center">
 						<tr>
 							<td colspan="2" rowspan="2" style="border-left-style: hidden;border-top-style: hidden;"></td>
-							<th colspan="5">Last Digit of Serial No.</th>
+							<th colspan="5">First Digit of Serial No.</th>
 						</tr>
 						<tr>
 							<th>0, 1</th>
@@ -150,17 +154,17 @@
 							<th>3</th>
 							<td>9</td>
 							<td>8</td>
-							<td>7</td>
-							<td>6</td>
 							<td>5</td>
+							<td>6</td>
+							<td>7</td>
 						</tr>
 						<tr>
 							<th>4</th>
 							<td>4</td>
 							<td>3</td>
-							<td>2</td>
-							<td>1</td>
 							<td>0</td>
+							<td>1</td>
+							<td>2</td>
 						</tr>
 					</table>
 					<p>A cell with "O!" indicates original digit in the 5th slot. Not to be confused with 0, which is just by itself.</p>

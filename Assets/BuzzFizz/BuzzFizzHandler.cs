@@ -59,7 +59,7 @@ public class BuzzFizzHandler : MonoBehaviour {
         };
         dialSelect.OnInteract += delegate ()
         {
-            dial.transform.Rotate(new Vector3(0, -90, 0));
+            dial.transform.Rotate(new Vector3(0, 90, 0));
             rotatePos = (rotatePos + 1) % 4;
             return false;
         };

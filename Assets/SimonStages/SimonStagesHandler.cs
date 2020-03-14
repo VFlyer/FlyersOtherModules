@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class SimonStagesHandler : MonoBehaviour
@@ -56,6 +57,7 @@ public class SimonStagesHandler : MonoBehaviour
     private bool reverse = false;
     private bool gameOn = false;
     private bool secondAttempt;
+    private bool hasStruck = false;
     private bool checking;
     private bool canPlaySound = false;
 
@@ -454,6 +456,7 @@ public class SimonStagesHandler : MonoBehaviour
             increaser = 0;
             Debug.LogFormat("[Simon Stages #{0}] Strike! Your full sequence was incorrect.", moduleId);
             GetComponent<KMBombModule>().HandleStrike();
+            hasStruck = true; // Send a strike detection to the TP handler if the module is still requiring inputs.
         }
         checking = false;
     }
@@ -524,9 +527,9 @@ public class SimonStagesHandler : MonoBehaviour
                 indic.glow.enabled = false;
             }
             moduleLocked = false;
-            for (int x = 0; x < 5; x++)
+            for (int x = 0; x < 20; x++)
             {
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(0.25f);
                 if (totalPresses > 0 || lastLevel != currentLevel)
                 {
                     break;
@@ -583,5 +586,53 @@ public class SimonStagesHandler : MonoBehaviour
             lightDevices[i].ledGlow.enabled = true;
             indicatorLights[i].glow.enabled = true;
         }
+    }
+
+#pragma warning disable IDE0051 // Remove unused private members
+    public readonly string TwitchHelpMessage = "To press a button: \"!{0} press RBYOMGPLCW\" Letters are dependent on the location on the module and \"press\" is optional.\nUse \"!{0} zoom\" to get the layout of where each button is. Press commands will be voided upon a new stage, solve, or strike.";
+#pragma warning restore IDE0051 // Remove unused private members
+    private string[] idxStrings;
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+        command = Regex.Replace(command.ToLowerInvariant().Trim(), "^(press|hit|enter|push) ", "", RegexOptions.IgnoreCase);
+        // If the command contains the following start commands, trim it off.
+        List<KMSelectable> presses = new List<KMSelectable>();
+        
+        if (idxStrings == null)
+        {// Grab where each button is located based on the button presses, if the variable is not assigned yet.
+            idxStrings = lightDevices.Select(device => device.colorName.Substring(0, 1)).ToArray();
+            print(idxStrings.Join());
+        }
+        string[] segmentedCommand = command.Split(' ');
+        foreach (string part in segmentedCommand)
+        {
+            for (int x = 0; x < part.Length; x++)
+            {
+                string curInspect = part.Substring(x, 1);
+                int idxCur = idxStrings.ToList().IndexOf(curInspect);
+                if (idxCur < 0)
+                {
+                    yield return "sendtochaterror The character \"" + curInspect + "\" does not match any of the given labeled buttons.";
+                    yield break;
+                }
+                presses.Add(lightDevices[idxCur].connectedButton);
+            }
+        }
+        hasStruck = false; // Detect if the module has struck from inputting at the end of the full required sequence before all inputs are processed.
+        int lastCurLv = currentLevel; // Required to detect if the module has to generate a new sequence after a correct set of inputs.
+        for (int x = 0; x < presses.Count; x++)
+        {
+            do
+            {
+                if (hasStruck || lastCurLv != currentLevel || moduleSolved) {// Check if the module has struck, entered another stage, or has been solved.
+                    yield break;
+                }
+                yield return "trycancel Your command have been canceled after " + x +"/" + presses.Count + " presses.";
+            }
+            while (moduleLocked);
+            yield return null;
+            presses[x].OnInteract();
+        }
+        yield break;
     }
 }

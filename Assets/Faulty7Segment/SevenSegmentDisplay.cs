@@ -48,6 +48,10 @@ public class SevenSegmentDisplay : MonoBehaviour {
 	{
 		return currentValue;
 	}
+	public void SetColors(Color[] newSegmentColors)
+	{
+		segmentColors = newSegmentColors;
+	}
 	// Update is called once per frame
 	void Update()
 	{
