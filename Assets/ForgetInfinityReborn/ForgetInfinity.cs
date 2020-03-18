@@ -242,16 +242,19 @@ public class ForgetInfinity : MonoBehaviour {
                     autosolvable = true;
                 }
             }
-            catch
+            catch (Exception error)
             {
 
                 Debug.LogErrorFormat("[Forget Infinity #{0}]: Looks like you found a bug, the module has been automatically primed to auto-solve because of this.", curModID);
+                Debug.LogErrorFormat("[Forget Infinity #{0}]: The error is the following:", curModID);
+                Debug.LogException(error);
                 Debug.LogFormat("[Forget Infinity #{0}]: For reference, the module's display stages were the following: ", curModID);
                 for (int x = 0; x < stages.Count; x++)
                 {
                     Debug.LogFormat("[Forget Infinity #{0}]: Stage {1}: Display = {2}", curModID, x + 1, stages[x].Join(""));
                 }
-                Debug.LogFormat("[Forget Infinity #{0}]: Please report this log to VFlyer so that he can get this fixed.", curModID);
+                Debug.LogFormat("[Forget Infinity #{0}]: Please send this log to VFlyer so that he can get this fixed.", curModID);
+                Debug.LogFormat("[Forget Infinity #{0}]: Press any button to solve the module.", curModID);
                 autosolvable = true;
             }
             finally
@@ -370,20 +373,20 @@ public class ForgetInfinity : MonoBehaviour {
     {
         Debug.LogFormat("[Forget Infinity #{0}]: Module solved.", curModID);
         ModSelf.HandlePass();
-        while (ScreenStatus.text.Length > 0)
+        while (ScreenStatus.text.Length > 0 || ScreenStages.text.Length > 0)
         {
-            ScreenStatus.text = ScreenStatus.text.Substring(0, ScreenStatus.text.Length - 1);
-            string outputDisplay = "";
-            for (int x = 0; x < ScreenStatus.text.Length; x++)
+            if (ScreenStatus.text.Length > 0)
             {
-                outputDisplay += ScreenStatus.text.Substring(x, 1).RegexMatch(@"[0-9]") ? UnityEngine.Random.Range(0, 10).ToString("0") : ScreenStatus.text.Substring(x, 1);
+                ScreenStatus.text = ScreenStatus.text.Substring(0, ScreenStatus.text.Length - 1);
+                string outputDisplay = "";
+                for (int x = 0; x < ScreenStatus.text.Length; x++)
+                {
+                    outputDisplay += ScreenStatus.text.Substring(x, 1).RegexMatch(@"[0-9]") ? UnityEngine.Random.Range(0, 10).ToString("0") : ScreenStatus.text.Substring(x, 1);
+                }
+                ScreenStatus.text = outputDisplay;
             }
-            ScreenStatus.text = outputDisplay;
-            yield return new WaitForSeconds(0f);
-        }
-        while (ScreenStages.text.Length > 0)
-        {
-            ScreenStages.text = ScreenStages.text.Substring(0, ScreenStages.text.Length - 1).Trim();
+            if (ScreenStages.text.Length > 0)
+                ScreenStages.text = ScreenStages.text.Substring(0, ScreenStages.text.Length - 1).Trim();
             yield return new WaitForSeconds(0f);
         }
     }
@@ -421,7 +424,7 @@ public class ForgetInfinity : MonoBehaviour {
                 solved = true;
                 ScreenStages.color = Color.yellow;
                 ScreenStatus.color = Color.yellow;
-                yield return new WaitForSeconds(0.25f);
+                yield return new WaitForSeconds(0f);
                 StartCoroutine(AnimateSolveAnim());
                 yield break;
             }
