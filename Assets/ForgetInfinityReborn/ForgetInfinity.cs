@@ -54,6 +54,7 @@ public class ForgetInfinity : MonoBehaviour {
                 "Forget Me Later",
                 "Forget Me Not",
                 "Forget Perspective",
+                "Forget The Colors",
                 "Forget Them All",
                 "Forget This",
                 "Forget Us Not",
@@ -89,7 +90,7 @@ public class ForgetInfinity : MonoBehaviour {
         }
         catch
         {
-            Debug.LogErrorFormat("[Forget Infinty #{0}]: The settings for Forget Infinty does not exist! The module will use default settings instead.", curModID);
+            Debug.LogErrorFormat("[Forget Infinty #{0}]: The settings for Forget Infinty do not work as intended! The module will use default settings instead.", curModID);
             PPAScaling = 0.5f;
         }
     }
@@ -225,13 +226,18 @@ public class ForgetInfinity : MonoBehaviour {
                     }
                     else
                     { // Implement Failsafe to enforce this module to be solvable if Forget Infinity is NOT ignored by Organization AND Organization is present on the bomb.
-                        Debug.LogFormat("[Forget Infinity #{0}]: Organization: Why do you even exist!? No one wanted you to show up anyway!", curModID);
-                        Debug.LogFormat("[Forget Infinity #{0}]: Forget Infinity: But... I am made by a Tetris legend who has made bunch of Tetris videos!", curModID);
-                        Debug.LogFormat("[Forget Infinity #{0}]: Organization: It doesn't matter! These people saw you a few times and they didn't like how you operate in the factory.", curModID);
-                        Debug.LogFormat("[Forget Infinity #{0}]: Forget Infinity: But... I am an easier module... Right?", curModID);
-                        Debug.LogFormat("[Forget Infinity #{0}]: Organization: Pff. I saw an module easier than yours and that module is more likeable than you! Get out.", curModID);
-                        Debug.LogFormat("[Forget Infinity #{0}]: Forget Infinity: But...", curModID);
-                        Debug.LogFormat("[Forget Infinity #{0}]: Organization: GET OUT! No more \"but's\"!", curModID);
+                        string[] dialog = new string[]
+                        {// A reminder of why Forget Infinity was received poorly to the community. Yes. It's a thing still. -VFlyer
+                            "Organization: Why do you even exist!? No one wanted you to show up anyway!",
+                            "Forget Infinity: But... I am made by a Tetris legend who has made bunch of Tetris videos!",
+                            "Organization: It doesn't matter! These people saw you a few times and they didn't like how you operate in the factory.",
+                            "Forget Infinity: But... This one person said I would get a second chance, right?",
+                            "Organization: Pff. I saw an module better than yours and that module, who goes by Forget It Not, is more praiseworthy than you! Get out.",
+                            "Forget Infinity: But...",
+                            "Organization: GET OUT! No more \"but's\"! I'm done talking with you!"
+                        };
+                        foreach (string line in dialog)
+                            Debug.LogFormat("[Forget Infinity #{0}]: {1}", curModID,line);
                         Debug.LogFormat("[Forget Infinity #{0}]: Organization is present AND not ignoring Forget Infinity! This module can be auto-solved by pressing any button.", curModID);
                         autosolvable = true;
                     }
@@ -266,6 +272,7 @@ public class ForgetInfinity : MonoBehaviour {
         {
             AudioHandler.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
             BackSpaceButton.AddInteractionPunch();
+            StartCoroutine(HandleButtonAnim(BackSpaceButton.gameObject));
             if (!interactable || solved) return false;
             if (inFinale)
             {
@@ -312,6 +319,7 @@ public class ForgetInfinity : MonoBehaviour {
             {
                 AudioHandler.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
                 ButtonDigits[y].AddInteractionPunch();
+                StartCoroutine(HandleButtonAnim(ButtonDigits[y].gameObject));
                 if (!interactable || solved) return false;
                 if (inFinale)
                 {
@@ -368,7 +376,19 @@ public class ForgetInfinity : MonoBehaviour {
         }
         return output;
     }
-
+    IEnumerator HandleButtonAnim(GameObject selected)
+    {
+        for (int x = 0; x < 5; x++)
+        {
+            selected.transform.localPosition += new Vector3(0, -.001f, 0);
+            yield return new WaitForSeconds(0);
+        }
+        for (int x = 5; x > 0; x--)
+        {
+            selected.transform.localPosition += new Vector3(0, +.001f, 0);
+            yield return new WaitForSeconds(0);
+        }
+    }
     IEnumerator AnimateSolveAnim()
     {
         Debug.LogFormat("[Forget Infinity #{0}]: Module solved.", curModID);
