@@ -34,6 +34,13 @@ public class NonverbalSimonHandler : MonoBehaviour {
     private bool canPlaySound = false;
 
     // Use this for initialization
+    List<string> GrabCombinedFlashes() // In case of Souvenir Support. 
+    {
+        List<string> output = new List<string>();
+        foreach (int oneFlash in flashes)
+            output.Add(colorlist[oneFlash]);
+        return output;
+    }
     void Start() {
         modid = modid_counter++;
         stagesToComplete = Random.Range(3,6);
@@ -274,8 +281,23 @@ public class NonverbalSimonHandler : MonoBehaviour {
             }
         }
     }
-
+    // TP Handling
     public readonly string TwitchHelpMessage = "!{0} press Red/Orange/Yellow/Green/Left/Top/Bottom/Right to press the specified button in the command. Presses can be combined but must be spaced out. Shorthand abbreviations are acceptable but account for \"r\" pressing the right button and not the red button!";
+
+
+    IEnumerator HandleAutoSolve()
+    {
+        while (isActive)
+        {
+            buttons[correctInputs[flashes[currentpos]]].OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+    void TwitchHandleForcedSolve()
+    {
+        QuickDebug("A force solve has been issued viva TP Handler.");
+        StartCoroutine(HandleAutoSolve());
+    }
 
     KMSelectable[] ProcessTwitchCommand(string command)
     {

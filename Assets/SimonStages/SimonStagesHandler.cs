@@ -592,6 +592,33 @@ public class SimonStagesHandler : MonoBehaviour
     public readonly string TwitchHelpMessage = "To press a button: \"!{0} press RBYOMGPLCW\" Letters are dependent on the location on the module and \"press\" is optional.\nUse \"!{0} zoom\" to get the layout of where each button is. Press commands will be voided upon a new stage, solve, or strike.";
 #pragma warning restore IDE0051 // Remove unused private members
     private string[] idxStrings;
+    IEnumerator HandleAutoSolve()
+    {
+        if (idxStrings == null)
+        {// Grab where each button is located based on the button presses, if the variable is not assigned yet.
+            idxStrings = lightDevices.Select(device => device.colorName.Substring(0, 1)).ToArray();
+            //print(idxStrings.Join()); // Show the array of buttons given in the given layout.
+        }
+        while (!gameOn)
+            yield return new WaitForSeconds(0);
+        totalPresses = 0;
+        stagePresses = 0;
+        clearLights.Clear();
+        while (!moduleSolved)
+        {
+            while (moduleLocked)
+                yield return new WaitForSeconds(0);
+
+            lightDevices[idxStrings.ToList().IndexOf(solutionNames[totalPresses].Substring(0,1))].connectedButton.OnInteract();
+            yield return new WaitForSeconds(0);
+        }
+        yield return null;
+    }
+    void TwitchHandleForcedSolve()
+    {
+        Debug.LogFormat("[Simon Stages #{0}] A force solve has been issued viva TP handler.", moduleId);
+        StartCoroutine(HandleAutoSolve());
+    }
     IEnumerator ProcessTwitchCommand(string command)
     {
         command = Regex.Replace(command.ToLowerInvariant().Trim(), "^(press|hit|enter|push) ", "", RegexOptions.IgnoreCase);
@@ -601,7 +628,7 @@ public class SimonStagesHandler : MonoBehaviour
         if (idxStrings == null)
         {// Grab where each button is located based on the button presses, if the variable is not assigned yet.
             idxStrings = lightDevices.Select(device => device.colorName.Substring(0, 1)).ToArray();
-            print(idxStrings.Join());
+            //print(idxStrings.Join()); // Show the array of buttons given in the given layout.
         }
         string[] segmentedCommand = command.Split(' ');
         foreach (string part in segmentedCommand)

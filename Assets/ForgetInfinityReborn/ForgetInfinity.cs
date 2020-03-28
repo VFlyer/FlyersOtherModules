@@ -32,7 +32,7 @@ public class ForgetInfinity : MonoBehaviour {
     private int currentStage = 0;
 
     private static int modID = 1;
-    private static int curModID;
+    private int curModID;
 
     private float PPAScaling;
     private ForgetInfintySettings FIConfig = new ForgetInfintySettings();
@@ -599,6 +599,34 @@ public class ForgetInfinity : MonoBehaviour {
 #pragma warning disable IDE0051 // Remove unused private members
     public readonly string TwitchHelpMessage = "Enter the sequence with \"!{0} press 01234\". To press the back space button, append as many \"back\" commands as needed to press the backspace button. 0-9 are acceptable digits. Space out the commands (digits excluded)!";
 #pragma warning restore IDE0051 // Remove unused private members
+    IEnumerator HandleAutoSolve()
+    {
+        inFinale = true;
+        yield return new WaitForFixedUpdate();
+        List<int> autoSolveStages = possibleStages.Where(a => a >= 0).ToList();
+        isRecapturing = false;
+        while (input.Length > 0)
+        {
+            BackSpaceButton.OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+        foreach (int oneStage in autoSolveStages)
+        {
+            while (!interactable)
+                yield return new WaitForSeconds(0);
+            for (int x = 0; x < stages[oneStage].Length; x++)
+            {
+                ButtonDigits[solution[oneStage][x]].OnInteract();
+                yield return new WaitForSeconds(0.1f);
+            }
+            
+        }
+    }
+    void TwitchHandleForcedSolve()
+    {
+        Debug.LogFormat("[Forget Infinity #{0}]: A force solve has been issued viva TP handler.", curModID);
+        StartCoroutine(HandleAutoSolve());
+    }
     public IEnumerator ProcessTwitchCommand(string cmd)
     {
         string[] commandLowerSet = cmd.ToLower().Split(' ');
