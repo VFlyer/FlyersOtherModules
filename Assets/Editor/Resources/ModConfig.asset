@@ -15,17 +15,18 @@ MonoBehaviour:
   title: Flyer's Other Modules
   description: "A collection of 8 (and possibly growing) modules made by VFlyer with
     some modules from other ideas.\n\nMod contains 3x3 Grid, \u2756, Time Accumulation,
-    BuzzFizz, Forget It Not, 15 Mystic Lights, Simon Stages, Forget Infinity\nThe
-    following original ideas are by the following users in this pack:\n3x3 Grid: Lumbud84\n\u2756:
-    Mirage Xel\nTime Accumulation: Kusane\nBuzzFizz: Blananas2\nForget It Not: RubyBfdi\nForget
-    Infinity: Oshisure, Ry0001 (Revived by VFlyer to be more suitable)\nSimon Stages:
-    Madela\n\nAssets used: Asset pack from Royal_Flu$h's tutorials, Simon's Stages
-    assets, Old FMN model by Hexicube, custom dial self-made\n\nThe 6 Manuals can
-    be found built-in or from these repository links:\n[url=https://ktane.timwi.de/HTML/BuzzFizz.html]BuzzFizz[/url]\n[url=https://ktane.timwi.de/HTML/3x3%20Grid.html]3x3
+    BuzzFizz, Forget It Not, 15 Mystic Lights, Simon Stages, Forget Infinity, Faulty
+    7 Segment Displays\nThe following original ideas are by the following users in
+    this pack:\n3x3 Grid: Lumbud84\n\u2756: Mirage Xel\nTime Accumulation: Kusane\nBuzzFizz:
+    Blananas2\nForget It Not: RubyBfdi\nForget Infinity: Oshisure, Ry0001 (Revived
+    by VFlyer to be more suitable)\nSimon Stages: Madela\n\nNon-example assets used:
+    Asset pack from Royal_Flu$h's tutorials, Simon's Stages assets, Divided Squares
+    backing by Timwi, Old FMN model by Hexicube, custom dial self-made\n\nThe 6 Manuals
+    can be found built-in or from these repository links:\n[url=https://ktane.timwi.de/HTML/BuzzFizz.html]BuzzFizz[/url]\n[url=https://ktane.timwi.de/HTML/3x3%20Grid.html]3x3
     Grid[/url]\n[url=https://ktane.timwi.de/HTML/Forget%20It%20Not.html]Forget It
     Not[/url]\n[url=https://ktane.timwi.de/HTML/%E2%9D%96.html]\u2756[/url]\n[url=https://ktane.timwi.de/HTML/Time%20Accumulation.html]Time
     Accumulation[/url]\n[url=https://ktane.timwi.de/HTML/15%20Mystic%20Lights.html]15
     Mystic Lights[/url]"
-  version: 1.1
+  version: 1.3
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 7dbc6bc78df97b44ea2dd97944ee91f1, type: 3}

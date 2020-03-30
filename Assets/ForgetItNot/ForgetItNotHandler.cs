@@ -87,13 +87,13 @@ public class ForgetItNotHandler : MonoBehaviour {
                 }
                 string DebugString = "";
                 int o = 0;
-                for (int i=0; i < combinedDisplayString.Length / 3; i++)
+                for (int i = 0; i < combinedDisplayString.Length / 3; i++)
                 {
                     //print(combinedDisplayString.Substring(i * 3, 3));
                     DebugString += combinedDisplayString.Substring(i * 3, 3) + " ";
                     o++;
                 }
-                DebugString += combinedDisplayString.Substring(o * 3, Mathf.Min(3,combinedDisplayString.Length-o*3));
+                DebugString += combinedDisplayString.Substring(o * 3, Mathf.Min(3, combinedDisplayString.Length - (o * 3)));
                 Debug.LogFormat("[Forget It Not #{0}]: Display: {1}", curModID, DebugString.Trim());
                 canStart = true;
             }
@@ -106,7 +106,10 @@ public class ForgetItNotHandler : MonoBehaviour {
         bombInfo.OnBombExploded += delegate () {
             if (curstagenum < totalstages)
             {
-                Debug.LogFormat("[Forget It Not #{0}]: The module displayed up to {1} stage(s) before the bomb detonated.", curModID, curstagenum + 1);
+                if (curstagenum + 1 < totalstages)
+                    Debug.LogFormat("[Forget It Not #{0}]: The module displayed up to {1} stage(s) before the bomb detonated.", curModID, curstagenum + 1);
+                else
+                    Debug.LogFormat("[Forget It Not #{0}]: All {1} stage(s) were displayed before the bomb detonated.", curModID, curstagenum + 1);
             }
             else if (correctinputs < totalstages)
             {
@@ -143,7 +146,7 @@ public class ForgetItNotHandler : MonoBehaviour {
                     else
                     {
                         HandleIncorrectPress();
-                        Debug.LogFormat("[Forget It Not #{0}]: For the input in position {1}, {2} is incorrectly pressed.", curModID,correctinputs+1,y);
+                        Debug.LogFormat("[Forget It Not #{0}]: For the input on stage {1}, {2} is incorrectly pressed.", curModID,correctinputs+1,y);
                         modSelf.HandleStrike();
                     }
                 }
@@ -168,14 +171,7 @@ public class ForgetItNotHandler : MonoBehaviour {
             textMeshStage.text = (correctinputs + 1).ToString();
         else
         {
-            if (correctinputs >= 99 && (correctinputs + 1) % 100 >= 0 && (1 + correctinputs) % 100 <= 9)
-            {
-                textMeshStage.text = "0" + ((correctinputs + 1) % 10).ToString();
-            }
-            else
-            {
-                textMeshStage.text = ((correctinputs + 1) % 100).ToString();
-            }
+            textMeshStage.text = ((curstagenum + 1) % 100).ToString("00");
         }
     }
 
@@ -185,14 +181,7 @@ public class ForgetItNotHandler : MonoBehaviour {
             textMeshStage.text = (curstagenum + 1).ToString();
         else
         {
-            if (curstagenum >= 99 && (curstagenum + 1) % 100 >= 0 && (1 + curstagenum) % 100 <= 9)
-            {
-                textMeshStage.text = "0" + ((curstagenum + 1) % 10).ToString();
-            }
-            else
-            {
-                textMeshStage.text = ((curstagenum + 1) % 100).ToString();
-            }
+            textMeshStage.text = ((curstagenum + 1) % 100).ToString("00");
         }
         textMeshBig.text = combinedDisplayString.Substring(curstagenum, 1);
         inputTextMesh.text = "";
@@ -202,7 +191,7 @@ public class ForgetItNotHandler : MonoBehaviour {
     {
         isShowingInputs = true;
         int stagesCounted = 0;
-        while (inputTextMesh.text.Length < 31&&stagesCounted<totalstages)
+        while (inputTextMesh.text.Length < 31 && stagesCounted < totalstages)
         {
             inputTextMesh.text += "-";
             if ((inputTextMesh.text.Length + 1) % 16 == 0)
@@ -425,7 +414,7 @@ public class ForgetItNotHandler : MonoBehaviour {
         yield return null;
         if (curstagenum < totalstages)
         {
-            yield return "Forget It Not";
+            //yield return "Forget It Not"; // Suggestively unnecessary 
             yield return "sendtochat Too early. Don't try to press a digit until this module is ready for input.";
             
             digitSelectables[digits[0]].OnInteract();
@@ -447,9 +436,9 @@ public class ForgetItNotHandler : MonoBehaviour {
         {
             mode = "PANIC";
         }
-        yield return "Forget It Not";
+        //yield return "Forget It Not"; // Suggestively unnecessary 
         yield return "multiple strikes";
-        yield return !mode.EqualsIgnoreCase("PANIC") ? "sendtochat This better be it! BlessRNG" : "sendtochat panicBasket Got to get this out now!";
+        yield return mode.EqualsIgnoreCase("PANIC") ? "sendtochat panicBasket Got to get this out now!" : bombInfo.GetSolvableModuleNames().Count - 1 == bombInfo.GetSolvedModuleNames().Count ? "sendtochat Let's finish this! BlessRNG" : "sendtochat This better be it! BlessRNG";
         int patientDigitsLeft = Random.Range(Mathf.Min(totalstages / 50, 1), 6);
         foreach (int d in digits)
         {
