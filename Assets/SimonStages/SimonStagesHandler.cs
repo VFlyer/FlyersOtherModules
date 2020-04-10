@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 public class SimonStagesHandler : MonoBehaviour
 {
@@ -61,6 +62,23 @@ public class SimonStagesHandler : MonoBehaviour
     private bool checking;
     private bool canPlaySound = false;
 
+    public List<string> grabIndicatorColorsAll()
+    {
+        List<string> output = new List<string>();
+        foreach (int oneIndCol in indicatorColour)
+        {
+            output.Add(indicatorLights[oneIndCol].colorName);
+        }
+        return output;
+    }
+    public List<string> grabSequenceColorsOneStage(int stageNum)
+    {
+        List<string> output = new List<string>();
+        if (stageNum <= 0 || stageNum > startLocation.Count) return null; // Avoid an IndexOutOfBoundsException
+        for (int x = startLocation[stageNum - 1]; x < startLocation[stageNum - 1] + sequenceLengths[stageNum - 1]; x++)
+            output.Add(lightDevices[sequences[x]].colorName);
+        return output;
+    }
     void Awake()
     {
         moduleId = moduleIdCounter++;
@@ -589,7 +607,7 @@ public class SimonStagesHandler : MonoBehaviour
     }
 
 #pragma warning disable IDE0051 // Remove unused private members
-    public readonly string TwitchHelpMessage = "To press a button: \"!{0} press RBYOMGPLCW\" Letters are dependent on the location on the module and \"press\" is optional.\nUse \"!{0} zoom\" to get the layout of where each button is. Press commands will be voided upon a new stage, solve, or strike.";
+    public readonly string TwitchHelpMessage = "To press a button: \"!{0} press RBYOMGPLCW\" Letters are dependent on the location on the module and \"press\" is optional.\nUse \"!{0} zoom\" to get the layout of where each button is. Press commands will be voided upon a new stage, solve, or strike.\nTo reset inputs on the module: \"!{0} resetinputs\"";
 #pragma warning restore IDE0051 // Remove unused private members
     private string[] idxStrings;
     IEnumerator HandleAutoSolve()
@@ -621,7 +639,17 @@ public class SimonStagesHandler : MonoBehaviour
     }
     IEnumerator ProcessTwitchCommand(string command)
     {
-        command = Regex.Replace(command.ToLowerInvariant().Trim(), "^(press|hit|enter|push) ", "", RegexOptions.IgnoreCase);
+        command = command.ToLower();
+        if (command.RegexMatch("^clearinputs$"))
+        {
+            yield return null;
+            totalPresses = 0;
+            stagePresses = 0;
+            increaser = 0;
+            yield return "sendtochat Inputs cleared.";
+            Debug.LogFormat("[Simon Stages #{0}] Inputs resetted viva TP handler.", moduleId);
+        }
+        command = Regex.Replace(command.Trim(), "^(press|hit|enter|push) ", "", RegexOptions.IgnoreCase);
         // If the command contains the following start commands, trim it off.
         List<KMSelectable> presses = new List<KMSelectable>();
         
@@ -647,6 +675,7 @@ public class SimonStagesHandler : MonoBehaviour
         }
         hasStruck = false; // Detect if the module has struck from inputting at the end of the full required sequence before all inputs are processed.
         int lastCurLv = currentLevel; // Required to detect if the module has to generate a new sequence after a correct set of inputs.
+        int lastTotalPresses = totalPresses; // Required to detect if the input was correctly processed.
         for (int x = 0; x < presses.Count; x++)
         {
             do
@@ -654,11 +683,16 @@ public class SimonStagesHandler : MonoBehaviour
                 if (hasStruck || lastCurLv != currentLevel || moduleSolved) {// Check if the module has struck, entered another stage, or has been solved.
                     yield break;
                 }
-                yield return "trycancel Your command have been canceled after " + x +"/" + presses.Count + " presses.";
+                yield return new WaitForSeconds(0);
+                yield return "trycancel Your command have been canceled after " + x + "/" + presses.Count + " presses.";
             }
             while (moduleLocked);
             yield return null;
             presses[x].OnInteract();
+            if (lastTotalPresses == totalPresses) // Check if the input correctly got processed. 
+                x--;
+            else
+                lastTotalPresses = totalPresses;
         }
         yield break;
     }

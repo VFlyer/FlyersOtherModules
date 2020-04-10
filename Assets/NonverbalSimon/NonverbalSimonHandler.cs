@@ -34,7 +34,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
     private bool canPlaySound = false;
 
     // Use this for initialization
-    List<string> GrabCombinedFlashes() // In case of Souvenir Support. 
+    public List<string> GrabCombinedFlashes() // In case of Souvenir Support. 
     {
         List<string> output = new List<string>();
         foreach (int oneFlash in flashes)
