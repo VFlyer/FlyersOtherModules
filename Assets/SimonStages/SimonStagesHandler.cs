@@ -607,7 +607,9 @@ public class SimonStagesHandler : MonoBehaviour
     }
 
 #pragma warning disable IDE0051 // Remove unused private members
-    public readonly string TwitchHelpMessage = "To press a button: \"!{0} press RBYOMGPLCW\" Letters are dependent on the location on the module and \"press\" is optional.\nUse \"!{0} zoom\" to get the layout of where each button is. Press commands will be voided upon a new stage, solve, or strike.\nTo reset inputs on the module: \"!{0} resetinputs\"";
+    public readonly string TwitchHelpMessage = "To press a button: \"!{0} press RBYOMGPLCW\" Letters are dependent on the location on the module and \"press\" is optional."+
+        "\nUse \"!{0} zoom\" to get the layout of where each button is. Press commands will be voided upon a new stage, solve, or strike."+
+        "\nTo reset inputs on the module: \"!{0} resetinputs\" To mute the sound on this module: \"!{0} mute\" Certain phrases such as \"shuddup\",\"sush\" can be used to mute instead.";
 #pragma warning restore IDE0051 // Remove unused private members
     private string[] idxStrings;
     IEnumerator HandleAutoSolve()
@@ -649,6 +651,11 @@ public class SimonStagesHandler : MonoBehaviour
             yield return "sendtochat Inputs cleared.";
             Debug.LogFormat("[Simon Stages #{0}] Inputs resetted viva TP handler.", moduleId);
         }
+        else if (command.RegexMatch("^(mute|shut up|shuddup|sush|shut the fuck up)$"))
+        {
+            yield return null;
+            canPlaySound = false;
+        }
         command = Regex.Replace(command.Trim(), "^(press|hit|enter|push) ", "", RegexOptions.IgnoreCase);
         // If the command contains the following start commands, trim it off.
         List<KMSelectable> presses = new List<KMSelectable>();
@@ -683,12 +690,12 @@ public class SimonStagesHandler : MonoBehaviour
                 if (hasStruck || lastCurLv != currentLevel || moduleSolved) {// Check if the module has struck, entered another stage, or has been solved.
                     yield break;
                 }
-                yield return new WaitForSeconds(0);
                 yield return "trycancel Your command have been canceled after " + x + "/" + presses.Count + " presses.";
             }
             while (moduleLocked);
             yield return null;
             presses[x].OnInteract();
+            yield return new WaitForSeconds(0);
             if (lastTotalPresses == totalPresses) // Check if the input correctly got processed. 
                 x--;
             else

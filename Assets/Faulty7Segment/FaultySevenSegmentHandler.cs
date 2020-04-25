@@ -158,7 +158,7 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 	// Update is called once per frame
 	readonly Color[] faultyColorList = new Color[] { Color.magenta, Color.red, Color.blue, Color.grey, Color.yellow, Color.cyan, Color.green };
 	int value = 0, cooldown = 20, delayFlicker = 0, checkCooldown = 0;
-	readonly string[] faultyDisplayLetters = new string[] { "a", "b", "c", "d", "e", "f", "h", "j", "l", "n", "o", "p", "r", "u", "y", "-" };
+	//readonly string[] faultyDisplayLetters = new string[] { "a", "b", "c", "d", "e", "f", "h", "j", "l", "n", "o", "p", "r", "u", "y", "-" }; // Unused atm.
 	void Update () {
 		if (isActive)
 		{
