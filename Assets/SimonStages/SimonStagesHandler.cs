@@ -642,7 +642,7 @@ public class SimonStagesHandler : MonoBehaviour
     IEnumerator ProcessTwitchCommand(string command)
     {
         command = command.ToLower();
-        if (command.RegexMatch("^clearinputs$"))
+        if (command.RegexMatch(@"^clear\s?inputs$")|| command.RegexMatch(@"^reset\s?inputs$"))
         {
             yield return null;
             totalPresses = 0;
@@ -651,7 +651,7 @@ public class SimonStagesHandler : MonoBehaviour
             yield return "sendtochat Inputs cleared.";
             Debug.LogFormat("[Simon Stages #{0}] Inputs resetted viva TP handler.", moduleId);
         }
-        else if (command.RegexMatch("^(mute|shut up|shuddup|sush|shut the fuck up)$"))
+        else if (command.RegexMatch(@"^(mute|shut up|shuddup|sush|shut the fuck up)$"))
         {
             yield return null;
             canPlaySound = false;
