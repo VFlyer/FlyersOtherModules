@@ -282,7 +282,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
         }
     }
     // TP Handling
-    public readonly string TwitchHelpMessage = "!{0} press Red/Orange/Yellow/Green/Left/Top/Bottom/Right to press the specified button in the command. Presses can be combined but must be spaced out. Shorthand abbreviations are acceptable but account for \"r\" pressing the right button and not the red button!";
+    public readonly string TwitchHelpMessage = "\"!{0} press Red/Orange/Yellow/Green\" to press the specified button in the command. Shorthand abbreviations are acceptable. Presses can be combined by spacing out the commands or as one word when abbreviated, I.E \"!{0} press royg\".";
 
 
     IEnumerator HandleAutoSolve()
@@ -301,8 +301,33 @@ public class NonverbalSimonHandler : MonoBehaviour {
 
     KMSelectable[] ProcessTwitchCommand(string command)
     {
-        string input = command;
-        if (input.RegexMatch(@"^press\s"))
+        string input = command.ToLower();
+        if (input.RegexMatch(@"^press\s[royg]+$"))
+        {
+            input = input.Substring(6).ToLower();
+            List<KMSelectable> kMSelectables = new List<KMSelectable>();
+            foreach (char press in input)
+            {
+                switch (press)
+                {
+                    case 'r':
+                        kMSelectables.Add(buttons[0]);
+                        break;
+                    case 'o':
+                        kMSelectables.Add(buttons[1]);
+                        break;
+                    case 'y':
+                        kMSelectables.Add(buttons[2]);
+                        break;
+                    case 'g':
+                        kMSelectables.Add(buttons[3]);
+                        break;
+                    default: return null;
+                }
+            }
+            return kMSelectables.ToArray();
+        }
+        else if (input.RegexMatch(@"^press\s"))
         {
             input = input.Substring(6).ToLower();
             string[] presses = input.Trim().Split(' ');
@@ -312,25 +337,18 @@ public class NonverbalSimonHandler : MonoBehaviour {
                 switch (press)
                 {
                     case "red":
-                    case "top":
-                    case "t":
+                    case "r":
                         kMSelectables.Add(buttons[0]);
                         break;
                     case "orange":
-                    case "left":
-                    case "l":
                     case "o":
                         kMSelectables.Add(buttons[1]);
                         break;
                     case "yellow":
-                    case "right":
-                    case "r":
                     case "y":
                         kMSelectables.Add(buttons[2]);
                         break;
                     case "green":
-                    case "bottom":
-                    case "b":
                     case "g":
                         kMSelectables.Add(buttons[3]);
                         break;

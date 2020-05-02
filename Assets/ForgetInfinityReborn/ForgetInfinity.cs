@@ -154,7 +154,7 @@ public class ForgetInfinity : MonoBehaviour {
                                 finalStageNumbers[idx] -= LettersInSerial.Count;
                             // Individual Slots
                             // Slot 1
-                            if (solvablemodNames.Contains("Tetris"))
+                            if (allModNames.Contains("Tetris"))
                                 finalStageNumbers[0] = stages[x][0] + 7;
                             else if (finalStageNumbers[0] >= 10 && finalStageNumbers[0] % 2 == 0)
                                 finalStageNumbers[0] /= 2;
@@ -431,6 +431,7 @@ public class ForgetInfinity : MonoBehaviour {
         if (canStrike)
         {
             Debug.LogFormat("[Forget Infinity #{0}]: {1} does not match for any of the remaining stages required to solve.", curModID, input);
+            Debug.LogFormat("[Forget Infinity #{0}]: For reference, the remaining required stages to solve upon this strike are: {1}", curModID, FormatIntListWithCommas(possibleStages.Where(a => a >= 0 && a < stages.Count).ToArray()));
             ModSelf.HandleStrike();
             hasStruck = true;
             ScreenStages.color = Color.red;

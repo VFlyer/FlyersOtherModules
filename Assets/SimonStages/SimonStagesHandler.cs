@@ -279,7 +279,7 @@ public class SimonStagesHandler : MonoBehaviour
 
     IEnumerator StartFlash()
     {
-        Audio.PlaySoundAtTransform("scaryRiff", transform);
+        Audio.PlaySoundAtTransform("scaryRiffREV", transform);
         int index = 0;
         int iterations = 0;
         int currentIdx = 0;

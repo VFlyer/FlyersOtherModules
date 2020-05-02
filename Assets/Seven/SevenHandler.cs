@@ -1,14 +1,12 @@
-﻿using Newtonsoft.Json.Serialization;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.SocialPlatforms;
 
 public class SevenHandler : MonoBehaviour {
 
 	public KMBombModule modSelf;
+	public KMAudio audioMod;
 	public GameObject entireModule;
 	public KMBombInfo info;
 	public MeshRenderer[] segments, colorTriangles, colorTrianglesHL;
@@ -25,6 +23,7 @@ public class SevenHandler : MonoBehaviour {
 	List<int> idxOperations = new List<int>();
 
 	readonly int[] segmentLogging = { 0, 5, 1, 6, 4, 2, 3 };
+	readonly string colorList = "KRGYBMCW";
 
 	int curSelectedColor = 0;
 	int[] segmentsColored = new int[7], segmentsSolution = new int[7];
@@ -34,7 +33,7 @@ public class SevenHandler : MonoBehaviour {
 	int curModID;
 
 	// Detection and Logging
-	bool zenDetected, timeDetected, hasStarted, isSubmitting;
+	bool zenDetected, timeDetected, hasStarted, isSubmitting, interactable = false;
 	int curIdx = 0, curStrikeCount, localStrikes = 0;
 
 	// Use this for initialization
@@ -47,12 +46,35 @@ public class SevenHandler : MonoBehaviour {
 		{
 			int y = x;
 			segmentSelectables[x].OnInteract += delegate {
-				if (isSubmitting)
+				segmentSelectables[y].AddInteractionPunch();
+				audioMod.PlaySoundAtTransform("selectALT", transform);
+				if (isSubmitting && interactable)
 				{
 					segmentsColored[y] = curSelectedColor;
 					UpdateSegments(false);
 				}
 				return false;
+			};
+			segmentSelectables[x].OnHighlight += delegate {
+				if (isSubmitting) return;
+				//Debug.LogFormat("segment {0} Highlighted", y);
+				Color segmentColor = segments[y].material.color;
+				int idx = Mathf.RoundToInt(segmentColor.r)
+				+ Mathf.RoundToInt(segmentColor.g) * 2
+				+ Mathf.RoundToInt(segmentColor.b) * 4;
+				if (idx >= 0 && idx < colorTrianglesHL.Length) {
+					colorTrianglesHL[idx].enabled = true;
+					colorTriangles[idx].material.color = new Color(idx % 2, idx / 2 % 2, idx / 4 % 2);
+				}
+			};
+			segmentSelectables[x].OnHighlightEnded += delegate {
+				if (isSubmitting) return;
+				//Debug.LogFormat("segment {0} Dehighlighted", y);
+				for (int z = 0; z < colorTrianglesHL.Length; z++)
+				{
+					colorTrianglesHL[z].enabled = false;
+					colorTriangles[z].material.color = Color.black;
+				}
 			};
 		}
 
@@ -60,20 +82,26 @@ public class SevenHandler : MonoBehaviour {
 		{
 			int y = x;
 			colorTriangleSelectables[x].OnInteract += delegate {
-				if (isSubmitting)
+				colorTriangleSelectables[y].AddInteractionPunch();
+				audioMod.PlaySoundAtTransform("tick", transform);
+				audioMod.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonRelease, transform);
+				if (isSubmitting && interactable)
 				{
 					curSelectedColor = y;
 					for (int idx = 0; idx < colorTrianglesHL.Length; idx++)
 					{
 						colorTrianglesHL[idx].enabled = y == idx;
 					}
+					UpdateSegments(false);
 				}
 				return false;
 			};
 		}
 
 		LED.OnInteract += delegate {
-			if (hasStarted)
+			LED.AddInteractionPunch();
+			audioMod.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonRelease, transform);
+			if (hasStarted && interactable)
 			{
 				if (!isSubmitting)
 				{
@@ -91,6 +119,10 @@ public class SevenHandler : MonoBehaviour {
 						for (int x = 0; x < colorTriangles.Length; x++)
 							colorTriangles[x].material.color = Color.black;
 						DisplayGivenValue(displayedValues[curIdx]);
+						for (int z = 0; z < colorTrianglesHL.Length; z++)
+						{
+							colorTrianglesHL[z].enabled = false;
+						}
 					}
 				}
 			}
@@ -98,18 +130,45 @@ public class SevenHandler : MonoBehaviour {
 		};
 
 		stageDisplay.OnInteract += delegate {
-			if (hasStarted)
+			stageDisplay.AddInteractionPunch(2);
+			audioMod.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
+			if (hasStarted && interactable)
 			{
 				if (!isSubmitting)
 				{
 					isSubmitting = true;
-					for (int x = 0; x < segments.Length; x++)
-						segments[x].material.color = Color.black;
+					UpdateSegments(false);
 					LEDMesh.material.color = Color.black;
 					stageIndc.text = "5UB";
 					for (int x = 0; x < colorTriangles.Length; x++)
 						colorTriangles[x].material.color = new Color(x % 2, x / 2 % 2, x / 4 % 2);
-					colorTrianglesHL[0].enabled = true;
+					for (int idx = 0; idx < colorTrianglesHL.Length; idx++)
+					{
+						colorTrianglesHL[idx].enabled = idx == curSelectedColor;
+					}
+				}
+				else
+				{
+					if (segmentsColored.SequenceEqual(segmentsSolution))
+					{
+						audioMod.PlaySoundAtTransform("InputCorrect", transform);
+						interactable = false;
+						modSelf.HandlePass();
+						for (int x = 0; x < colorTrianglesHL.Length; x++)
+						{
+							colorTrianglesHL[x].enabled = false;
+						}
+						stageIndc.text = "";
+						StartCoroutine(PlaySolveAnim());
+					}
+					else
+					{
+						modSelf.HandleStrike();
+						Debug.LogFormat("[7 #{0}]: Strike! You submitted the following segment colors in reading order: {1}", curModID, segmentsColored.Select(a => colorList[a]).Join(", "));
+						UpdateSegments(true);
+						localStrikes += timeDetected ? 1 : 0;
+						segmentsColored = new int[7];
+					}
 				}
 			}
 			return false;
@@ -125,17 +184,23 @@ public class SevenHandler : MonoBehaviour {
 		modSelf.OnActivate += delegate {
 			for (int x = 0; x < segments.Length; x++)
 				segments[x].material = matSwitch[1];
-			for (int x = 0; x < colorTriangles.Length; x++)
-				colorTriangles[x].material = matSwitch[0];
+			for (int z = 0; z < colorTriangles.Length; z++)
+			{
+				colorTriangles[z].material = matSwitch[1];
+				colorTriangles[z].material.color = Color.black;
+			}
 			LEDMesh.material = matSwitch[1];
 			int modCount = info.GetSolvableModuleNames().Count;
 			int stagesToGenerate = Mathf.Min(modCount, 7);
 			Debug.LogFormat("[7 #{0}]: Modules detected: {1}", curModID, modCount);
 			GenerateStages(stagesToGenerate);
+			CalculateSolution();
 			zenDetected = ZenModeActive;
 			timeDetected = TimeModeActive;
 			DisplayGivenValue(displayedValues[curIdx]);
 			hasStarted = true;
+			interactable = true;
+
 		};
 	}
 
@@ -151,8 +216,9 @@ public class SevenHandler : MonoBehaviour {
 		for (int x = 0; x < extStageCount; x++)
 		{
 			int[] modifedNumbers = { Random.Range(-9, 10), Random.Range(-9, 10), Random.Range(-9, 10) };
+			string[] operationStrings = { "Red", "Green", "Blue" };
 			int operationModifer = Random.Range(0, 3);
-			Debug.LogFormat("[7 #{0}]: Stage {1}: LED: {3}, Values: ( {2} )", curModID, x + 1, modifedNumbers.Join(", "), new string[] { "R", "G", "B" }[operationModifer]);
+			Debug.LogFormat("[7 #{0}]: Stage {1}: LED: {3}, Values: ( {2} )", curModID, x + 1, modifedNumbers.Join(", "), operationStrings[operationModifer]);
 			switch (operationModifer)
 			{
 				case 0:
@@ -185,9 +251,27 @@ public class SevenHandler : MonoBehaviour {
 			idxOperations.Add(operationModifer);
 		}
 	}
-
+	
 	void CalculateSolution()
 	{
+		for (int x = 0; x < segmentsSolution.Length; x++)
+		{
+			int segIdx = segmentLogging[x];
+			bool[] displayCnl = { false, false, false };
+			for (int y = 0; y < displayCnl.Length; y++)
+			{
+				int grabbedValue = finalValues[y];
+				bool invert = finalValues[y] < 0;
+				string absVal = Mathf.Abs(finalValues[y]).ToString();
+				int valIdx = segmentCodings.possibleValues.IndexOf(absVal[0]);
+				if (valIdx != -1)
+				{
+					displayCnl[y] = invert != segmentCodings.segmentStates[valIdx, segIdx];
+				}
+			}
+			segmentsSolution[x] = (displayCnl[0] ? 1 : 0) + (displayCnl[1] ? 1 : 0) * 2 + (displayCnl[2] ? 1 : 0) * 4;
+		}
+		Debug.LogFormat("[7 #{0}]: This gives the final segment combinations in reading order: {1}", curModID, segmentsSolution.Select(a => colorList[a]).Join(", "));
 
 	}
 
@@ -223,18 +307,220 @@ public class SevenHandler : MonoBehaviour {
 	{
 		for (int x = 0; x < segments.Length; x++)
 		{
-			if (canValidCheck)
-				segments[x].material.color = segmentsColored[x] == segmentsSolution[x] ? Color.green : Color.red;
-			else
-				segments[x].material.color = new Color(segmentsColored[x] % 2, segmentsColored[x] / 2 % 2, segmentsColored[x] / 4 % 2);
+			segments[x].material.color = canValidCheck
+				? segmentsColored[x] == segmentsSolution[x] ? Color.green : Color.red
+				: new Color(segmentsColored[x] % 2, segmentsColored[x] / 2 % 2, segmentsColored[x] / 4 % 2);
 		}
 	}
 	// Update is called once per frame
+	int animPrt = 0;
 	void Update () {
-
+		if (isSubmitting && interactable)
+		{
+			animPrt++;
+			if (animPrt >= 90)
+			{
+				animPrt = 0;
+			}
+			else if (animPrt > 45)
+			{
+				if (zenDetected)
+				{
+					LEDMesh.material.color = Color.cyan;
+				}
+				else if (timeDetected && localStrikes >= 2)
+				{
+					LEDMesh.material.color = new Color(1, 0.5f, 0);
+				}
+				else if (!zenDetected && !timeDetected && info.GetStrikes() > 1)
+				{
+					LEDMesh.material.color = Color.red;
+				}
+			}
+			else
+			{
+				LEDMesh.material.color = Color.black;
+			}
+		}
+		else if (!interactable)
+		{
+			LEDMesh.material.color = Color.black;
+		}
+	}
+	IEnumerator TurnOffTriangleLeds()
+	{
+		for (int x = 0; x < colorTriangles.Length; x++)
+		{
+			yield return new WaitForSeconds(0.25f);
+			colorTriangles[x].material.color = Color.black;
+			
+		}
+		yield return new WaitForSeconds(0.5f);
+		for (int x = colorTriangles.Length; x > 0; x--)
+		{
+			yield return new WaitForSeconds(0f);
+			colorTriangles[x-1].material.color = Color.green;
+		}
+		yield return new WaitForSeconds(1f);
+		for (int x = colorTriangles.Length; x > 0; x--)
+		{
+			colorTriangles[x - 1].material.color = Color.black;
+			
+		}
+		yield return null;
+	}
+	IEnumerator PlaySolveAnim()
+	{
+		string displayText = "yeah--";
+		StartCoroutine(TurnOffTriangleLeds());
+		foreach (char oneLetter in displayText)
+		{
+			for (int x = 0; x < segmentLogging.Length; x++)
+			{
+				int segIdx = segmentLogging[x];
+				int valIdx = segmentCodings.possibleValues.IndexOf(oneLetter);
+				segments[x].material.color = valIdx != -1 && segmentCodings.segmentStates[valIdx,segIdx] ? Color.white:Color.black;
+			}
+			yield return new WaitForSeconds(0.5f);
+			for (int x = 0; x < segmentLogging.Length; x++)
+			{
+				segments[x].material.color = Color.black;
+			}
+			yield return new WaitForSeconds(0.05f);
+		}
+		
+		yield return null;
 	}
 
+#pragma warning disable IDE0044 // Add readonly modifier
 	bool TimeModeActive;
 	bool ZenModeActive;
+	string TwitchHelpMessage = "\"!{0} R G B C M Y K W\" to select the color, \"!{0} 1 2 3 4 5 6 7\" to select the segments in reading order. Commands can be chained, I.E \"!{0} R 1 C 2...\".\n"+
+		"Cycle the stages with \"!{0} led cycle\", go to a specific stage with \"!{0} led #\", or press the LED once with \"!{0} led\". Highlight the segment's in reading order with \"!{0} segments\". Submit the current setup or enter submission mode with \"!{0} submit\"";
+	bool TwitchShouldCancelCommand;
+#pragma warning restore IDE0044 // Add readonly modifier
+	IEnumerator ProcessTwitchCommand(string command)
+	{
+		string commandLower = command.ToLower();
+		if (commandLower.RegexMatch(@"^led(\s(cycle|\d))?$"))
+		{
+
+			string leftover = commandLower.Length > 4 ? commandLower.Substring(4) : "";
+			if (isSubmitting && leftover.Length != 0)
+			{
+				yield return "sendtochaterror The module is in submission phase. Use \"!{1} led\" to reaccess the stages once specific conditions have been satsfied.";
+				yield break;
+			}
+			switch (leftover)
+			{
+				case "cycle":
+					{
+						int lastStage = curIdx;
+						while (curIdx != 0)
+						{
+							yield return new WaitForSeconds(0.1f);
+							yield return null;
+							LED.OnInteract();
+						}
+						for (int x = 0; x < displayedValues.Count; x++)
+						{
+							yield return new WaitForSeconds(TwitchShouldCancelCommand ? 0.1f : 3f);
+							yield return null;
+							LED.OnInteract();
+						}
+						while (curIdx != lastStage)
+						{
+							yield return new WaitForSeconds(0.1f);
+							yield return null;
+							LED.OnInteract();
+						}
+						break;
+					}
+				case "0":
+				case "1":
+				case "2":
+				case "3":
+				case "4":
+				case "5":
+				case "6":
+				case "7":
+				case "8":
+				case "9":
+					{
+						string stagesAccessible = "0123456789".Substring(0, displayedValues.Count);
+						int specifiedStage = stagesAccessible.IndexOf(leftover);
+						if (specifiedStage == -1)
+						{
+							yield return "sendtochaterror Sorry, but the specified stage \"" + leftover + "\" is not accessible.";
+							yield break;
+						}
+						else if (specifiedStage == curIdx)
+						{
+							yield return "sendtochaterror Sorry, but the specified stage \"" + leftover + "\" is already being shown.";
+							yield break;
+						}
+						while (curIdx != specifiedStage)
+						{
+							yield return new WaitForSeconds(0.1f);
+							yield return null;
+							LED.OnInteract();
+						}
+						break;
+					}
+				default:
+					yield return null;
+					LED.OnInteract();
+					yield break;
+			}
+		}
+		else if (commandLower.RegexMatch(@"^segments$"))
+		{
+			for (int x = 0; x < segmentSelectables.Count(); x++)
+			{
+				yield return new WaitForSeconds(0.1f);
+				yield return null;
+				segmentSelectables[x].OnHighlight();
+				yield return new WaitForSeconds(TwitchShouldCancelCommand ? 0.1f : 3f);
+				segmentSelectables[x].OnHighlightEnded();
+			}
+		}
+		else if (commandLower.RegexMatch(@"^submit$"))
+		{
+			yield return null;
+			stageDisplay.OnInteract();
+			yield return "solve";
+		}
+		else
+		{
+			if (!isSubmitting)
+			{
+				yield return "sendtochaterror The module is not ready to submit yet. Use the \"submit\" command to make the module enter submission mode.";
+				yield break;
+			}
+			string segmentString = "1234567";
+			List<KMSelectable> pressables = new List<KMSelectable>();
+			foreach (string commandPart in commandLower.Split())
+			{
+				int idxSegments = segmentString.IndexOf(commandPart);
+				int idxColors = colorList.ToLower().IndexOf(commandPart);
+				if (commandPart.Length != 1 || (idxSegments == -1 && idxColors == -1))
+				{
+					yield return "sendtochaterror Sorry, but what does \"" + commandPart + "\" represent again?";
+					yield break;
+				}
+				else if (idxColors != -1)
+				{
+					pressables.Add(colorTriangleSelectables[idxColors]);
+				}
+				else if (idxSegments != -1)
+				{
+					pressables.Add(segmentSelectables[idxSegments]);
+				}
+			}
+			yield return null;
+			yield return pressables.ToArray();
+		}
+		yield break;
+	}
 
 }

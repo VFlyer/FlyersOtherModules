@@ -31,7 +31,7 @@ public class SyncSolveHandler : MonoBehaviour {
 		}
 		public bool IsEqualToNumberOnBomb(SyncSolveHandler buttonHandler)
 		{
-			return CountSyncSolveTesters() == buttonHandler.bombInfo.GetModuleNames().Where(a => a.Equals("Singularity Button")).Count();
+			return CountSyncSolveTesters() == buttonHandler.bombInfo.GetModuleNames().Where(a => a.Equals(buttonHandler.modSelf.ModuleDisplayName)).Count();
 		}
 		public IEnumerator StartBootUpSequence()
 		{

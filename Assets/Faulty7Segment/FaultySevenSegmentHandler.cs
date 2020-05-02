@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using UnityEngine;
 
 public class FaultySevenSegmentHandler : MonoBehaviour {
@@ -12,17 +13,17 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 	public KMSelectable needySelfSelectable;
 	public KMNeedyModule needyModule;
 	public KMAudio audioSelf;
-	bool isActive = false;
+	bool isActive = false, TPDetected;
 	private List<Vector3> localPosSeg = new List<Vector3>();
 	private List<Vector3> localRotSeg = new List<Vector3>();
-	private int[] segmentIDs = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 }; // Used for read-only assignment, generally used for importing
+	private int[] segmentIDs = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 }; // Used for read-only assignment, generally used for importing
 	private List<int> curSegmentPos = new List<int>();
 
 	private int activationCount = 1;
 	private static int modID = 1;
 	private int curModID;
 	// Use this for initialization
-	void Start () {
+	void Start() {
 		needyModule.OnNeedyActivation += delegate
 		{
 			isActive = true;
@@ -37,6 +38,11 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 			UpdateSegments();
 			Debug.LogFormat("[Faulty Seven Segment Display #{0}]: The set of the seven segments scrambled for {1} needy activation(s) are:", curModID, activationCount);
 			LogSegments(curSegmentPos.ToArray());
+			TPDetected = TwitchPlaysActive;
+			if (TPDetected)
+			{
+				needyModule.SetNeedyTimeRemaining(needyModule.GetNeedyTimeRemaining() * 2);
+			}
 		};
 		needyModule.OnNeedyDeactivation += delegate
 		{
@@ -58,7 +64,7 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 		for (int x = 0; x < segmentSelectables.Length; x++)
 		{
 			int temp = x;
-			segmentSelectables[x].OnInteract += delegate 
+			segmentSelectables[x].OnInteract += delegate
 			{
 				segmentSelectables[temp].AddInteractionPunch();
 				audioSelf.PlaySoundAtTransform("tick", transform);
@@ -110,12 +116,12 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 		{ 4, null, 2, 11, null, 9 },
 		{ null, 3, null, null, 10, null },
 	};
-	
+
 	void LogSegments(int[] logSegmentIDs)
 	{
 		if (logSegmentIDs.Length == 14)
 		{
-			
+
 			for (int x = 0; x < loggingOrderIdx.GetLength(0); x++)
 			{
 				string log1LineOutput = "";
@@ -159,7 +165,7 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 	readonly Color[] faultyColorList = new Color[] { Color.magenta, Color.red, Color.blue, Color.grey, Color.yellow, Color.cyan, Color.green };
 	int value = 0, cooldown = 20, delayFlicker = 0, checkCooldown = 0;
 	//readonly string[] faultyDisplayLetters = new string[] { "a", "b", "c", "d", "e", "f", "h", "j", "l", "n", "o", "p", "r", "u", "y", "-" }; // Unused atm.
-	void Update () {
+	void Update() {
 		if (isActive)
 		{
 			if (cooldown > 0)
@@ -185,7 +191,7 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 					if (Random.Range(0, 5) == 0)
 					{
 						int idxFlicker = Random.Range(0, segmentDisplays.Length);
-						segmentDisplays[idxFlicker].SetColors(new Color[] { Color.black, faultyColorList[Random.Range(0,faultyColorList.Length)] });
+						segmentDisplays[idxFlicker].SetColors(new Color[] { Color.black, faultyColorList[Random.Range(0, faultyColorList.Length)] });
 						delayFlicker = 35;
 					}
 					checkCooldown = 20;
@@ -208,4 +214,74 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 			}
 		}
 	}
+
+	void TwitchHandleForcedSolve()
+	{
+		needyModule.HandlePass();
+	}
+
+	bool TwitchPlaysActive;
+	string TwitchHelpMessage = "Swap the following segments with \"!{0} swap a# b#\". Multiple pairs of segments can be swapped viva \";\" I.E \"!{0} swap a1 b2; a3 b4;...\".\nSegments are labeled 1-7 in reading order, \"a\" being the left 7 segment display, \"b\" being the right 7 segment display.";
+	IEnumerator ProcessTwitchCommand(string command)
+	{
+		string commandLower = command.ToLower();
+		if (commandLower.StartsWith("swap "))
+			commandLower = commandLower.Substring(5);
+		string[] selectedParts = commandLower.Split(';');
+		int[] TPSegmentIDsL = { 0, 5, 1, 6, 4, 2, 3 };
+		int[] TPSegmentIDsR = { 7, 12, 8, 13, 11, 9, 10 };
+		List<KMSelectable> selectablesTPCMD = new List<KMSelectable>();
+		if (curSegmentPos.Count != 14)
+		{
+			yield return "sendtochaterror The needy has not been activated for the first time yet. Wait for a bit until the needy is active.";
+			yield break;
+		}
+		foreach (string part in selectedParts)
+		{
+			string intereptedPart = part.Trim();
+			if (intereptedPart.RegexMatch(@"^[ab]\d\s[ab]\d$"))
+			{
+				string[] intereptedSections = intereptedPart.Split(' ');
+				foreach (string section in intereptedSections)
+				{
+					string intereptedLetter = section.Substring(0, 1);
+					string intereptedNum = section.Substring(1);
+					int givenNum;
+					if (int.TryParse(intereptedNum, out givenNum) && givenNum > 0 && givenNum <= 7)
+					{
+						if (intereptedLetter.Equals("a"))
+							selectablesTPCMD.Add(segmentSelectables[curSegmentPos.IndexOf(TPSegmentIDsL[givenNum - 1])]);
+						else if (intereptedLetter.Equals("b"))
+							selectablesTPCMD.Add(segmentSelectables[curSegmentPos.IndexOf(TPSegmentIDsR[givenNum - 1])]);
+						else
+						{
+							yield return "sendtochaterror Did you try to get this message?";
+							yield break;
+						}
+					}
+					else
+					{
+						yield return "sendtochaterror Sorry but segment \"" + intereptedNum + "\" for the given segment is not accessible.";
+						yield break;
+					}
+				}
+			}
+			else
+			{
+				yield return "sendtochaterror Sorry but what command is \"" + part + "\" supposed to be?";
+				yield break;
+			}
+		}
+		if (selectablesTPCMD.Count > 0)
+		{
+			foreach (KMSelectable selectable in selectablesTPCMD)
+			{
+				yield return null;
+				selectable.OnInteract();
+				yield return new WaitForSeconds(0.3f);
+			}
+		}
+		yield break;
+	}
+
 }
