@@ -28,7 +28,7 @@ public class SevenHandler : MonoBehaviour {
 	int curSelectedColor = 0;
 	int[] segmentsColored = new int[7], segmentsSolution = new int[7];
 
-
+	string[] soundsPressNames = { "selectALT", "selectALT2" };
 	static int modID;
 	int curModID;
 
@@ -47,7 +47,7 @@ public class SevenHandler : MonoBehaviour {
 			int y = x;
 			segmentSelectables[x].OnInteract += delegate {
 				segmentSelectables[y].AddInteractionPunch();
-				audioMod.PlaySoundAtTransform("selectALT", transform);
+				audioMod.PlaySoundAtTransform(soundsPressNames[Random.Range(0,soundsPressNames.Length)], transform);
 				if (isSubmitting && interactable)
 				{
 					segmentsColored[y] = curSelectedColor;
@@ -379,7 +379,7 @@ public class SevenHandler : MonoBehaviour {
 			{
 				int segIdx = segmentLogging[x];
 				int valIdx = segmentCodings.possibleValues.IndexOf(oneLetter);
-				segments[x].material.color = valIdx != -1 && segmentCodings.segmentStates[valIdx,segIdx] ? Color.white:Color.black;
+				segments[x].material.color = valIdx != -1 && segmentCodings.segmentStates[valIdx, segIdx] ? Color.green : Color.black;
 			}
 			yield return new WaitForSeconds(0.5f);
 			for (int x = 0; x < segmentLogging.Length; x++)
@@ -391,13 +391,41 @@ public class SevenHandler : MonoBehaviour {
 		
 		yield return null;
 	}
+	// TP Handler Begins here
+
+	IEnumerator TwitchHandleForcedSolve()
+	{
+		while (!hasStarted) yield return true;
+		if (!isSubmitting)
+		{
+			stageDisplay.OnInteract();
+			yield return new WaitForSeconds(0.1f);
+		}
+		for (int x = 0; x < segmentsSolution.Length; x++)
+		{
+			if (segmentsColored[x] != segmentsSolution[x])
+			{
+				if (curSelectedColor != segmentsSolution[x])
+				{
+					colorTriangleSelectables[segmentsSolution[x]].OnInteract();
+					yield return new WaitForSeconds(0.1f);
+				}
+				segmentSelectables[x].OnInteract();
+				yield return new WaitForSeconds(0.1f);
+			}
+		}
+		stageDisplay.OnInteract();
+		yield return true;
+	}
 
 #pragma warning disable IDE0044 // Add readonly modifier
 	bool TimeModeActive;
 	bool ZenModeActive;
 	string TwitchHelpMessage = "\"!{0} R G B C M Y K W\" to select the color, \"!{0} 1 2 3 4 5 6 7\" to select the segments in reading order. Commands can be chained, I.E \"!{0} R 1 C 2...\".\n"+
-		"Cycle the stages with \"!{0} led cycle\", go to a specific stage with \"!{0} led #\", or press the LED once with \"!{0} led\". Highlight the segment's in reading order with \"!{0} segments\". Submit the current setup or enter submission mode with \"!{0} submit\"";
+		"Cycle the stages with \"!{0} led cycle\", go to a specific stage with \"!{0} led #\", or press the LED once with \"!{0} led\". Modify the cycle speed with \"!{0} cyclespeed #\" (1-9 seconds only) Highlight the segment's in reading order with \"!{0} segments\". Submit the current setup or enter submission mode with \"!{0} submit\"";
 	bool TwitchShouldCancelCommand;
+	int curCycleDelay = 3;
+
 #pragma warning restore IDE0044 // Add readonly modifier
 	IEnumerator ProcessTwitchCommand(string command)
 	{
@@ -424,7 +452,7 @@ public class SevenHandler : MonoBehaviour {
 						}
 						for (int x = 0; x < displayedValues.Count; x++)
 						{
-							yield return new WaitForSeconds(TwitchShouldCancelCommand ? 0.1f : 3f);
+							yield return new WaitForSeconds(TwitchShouldCancelCommand ? 0.1f : (float)curCycleDelay);
 							yield return null;
 							LED.OnInteract();
 						}
@@ -467,11 +495,29 @@ public class SevenHandler : MonoBehaviour {
 						}
 						break;
 					}
-				default:
+				case "":
 					yield return null;
 					LED.OnInteract();
 					yield break;
+				default:
+					yield return "sendtochaterror You aren't supposed to get this error.";
+					yield break;
 			}
+		}
+		else if (commandLower.RegexMatch(@"^cycle\s?speed\s\d$"))
+		{
+			yield return null;
+			string[] commandParts = commandLower.Split();
+			string intereptedDigit = commandParts[commandParts.Length - 1];
+			int timePossible = int.Parse(intereptedDigit);
+			if (timePossible > 0)
+			{
+				curCycleDelay = timePossible;
+				yield return "sendtochat {0}, I have setted the cycle speed for this module to " + intereptedDigit + " second(s).";
+			}
+			else
+				yield return "sendtochaterror {0}, I am not setting the cycle speed for this module to " + intereptedDigit + " second(s).";
+			
 		}
 		else if (commandLower.RegexMatch(@"^segments$"))
 		{

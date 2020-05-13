@@ -9,6 +9,7 @@ public class MysticLightsHandler : MonoBehaviour {
 
     public KMSelectable[] tileSelectables = new KMSelectable[16];
     public GameObject AnimPointTL, AnimPointBR, AnimPointD, TileAnim, StatusLight;
+    public MeshRenderer AnimRenderer;
     public MeshRenderer[] meshRenderers = new MeshRenderer[16];
     public TextMesh[] textMeshes = new TextMesh[16];
     public GameObject[] tiles = new GameObject[16];
@@ -590,7 +591,7 @@ public class MysticLightsHandler : MonoBehaviour {
                 finalposY /= animDelay/2;
                 TileAnim.transform.localPosition = new Vector3(finalposY,finalposX,0.0f);
                 bool lgtSteSgl = (bool)lightStates[xIntIdx, yIntIdx];
-                TileAnim.GetComponent<MeshRenderer>().material = lgtSteSgl ? materials[0] : materials[1];
+                AnimRenderer.material = lgtSteSgl ? materials[0] : materials[1];
                 animLight.color = lgtSteSgl ? Color.yellow : Color.blue;
                 animLight.enabled = true;
                 UpdateSpecificLight(xIdx, yIdx);
@@ -662,8 +663,8 @@ public class MysticLightsHandler : MonoBehaviour {
             StatusLight.SetActive(true);
             TileAnim.transform.localPosition = new Vector3(localX, localY, localZ);
             StatusLight.transform.localPosition = new Vector3(localX, localY, localZ+.005f);
-            
-            TileAnim.GetComponent<MeshRenderer>().material = lgtSteSgl ? materials[0] : materials[1];
+
+            AnimRenderer.material = lgtSteSgl ? materials[0] : materials[1];
             animLight.color = lgtSteSgl ? Color.yellow : Color.blue;
             animLight.enabled = true;
             yield return new WaitForSeconds(0);
@@ -677,7 +678,7 @@ public class MysticLightsHandler : MonoBehaviour {
         moduleSelf.HandlePass();
         yield return null;
     }
-    public readonly string TwitchHelpMessage = "Press a button with “!{0} A1 B2 C3 D4...”. Columns are labeled A-D from left to right, rows are labeled 1-4 from top to bottom. Commands may be voided if the module enters a generation state or a solve state. \"press\" is optional.\nTo activate colorblind: \"!{0} colorblind\" To generate a new board: \"!{0} regen[erate]\" or \"!{0} reset\". You can only regenerate up to 3 times on this module! To get the number of resets this module currently used up: \"!{0} resetcount\"";
+    public readonly string TwitchHelpMessage = "Press a button with “!{0} A1 B2 C3 D4...”. Columns are labeled A-D from left to right, rows are labeled 1-4 from top to bottom. Commands may be voided if the module enters a generation state or a solve state. \"press\" is optional.\nTo toggle colorblind: \"!{0} colorblind\" To generate a new board: \"!{0} regen[erate]\" or \"!{0} reset\". You can only regenerate up to 3 times on this module! To get the number of resets this module currently used up: \"!{0} resetcount\"";
 
     bool TwitchPlaysActive;
     readonly string RowIDX = "abcd";
@@ -708,16 +709,16 @@ public class MysticLightsHandler : MonoBehaviour {
                 yield break;
             }
         }
-        else if (proCmd.RegexMatch(@"^reset count$") || proCmd.RegexMatch(@"^resetcount$"))
+        else if (proCmd.RegexMatch(@"^reset\s?count$"))
         {
             yield return "sendtochat This module has been resetted " + resetsCounted + " time(s).";
             yield break;
         }
         else if (proCmd.RegexMatch(@"^colou?rblind$"))
         {
-            colorblindEnabled = true;
-            UpdateAllLights();
             yield return null;
+            colorblindEnabled = !colorblindEnabled;
+            UpdateAllLights();
             yield break;
         }
         if (proCmd.StartsWith("press "))
@@ -738,7 +739,7 @@ public class MysticLightsHandler : MonoBehaviour {
                 yield break;
             }
         }
-        for (int x=0;x<cordList.Count;x++)
+        for (int x = 0; x < cordList.Count; x++)
         {
             yield return null;
             do

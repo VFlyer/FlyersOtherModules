@@ -13,7 +13,7 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 	public KMSelectable needySelfSelectable;
 	public KMNeedyModule needyModule;
 	public KMAudio audioSelf;
-	bool isActive = false, TPDetected;
+	bool isActive = false, TPDetected, forceDisable = false;
 	private List<Vector3> localPosSeg = new List<Vector3>();
 	private List<Vector3> localRotSeg = new List<Vector3>();
 	private int[] segmentIDs = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 }; // Used for read-only assignment, generally used for importing
@@ -26,6 +26,11 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 	void Start() {
 		needyModule.OnNeedyActivation += delegate
 		{
+			if (forceDisable)
+			{
+				needyModule.HandlePass();
+				return;
+			}
 			isActive = true;
 			List<int> tempSegmentsID = segmentIDs.ToList();
 			curSegmentPos.Clear();
@@ -217,7 +222,10 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 
 	void TwitchHandleForcedSolve()
 	{
+		Debug.LogFormat("[Faulty Seven Segment Display #{0}]: Forcably disabling the needy viva TP handler.", curModID);
 		needyModule.HandlePass();
+		forceDisable = true;
+		isActive = false;
 	}
 
 	bool TwitchPlaysActive;

@@ -874,7 +874,7 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1098375043305042}
-  m_Text: 
+  m_Text: Some other color
   m_OffsetZ: 0
   m_CharacterSize: 0.002
   m_LineSpacing: 1
@@ -1117,7 +1117,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1249116593401286}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19af8efb7ad62b34b94d85de8fd7ebbb, type: 3}
+  m_Script: {fileID: 11500000, guid: b559471caa8ea9c459638bc237930a8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   disarmButtonObject: {fileID: 1373002549662654}
@@ -1130,12 +1130,11 @@ MonoBehaviour:
   textColorblind: {fileID: 102595761767704022}
   disarmButton: {fileID: 114323983609063212}
   buttonFront: {fileID: 114263400099437542}
-  bossModule: {fileID: 114635418557611102}
+  bossModule: {fileID: 0}
   bombInfo: {fileID: 114873876139256150}
   modSelf: {fileID: 114322943547317960}
   colorblindMode: {fileID: 114842235304491386}
   audioSelf: {fileID: 114914313973070090}
-  cautionaryModules: []
   frameSwitch: 0
 --- !u!114 &114795301431554686
 MonoBehaviour:
