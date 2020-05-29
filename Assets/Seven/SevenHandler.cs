@@ -13,8 +13,9 @@ public class SevenHandler : MonoBehaviour {
 	public MeshRenderer LEDMesh;
 	public KMSelectable[] segmentSelectables, colorTriangleSelectables;
 	public KMSelectable LED, stageDisplay;
+	public KMColorblindMode colorblindMode;
 	private SevenSegmentCodings segmentCodings;
-	public TextMesh stageIndc;
+	public TextMesh stageIndc, colorblindIndc;
 	public Material[] matSwitch = new Material[2];
 
 	int[] finalValues = new int[3];
@@ -33,13 +34,13 @@ public class SevenHandler : MonoBehaviour {
 	int curModID;
 
 	// Detection and Logging
-	bool zenDetected, timeDetected, hasStarted, isSubmitting, interactable = false;
+	bool zenDetected, timeDetected, hasStarted, isSubmitting, interactable = false, colorblinddetected;
 	int curIdx = 0, curStrikeCount, localStrikes = 0;
 
 	// Use this for initialization
 	void Awake()
 	{
-		segmentCodings = ScriptableObject.CreateInstance<SevenSegmentCodings>();
+		segmentCodings = new SevenSegmentCodings();
 		curModID = ++modID;
 
 		for (int x = 0; x < segmentSelectables.Length; x++)
@@ -139,7 +140,8 @@ public class SevenHandler : MonoBehaviour {
 					isSubmitting = true;
 					UpdateSegments(false);
 					LEDMesh.material.color = Color.black;
-					stageIndc.text = "5UB";
+					colorblindIndc.text = "";
+					stageIndc.text = "SUB";
 					for (int x = 0; x < colorTriangles.Length; x++)
 						colorTriangles[x].material.color = new Color(x % 2, x / 2 % 2, x / 4 % 2);
 					for (int idx = 0; idx < colorTrianglesHL.Length; idx++)
@@ -152,6 +154,7 @@ public class SevenHandler : MonoBehaviour {
 					if (segmentsColored.SequenceEqual(segmentsSolution))
 					{
 						audioMod.PlaySoundAtTransform("InputCorrect", transform);
+						Debug.LogFormat("[7 #{0}]: Correct segment colors submitted. Module passed.", curModID);
 						interactable = false;
 						modSelf.HandlePass();
 						for (int x = 0; x < colorTrianglesHL.Length; x++)
@@ -179,6 +182,16 @@ public class SevenHandler : MonoBehaviour {
 			colorTriangles[x].material = matSwitch[0];
 		LEDMesh.material = matSwitch[0];
 		stageIndc.text = "";
+
+		try
+		{
+			colorblinddetected = colorblindMode.ColorblindModeActive;
+		}
+		catch
+		{
+			colorblinddetected = false;
+		}
+		colorblindIndc.text = "";
 	}
 	void Start () {
 		modSelf.OnActivate += delegate {
@@ -216,8 +229,8 @@ public class SevenHandler : MonoBehaviour {
 		for (int x = 0; x < extStageCount; x++)
 		{
 			int[] modifedNumbers = { Random.Range(-9, 10), Random.Range(-9, 10), Random.Range(-9, 10) };
-			string[] operationStrings = { "Red", "Green", "Blue" };
-			int operationModifer = Random.Range(0, 3);
+			string[] operationStrings = { "Red", "Green", "Blue", "White" };
+			int operationModifer = Random.Range(0, 4);
 			Debug.LogFormat("[7 #{0}]: Stage {1}: LED: {3}, Values: ( {2} )", curModID, x + 1, modifedNumbers.Join(", "), operationStrings[operationModifer]);
 			switch (operationModifer)
 			{
@@ -234,6 +247,12 @@ public class SevenHandler : MonoBehaviour {
 					}
 					goto default;
 				case 2:
+					for (int p = 0; p < finalValues.Length; p++)
+					{
+						finalValues[p] = modifedNumbers[p] - finalValues[p];
+					}
+					goto default;
+				case 3:
 					for (int p = 0; p < finalValues.Length; p++)
 					{
 						finalValues[p] *= modifedNumbers[p];
@@ -298,9 +317,10 @@ public class SevenHandler : MonoBehaviour {
 				segments[x].material.color = new Color(displayCnl[0] ? 1: 0, displayCnl[1] ? 1 : 0, displayCnl[2] ? 1 : 0);
 			}
 			stageIndc.text = curIdx.ToString();
-			Color[] cPallete = { Color.red, Color.green, Color.blue };
-
-			LEDMesh.material.color = idxOperations[curIdx] < 0 || idxOperations[curIdx] >= 3 ? Color.black : cPallete[idxOperations[curIdx]] ;
+			Color[] cPallete = { Color.red, Color.green, Color.blue, Color.white };
+			string[] cPalleteCBlind = { "R", "G", "B", "W" };
+			LEDMesh.material.color = idxOperations[curIdx] < 0 || idxOperations[curIdx] >= 4 ? Color.black : cPallete[idxOperations[curIdx]] ;
+			colorblindIndc.text = colorblinddetected ? (idxOperations[curIdx] < 0 || idxOperations[curIdx] >= 4 ? "K": cPalleteCBlind[idxOperations[curIdx]]) : "";
 		}
 	}
 	void UpdateSegments(bool canValidCheck)
@@ -399,21 +419,42 @@ public class SevenHandler : MonoBehaviour {
 		if (!isSubmitting)
 		{
 			stageDisplay.OnInteract();
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(0f);
 		}
-		for (int x = 0; x < segmentsSolution.Length; x++)
+		List<int> segementsSolSorted = segmentsSolution.OrderBy(a => a).ToList();
+		List<int> idxSorted = new int[] { 0, 1, 2, 3, 4, 5, 6 }.OrderBy(a => segmentsSolution[a]).ToList();
+
+
+		Debug.Log(segementsSolSorted.Join());
+		Debug.Log(idxSorted.Join());
+
+		for (int x = 0; x < idxSorted.Count; x++)
+		{
+			if (segmentsColored[idxSorted[x]] != segementsSolSorted[x])
+			{
+				if (curSelectedColor != segementsSolSorted[x])
+				{
+					colorTriangleSelectables[segementsSolSorted[x]].OnInteract();
+					yield return new WaitForSeconds(0.1f);
+				}
+				segmentSelectables[idxSorted[x]].OnInteract();
+				yield return new WaitForSeconds(0.1f);
+			}
+		}
+
+/*		for (int x = 0; x < segmentsSolution.Length; x++)
 		{
 			if (segmentsColored[x] != segmentsSolution[x])
 			{
 				if (curSelectedColor != segmentsSolution[x])
 				{
 					colorTriangleSelectables[segmentsSolution[x]].OnInteract();
-					yield return new WaitForSeconds(0.1f);
+					yield return new WaitForSeconds(0f);
 				}
 				segmentSelectables[x].OnInteract();
-				yield return new WaitForSeconds(0.1f);
+				yield return new WaitForSeconds(0f);
 			}
-		}
+		}*/
 		stageDisplay.OnInteract();
 		yield return true;
 	}
@@ -421,8 +462,8 @@ public class SevenHandler : MonoBehaviour {
 #pragma warning disable IDE0044 // Add readonly modifier
 	bool TimeModeActive;
 	bool ZenModeActive;
-	string TwitchHelpMessage = "\"!{0} R G B C M Y K W\" to select the color, \"!{0} 1 2 3 4 5 6 7\" to select the segments in reading order. Commands can be chained, I.E \"!{0} R 1 C 2...\".\n"+
-		"Cycle the stages with \"!{0} led cycle\", go to a specific stage with \"!{0} led #\", or press the LED once with \"!{0} led\". Modify the cycle speed with \"!{0} cyclespeed #\" (1-9 seconds only) Highlight the segment's in reading order with \"!{0} segments\". Submit the current setup or enter submission mode with \"!{0} submit\"";
+	string TwitchHelpMessage = "\"!{0} R G B C M Y K W\" to select the color, \"!{0} 1 2 3 4 5 6 7\" to select the segments in reading order. These two commands can be chained, I.E \"!{0} R 1 C 2...\".\n"+
+		"Cycle the stages with \"!{0} led cycle\" or \"!{0} led cycle # #\" for specific stages, go to a specific stage with \"!{0} led #\", or press the LED once with \"!{0} led\". Modify the cycle speed with \"!{0} cyclespeed #\" (1-9 seconds only) Highlight the segment's in reading order with \"!{0} segments\". Submit the current setup or enter submission mode with \"!{0} submit\"";
 	bool TwitchShouldCancelCommand;
 	int curCycleDelay = 3;
 
@@ -430,7 +471,57 @@ public class SevenHandler : MonoBehaviour {
 	IEnumerator ProcessTwitchCommand(string command)
 	{
 		string commandLower = command.ToLower();
-		if (commandLower.RegexMatch(@"^led(\s(cycle|\d))?$"))
+		if (commandLower.RegexMatch(@"^led\scycle\s\d+\s\d+$"))
+		{
+			if (isSubmitting)
+			{
+				yield return "sendtochaterror The module is in submission phase. Use \"!{1} led\" to reaccess the stages once specific conditions have been satsfied.";
+				yield break;
+			}
+			string[] leftovers = commandLower.Split();
+			int leftValue;
+			int rightValue;
+			if (int.TryParse(leftovers[leftovers.Length - 2], out leftValue) && int.TryParse(leftovers[leftovers.Length - 1], out rightValue))
+			{
+				if (leftValue <= rightValue)
+				{
+					if (leftValue < 0 || leftValue >= displayedValues.Count || rightValue < 0 || rightValue >= displayedValues.Count)
+					{
+						yield return "sendtochaterror The cycle index for the following stage range " + leftValue + "," + rightValue + " do not contain all possible stages from the module.";
+						yield break;
+					}
+					int lastStage = curIdx;
+					yield return null;
+					while (curIdx != leftValue)
+					{
+						yield return new WaitForSeconds(0.1f);
+						LED.OnInteract();
+					}
+					for (int x = leftValue; x < rightValue + 1; x++)
+					{
+						yield return new WaitForSeconds(TwitchShouldCancelCommand ? 0.1f : curCycleDelay);
+						LED.OnInteract();
+					}
+					while (curIdx != lastStage)
+					{
+						yield return new WaitForSeconds(0.1f);
+						LED.OnInteract();
+					}
+				}
+				else
+				{
+					yield return "sendtochaterror Your command is not valid for cycling. Do you mean \"!{1} led cycle "+rightValue+" "+leftValue+"\"?";
+					yield break;
+				}
+			}
+			else
+			{
+				yield return "sendtochaterror The stage numbers given can't seem to work that well. Retry the command again with a different condition.";
+				yield break;
+			}
+
+		}
+		else if (commandLower.RegexMatch(@"^led(\s(cycle|\d))?$"))
 		{
 
 			string leftover = commandLower.Length > 4 ? commandLower.Substring(4) : "";
@@ -444,22 +535,20 @@ public class SevenHandler : MonoBehaviour {
 				case "cycle":
 					{
 						int lastStage = curIdx;
+						yield return null;
 						while (curIdx != 0)
 						{
 							yield return new WaitForSeconds(0.1f);
-							yield return null;
 							LED.OnInteract();
 						}
 						for (int x = 0; x < displayedValues.Count; x++)
 						{
-							yield return new WaitForSeconds(TwitchShouldCancelCommand ? 0.1f : (float)curCycleDelay);
-							yield return null;
+							yield return new WaitForSeconds(TwitchShouldCancelCommand ? 0.1f : curCycleDelay);
 							LED.OnInteract();
 						}
 						while (curIdx != lastStage)
 						{
 							yield return new WaitForSeconds(0.1f);
-							yield return null;
 							LED.OnInteract();
 						}
 						break;
@@ -504,13 +593,13 @@ public class SevenHandler : MonoBehaviour {
 					yield break;
 			}
 		}
-		else if (commandLower.RegexMatch(@"^cycle\s?speed\s\d$"))
+		else if (commandLower.RegexMatch(@"^cycle\s?speed\s\d+$"))
 		{
 			yield return null;
 			string[] commandParts = commandLower.Split();
 			string intereptedDigit = commandParts[commandParts.Length - 1];
 			int timePossible = int.Parse(intereptedDigit);
-			if (timePossible > 0)
+			if (timePossible > 0 && timePossible < 10)
 			{
 				curCycleDelay = timePossible;
 				yield return "sendtochat {0}, I have setted the cycle speed for this module to " + intereptedDigit + " second(s).";
@@ -530,7 +619,7 @@ public class SevenHandler : MonoBehaviour {
 				segmentSelectables[x].OnHighlightEnded();
 			}
 		}
-		else if (commandLower.RegexMatch(@"^submit$"))
+		else if (commandLower.RegexMatch(@"^sub(mit)?$"))
 		{
 			yield return null;
 			stageDisplay.OnInteract();
@@ -543,7 +632,7 @@ public class SevenHandler : MonoBehaviour {
 				yield return "sendtochaterror The module is not ready to submit yet. Use the \"submit\" command to make the module enter submission mode.";
 				yield break;
 			}
-			string segmentString = "1234567";
+			List<string> segmentString = new List<string>() { "1", "2", "3", "4", "5", "6", "7" };
 			List<KMSelectable> pressables = new List<KMSelectable>();
 			foreach (string commandPart in commandLower.Split())
 			{
@@ -561,6 +650,11 @@ public class SevenHandler : MonoBehaviour {
 				else if (idxSegments != -1)
 				{
 					pressables.Add(segmentSelectables[idxSegments]);
+				}
+				else
+				{
+					yield return "sendtochaterror Sorry but what is \"" + commandPart + "\" supposed to be?";
+					yield break;
 				}
 			}
 			yield return null;

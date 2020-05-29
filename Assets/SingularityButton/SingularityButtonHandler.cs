@@ -1,16 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using KModkit;
-using System.Linq;
 
-public class SingularityButtonHandler : MonoBehaviour {
+public partial class SingularityButtonHandler : MonoBehaviour {
 
 	public GameObject disarmButtonObject, buttonFrontObject, entireModule,animatedPortion;
 	public MeshRenderer buttonMainRenderer,buttonBacking;
 	public TextMesh textDisplay, textColorblind;
 	public KMSelectable disarmButton, buttonFront;
-	public KMBossModule bossModule;
 	public KMBombInfo bombInfo;
 	public KMBombModule modSelf;
 	public KMColorblindMode colorblindMode;
@@ -25,164 +22,6 @@ public class SingularityButtonHandler : MonoBehaviour {
 
 	private static int modID = 1;
 	private int curmodID;
-
-	protected sealed class SingularityButtonInfo //Lock down infomation to a single bomb, hopefully.
-	{
-		public List<SingularityButtonHandler> singularButtons = new List<SingularityButtonHandler>();// A collection of Singularity Button Handlers on 1 global handler.
-
-		public List<Color> buttonColors = new List<Color>();
-		public List<string> buttonLabels = new List<string>();
-		public List<int> buttonDigits = new List<int>();
-		private List<int> idxInputs = new List<int>();
-		public List<int> inputs = new List<int>();
-		public bool canDisarm = false;
-
-		public void DisarmAll()
-		{
-			canDisarm = true;
-		}
-		public void LogAll(string text)
-		{
-			foreach (SingularityButtonHandler singularityButton in singularButtons)
-			{
-				Debug.LogFormat("[Singularity Button #{0}]: {1}",singularityButton.curmodID,text);
-			}
-		}
-		public void LogIndividual(string text, int idx)
-		{
-			if (idx >= 0 && idx < singularButtons.Count)
-			{
-				Debug.LogFormat("[Singularity Button #{0}]: {1}", singularButtons[idx].curmodID, text);
-			}
-		}
-		public void LogIndividual(string text, SingularityButtonHandler handler)
-		{
-			Debug.LogFormat("[Singularity Button #{0}]: {1}", handler.curmodID, text);
-		}
-		public void CauseStrikeAll()
-		{
-			LogAll("An incorrect set of actions caused this module to strike.");
-			foreach (SingularityButtonHandler singularityButton in singularButtons)
-				singularityButton.modSelf.HandleStrike();
-		}
-		public void CauseStrikeIndividual(int idx)
-		{
-			if (idx >= 0 && idx < singularButtons.Count)
-			{
-				LogIndividual("An incorrect set of actions caused this module to strike.",idx);
-				singularButtons[idx].modSelf.HandleStrike();
-			}
-		}
-		public void CauseStrikeIndividual(SingularityButtonHandler handler)
-		{
-			LogIndividual("An incorrect set of actions caused this module to strike.", handler);
-			handler.modSelf.HandleStrike();
-		}
-		public int CountSingularityButtons()
-		{
-			return singularButtons.Count();
-		}
-		public int getIndexOfButton(SingularityButtonHandler handler)
-		{
-			return singularButtons.IndexOf(handler);
-		}
-		public bool IsAnyButtonHeld()
-		{
-			return !singularButtons.TrueForAll(a => !a.isPressedMain);
-		}
-		public string GrabColorofButton(int idx)
-		{
-			if (idx < 0 || idx > singularButtons.Count) return "";
-			int grabbedIndex = referenceList.IndexOf(singularButtons[idx].buttonMainRenderer.material.color);
-			return grabbedIndex >= 0 && grabbedIndex < referenceListNames.Length ? referenceListNames[grabbedIndex] : "some other color";
-		}
-		public string GrabColorofButton(SingularityButtonHandler handler)
-		{
-			int grabbedIndex = referenceList.IndexOf(handler.buttonMainRenderer.material.color);
-			return grabbedIndex >= 0 && grabbedIndex < referenceListNames.Length ? referenceListNames[grabbedIndex] : "some other color";
-		}
-		public bool IsEqualToNumberOnBomb(SingularityButtonHandler buttonHandler)
-		{
-			return CountSingularityButtons() == buttonHandler.bombInfo.GetModuleNames().Where(a => a.Equals("Singularity Button")).Count();
-		}
-		public void HandleInteraction(int idx, int value)
-		{
-			idxInputs.Add(idx);
-			inputs.Add(value);
-		}
-		public void HandleInteraction(SingularityButtonHandler handler, int value)
-		{
-			idxInputs.Add(singularButtons.IndexOf(handler));
-			inputs.Add(value);
-		}
-		public void ClearAllInputs()
-		{
-			idxInputs.Clear();
-			inputs.Clear();
-		}
-		public IEnumerator StartBootUpSequence()
-		{
-			if (singularButtons.Count <= 0) yield break;
-			if (IsEqualToNumberOnBomb(singularButtons[0]))
-			{
-				int btnCount = CountSingularityButtons();
-				LogAll("Detected this many Singularity Buttons on the bomb: " + btnCount);
-				foreach (SingularityButtonHandler singularity in singularButtons)
-				{
-					LogIndividual(LogManualChallengePhrases[Random.Range(0, LogManualChallengePhrases.Length)],singularity);
-				}
-				if (btnCount == 1)
-				{
-					singularButtons[0].buttonMainRenderer.material.color = Color.blue;
-				}
-				else if (btnCount == 2)
-				{
-
-				}
-				else if (btnCount == 3)
-				{
-
-				}
-				else if (btnCount == 4)
-				{
-
-				}
-				else if (btnCount == 5)
-				{
-
-				}
-				else if (btnCount == 6)
-				{
-
-				}
-				else if (btnCount == 7)
-				{
-
-				}
-				else if (btnCount == 8)
-				{
-
-				}
-				else if (btnCount == 9)
-				{
-
-				}
-				else if (btnCount == 10)
-				{
-
-				}
-				else if (btnCount > 10 && btnCount < 16)
-				{
-
-				}
-				else 
-				{
-
-				}
-			}
-			yield return null;
-		}
-	}
 	private static readonly Dictionary<KMBomb, SingularityButtonInfo> groupedSingularityButtons = new Dictionary<KMBomb, SingularityButtonInfo>();
 	private SingularityButtonInfo singularityButtonInfo;
 	// Commented out because of some solve dependent modules not being easily detectable.
@@ -342,6 +181,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 	void Awake()
 	{
 		curmodID = modID++;
+		groupedSingularityButtons.Clear();
 	}
 	// Use this for initialization
 	bool onHoldState;
@@ -438,7 +278,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 	// Update is called once per frame
 	int frameMain = 45;
 	int frameDisarm = 45;
-	public int frameSwitch = 0;
+	public int frameSwitch = 30;
 	int animLength = 30;
 	void Update () {
 		if (!hasActivated) return;
@@ -503,7 +343,7 @@ public class SingularityButtonHandler : MonoBehaviour {
 	IEnumerator ProcessTwitchCommand(string command)
 	{
 		string interpetedCommand = command.ToLower();
-
+		string[] separatedCommands = command.Split(';');
 		string pressDisarm = @"^disarm$";
 		string tapTimeStamp = @"^tap( \d{2})+$", tapDigit = @"^tap( \d)?$";
 		string holdTimeStamp = @"^hold( \d{2})+$", holdDigit = @"^hold( \d)?$";

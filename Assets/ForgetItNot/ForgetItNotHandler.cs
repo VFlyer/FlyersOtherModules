@@ -344,7 +344,7 @@ public class ForgetItNotHandler : MonoBehaviour {
                     { 
                         AdvanceStage();
                     }
-                    cooldown = 60;
+                    cooldown = 80;
                 }
             }
         }
@@ -481,7 +481,7 @@ public class ForgetItNotHandler : MonoBehaviour {
             {
                 if (hasAced)
                 {
-                    if (totalstages >= 15)
+                    if (totalstages >= 30)
                     {
                         if (bombInfo.GetSolvableModuleNames().Count == bombInfo.GetSolvedModuleNames().Count)
                         {

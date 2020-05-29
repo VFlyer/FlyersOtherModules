@@ -22,13 +22,11 @@ public class ThreeXThreeGridHandlerScript : MonoBehaviour {
     public GameObject[] buttons = new GameObject[9];
     private bool[] lightstate = new bool[9];
     private bool[] goallights = new bool[9];
-    private bool mustInvert = false;
-    private bool hasActivated = false;
-    private bool isWarning = false;
+    private bool mustInvert = false, hasActivated = false, isWarning = false, forceDisable = false;
     private bool IsCorrect(bool[] inputs)// Check if all inputs are correct.
     {
         bool result = true;
-        for (int x = 0; x < inputs.Count()&&result; x++)
+        for (int x = 0; x < inputs.Count() && result; x++)
         {
             result = result && (lightstate[x] == goallights[x]);
         }
@@ -44,6 +42,11 @@ public class ThreeXThreeGridHandlerScript : MonoBehaviour {
         };
         needySelf.OnNeedyActivation += delegate ()
         {// Generate board with goal presses and mix up interactable board with lit/unilt tiles
+            if (forceDisable)
+            {
+                needySelf.HandlePass();
+                return;
+            }
             hasActivated = true;
             bool[] choices = new bool[] { true, false };
             for (int pos = 0; pos < lightstate.Count(); pos++)
@@ -184,7 +187,14 @@ public class ThreeXThreeGridHandlerScript : MonoBehaviour {
             StartCoroutine(FlashGoalOnWarning());
         }
     }
-    // TP commands
+    // TP Handling
+
+    void TwitchHandleForcedSolve()
+    {
+        forceDisable = true;
+        needySelf.HandlePass();
+        hasActivated = false;
+    }
     public readonly string TwitchHelpMessage = "Press a button with “!{0} tl” or “!{0} 1”. Buttons are tl, tm, tr, ml, mm, mr, bl, bm, br, or numbered 1–9 in reading order. Commands can be chained but must be spaced out. \"press\" is optional.";
     KMSelectable[] ProcessTwitchCommand(string input)
     {

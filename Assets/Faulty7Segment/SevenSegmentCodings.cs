@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public partial class SevenSegmentCodings : ScriptableObject {
+public partial class SevenSegmentCodings {
 	public string possibleValues;
 	public bool[,] segmentStates;
-	void Awake()
+
+	public SevenSegmentCodings()
 	{
-	possibleValues = "0123456789abcdefhjlnopruy-"; // The list of possible values that can be made in the coding strand.
-	segmentStates = new bool[,] {// Order for the segments: T, TR, BR, B, BL, TL, M; Respect possible values
+		possibleValues = "0123456789abcdefhjlnopruy-"; // The list of possible values that can be made in the coding strand.
+		segmentStates = new bool[,] {// Order for the segments: T, TR, BR, B, BL, TL, M; Respect possible values
 		{ true, true, true, true, true, true, false },		// 0
 		{ false, true, true, false, false, false, false },	// 1
 		{ true, true, false, true, true, false, true },		// 2
@@ -36,6 +37,16 @@ public partial class SevenSegmentCodings : ScriptableObject {
 		{ false, true, true, true, false, true, true },		// y, lowercase due to limited segments
 		{ false, false, false, false, false, false, true }	// -
 	};
+	}
+	public SevenSegmentCodings(string readValues,bool[,] segmentRenders)
+	{
+		possibleValues = readValues;
+		segmentStates = segmentRenders;
+	}
+	
+	void Awake()
+	{
+
 	}
 	
 }

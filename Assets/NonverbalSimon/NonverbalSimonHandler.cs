@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using KModkit;
+using System.Linq;
 
 public class NonverbalSimonHandler : MonoBehaviour {
 
@@ -48,16 +49,8 @@ public class NonverbalSimonHandler : MonoBehaviour {
         {
             // Calculate based on edgework shown.
             batteryCount = bombInfo.GetBatteryCount();
-            int onIndicators = 0;
-            foreach (string onind in bombInfo.GetOnIndicators()) // For some reason, it does not like .Count()
-            {
-                onIndicators++;
-            }
-            int offIndicators = 0;
-            foreach (string onind in bombInfo.GetOffIndicators()) // Same reason as before comment
-            {
-                offIndicators++;
-            }
+            int onIndicators = bombInfo.GetOnIndicators().Count();
+            int offIndicators = bombInfo.GetOffIndicators().Count();
             indicatorOffset = onIndicators - offIndicators;
             serialno = bombInfo.GetSerialNumber();
             // Orange Flash Divider
@@ -145,7 +138,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
             int y = x;
             buttons[x].OnInteract += delegate()
             {
-                canPlaySound = true;
+                //canPlaySound = true;
                 buttons[y].AddInteractionPunch();
                 someAudio.PlayGameSoundAtTransform( KMSoundOverride.SoundEffect.BigButtonPress, transform);
                 HandlePress(y);
@@ -248,10 +241,11 @@ public class NonverbalSimonHandler : MonoBehaviour {
         {
             StopCoroutine(FlashSingle(input));
             StopCoroutine(FlashSequence());
-            someAudio.PlaySoundAtTransform(pressNames[input], transform);
+            if (canPlaySound)
+                someAudio.PlaySoundAtTransform(pressNames[input], transform);
             StartCoroutine(FlashSingle(input));
             onCooldown = true;
-            if (flashes.Count>0&&input == correctInputs[flashes[currentpos]])
+            if (flashes.Count > 0 && input == correctInputs[flashes[currentpos]])
             {
                 currentpos++;
                 if (currentpos >= flashes.Count)
@@ -284,19 +278,15 @@ public class NonverbalSimonHandler : MonoBehaviour {
     // TP Handling
     public readonly string TwitchHelpMessage = "\"!{0} press Red/Orange/Yellow/Green\" to press the specified button in the command. Shorthand abbreviations are acceptable. Presses can be combined by spacing out the commands or as one word when abbreviated, I.E \"!{0} press royg\".";
 
-
-    IEnumerator HandleAutoSolve()
+    IEnumerator TwitchHandleForcedSolve()
     {
+        QuickDebug("A force solve has been issued viva TP Handler.");
         while (isActive)
         {
             buttons[correctInputs[flashes[currentpos]]].OnInteract();
             yield return new WaitForSeconds(0.1f);
         }
-    }
-    void TwitchHandleForcedSolve()
-    {
-        QuickDebug("A force solve has been issued viva TP Handler.");
-        StartCoroutine(HandleAutoSolve());
+        yield return true;
     }
 
     KMSelectable[] ProcessTwitchCommand(string command)

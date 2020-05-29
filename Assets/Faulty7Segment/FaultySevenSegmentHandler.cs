@@ -286,7 +286,7 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 			{
 				yield return null;
 				selectable.OnInteract();
-				yield return new WaitForSeconds(0.3f);
+				yield return new WaitForSeconds(0.2f);
 			}
 		}
 		yield break;

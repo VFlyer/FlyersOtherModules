@@ -19,7 +19,7 @@ public class BuzzFizzHandler : MonoBehaviour {
 
     private static int modid = 1; // Changable Mod ID
     private int cmodID; // current mod ID
-    private bool iswarning = false;
+    private bool iswarning = false, forceDisable = false;
     void Awake()
     {
         cmodID = modid++;
@@ -30,6 +30,12 @@ public class BuzzFizzHandler : MonoBehaviour {
 
         needyModule.OnNeedyActivation += delegate ()
         {
+            if (forceDisable)
+            {
+                needyModule.HandlePass();
+                return;
+            }
+
             targetnumber = Random.Range(0, int.MaxValue);
             textnumber.text = targetnumber.ToString();
 
@@ -91,6 +97,14 @@ public class BuzzFizzHandler : MonoBehaviour {
         textnumber.text = "Pending...";
         yield return null;
     }
+
+    void TwitchHandleForcedSolve()
+    {
+        Debug.LogFormat("[BuzzFizz #{0}]: Forcably disabling the module viva TP Handler.", cmodID);
+        forceDisable = true;
+        needyModule.HandlePass();
+    }
+
     public readonly string TwitchHelpMessage = "To turn the dial a specific number of times, do \"!{0} turn/rotate #\". The dial turns # % 4 times based on the command inputted. (4n turns will turn the dial 4 times.)";
     KMSelectable[] ProcessTwitchCommand(string input)
     {

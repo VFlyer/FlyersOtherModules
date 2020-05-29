@@ -1,0 +1,210 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Singularity Wires — Keep Talking and Nobody Explodes Module</title>
+    <meta name="viewport" content="initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+	<link href='https://fonts.googleapis.com/css?family=Special+Elite' rel='stylesheet' type='text/css'>
+    <script src="js/ktane-utils.js"></script>
+	<style>
+		.footnote {
+            font-style: italic;
+            font-size: 12px;
+            margin-left: 00 cm;
+        }
+		div.footnote {
+                font-size: 75%;
+                margin-left: 10%;
+                margin-top: 1.5em;
+                position: relative;
+            }
+		div.footnote::before {
+			content: '';
+			position: absolute;
+			left: -1em;
+		}
+		div.footnote::after {
+			content: '';
+			position: absolute;
+			border-top: 1px solid #aaa;
+			left: -1em;
+			top: -1em;
+			width: 15em;
+		}
+		div.footnote p {
+			margin: 0;
+		}
+		table.condition {
+			width: 100%;
+			text-align: center;
+			font-size: 62.5%;
+		}
+		table.condition th
+		{
+			 font-size: 200%;
+		}
+	</style>
+</head>
+<body>
+    <div id="ManualContent">
+        <div class="section">
+            <div class="page page-bg-01">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Singularity Wires</span>
+                </div>
+                <div class="page-content">
+                    <img src="img/Component/Singularity%20Button.svg" class="diagram">
+                    <h2>On the Subject of Singularity Wires</h2>
+                    <p class="flavour-text">It's just two wires, right? Why do we bring up more of those anyway?</p>
+					<p>This module consists of two wires connected to a round screen at the center. The screen may or may not show anything at a certain time interval. To disarm this module, you must disarm <strong>ALL</strong> instances of Singularity Wires attached to the given casing by interacting with them in a specific way. An incorrect combination of actions on the wires will cause a strike. The display on Singularity Wires may or may not change after a strike. The color of the wires will not change, however.</p>
+					<h1 style="text-align: center;margin-top: 20%">Table of Contents</h1>
+					<ol>
+						<li>Appendix: The Disarm Button</li>
+						<li>Solving 1 Singularity Wires</li>
+						<li>Solving 2 Singularity Wires</li>
+						<li>Solving 3 Singularity Wires</li>
+						<li>Solving 4 Singularity Wires</li>
+						<li>Solving 5+ Singularity Wires</li>
+					</ol>
+					
+                </div>
+                <div class="page-footer relative-footer">Page 1 of 14</div>
+            </div>
+            <div class="page page-bg-02">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Singularity Wires</span>
+                </div>
+                <div class="page-content">
+                    <h2>Appendix: The Disarm Button</h2>
+					<img src="img/Component/ManualDisarmButton.svg" class="diagram">
+					<p class="flavour-text">It's there for a reason. And yes, you may not like it at all.</p>
+					<p>On the back of the module is a red rectangular button that says "DISARM MODULE MANUALLY." When pressed, this will automatically disarm the given Singularity Wires only when Singularity Wires are put in a "solve state". Due to strange natures on the "solve detection system" for modules that handle synchronized solves like Singularity Wires, all Singularity Wires will flip to the back due to the fact that there is no way Singularity Wires could directly connect to a module that relies on solves without an override. Notable actions that forbid synchronized solves are, reading a stage on major modules that require an input at the end, and inputting an answer on a module before another solve. No time, solve or strike dependent actions are required for the disarm button to be pressed.</p>
+                </div>
+				<div class="footnote">
+					<p>Originally, Singularity Wires was going to detect if certain modules were present on the bomb or if there was 1 instance of Singularity Wires. In summary, the effort to set up a system for solve dependent detection system was not worth the time at the end.</p>
+				</div>
+                <div class="page-footer relative-footer">Page 2 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Wires</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 1 Singularity Wires</h2>
+					<p class="flavour-text">It's an easy choice between those two, right? He said this one is easy.</p>
+					<p>Follow the table from top to bottom based on a set of conditions. Cutting either wire will disarm the module. Cut the wire given from the table to avoid a strike.</p>
+					<table class="condition">
+						<tr>
+							<th colspan="16">Start Here</th>
+						</tr>
+						<tr>
+							<td colspan="8">Left wire is Red</td>
+							<td colspan="8">Else</td>
+						</tr>
+						<tr>
+							<td colspan="4">Right wire is not Red</td>
+							<td colspan="4">Else</td>
+							<td colspan="4">Right wire is White</td>
+							<td colspan="4">Else</td>
+						</tr>
+						<tr>
+							<td colspan="2">Screen shows 0, 1, 2, 3, or 4</td>
+							<td colspan="2">Else</td>
+							<td colspan="2">Screen shows 5, 6, 7, 8, or 9</td>
+							<td colspan="2">Else</td>
+							<td colspan="2">Screen shows 4, 5, 6, 7, or 8</td>
+							<td colspan="2">Else</td>
+							<td colspan="2">Screen shows 9, 0, 1, 2, or 3</td>
+							<td colspan="2">Else</td>
+						</tr>
+						<tr>
+							<td>A, E, I, O, or U in serial no.</td>
+							<td>Else</td>
+							<td>1, 2, 3, 4, or 5 in serial no.</td>
+							<td>Else</td>
+							<td>6, 7, 8, 9, nor 0 in serial no.</td>
+							<td>Else</td>
+							<td>Right wire is not Black</td>
+							<td>Else</td>
+							<td>A, E, I, O, nor U in serial no.</td>
+							<td>Else</td>
+							<td>6, 7, 8, 9, or 0 in serial no.</td>
+							<td>Else</td>
+							<td>Right wire is White</td>
+							<td>Else</td>
+							<td>1, 2, 3, 4, nor 5 in serial no.</td>
+							<td>Else</td>
+						</tr>
+						<tr>
+							<td>Cut Right</td>
+							<td>Cut Left</td>
+							<td>Cut Left</td>
+							<td>Cut Right</td>
+							<td>Cut Right</td>
+							<td>Cut Left</td>
+							<td>Cut Right</td>
+							<td>Cut Left</td>
+							<td>Cut Left</td>
+							<td>Cut Right</td>
+							<td>Cut Left</td>
+							<td>Cut Right</td>
+							<td>Cut Right</td>
+							<td>Cut Left</td>
+							<td>Cut Left</td>
+							<td>Cut Right</td>
+						</tr>
+					</table>
+                </div>
+                <div class="page-footer relative-footer">Page 3 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Wires</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 2 Singularity Wiress</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 4 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Wires</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 3 Singularity Wiress</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 5 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Wires</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 4 Singularity Wiress</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 6 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Wires</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 5+ Singularity Wiress</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 7 of 14</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -12,7 +12,7 @@ public class SevenSegmentDisplay : MonoBehaviour {
 	// Use this for initialization
 	void Awake()
 	{
-		segmentHandling = ScriptableObject.CreateInstance<SevenSegmentCodings>();
+		segmentHandling = new SevenSegmentCodings();
 	}
 	void Start () {
 		currentValue = "";

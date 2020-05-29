@@ -407,7 +407,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1172217217148488}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -419,7 +419,7 @@ Transform:
   - {fileID: 4525828637959394}
   m_Father: {fileID: 4283374344840416}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
 --- !u!4 &4711427232270002
 Transform:
   m_ObjectHideFlags: 1
@@ -1130,7 +1130,6 @@ MonoBehaviour:
   textColorblind: {fileID: 102595761767704022}
   disarmButton: {fileID: 114323983609063212}
   buttonFront: {fileID: 114263400099437542}
-  bossModule: {fileID: 0}
   bombInfo: {fileID: 114873876139256150}
   modSelf: {fileID: 114322943547317960}
   colorblindMode: {fileID: 114842235304491386}

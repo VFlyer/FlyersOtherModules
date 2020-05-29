@@ -602,6 +602,13 @@ public class ForgetInfinity : MonoBehaviour {
 #pragma warning restore IDE0051 // Remove unused private members
     IEnumerator HandleAutoSolve()
     {
+        if (autosolvable)
+        {
+            ButtonDigits[0].OnInteract();
+            yield return true;
+            yield break;
+        }
+
         inFinale = true;
         yield return new WaitForFixedUpdate();
         List<int> autoSolveStages = possibleStages.Where(a => a >= 0).ToList();
