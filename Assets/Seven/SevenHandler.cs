@@ -627,11 +627,6 @@ public class SevenHandler : MonoBehaviour {
 		}
 		else
 		{
-			if (!isSubmitting)
-			{
-				yield return "sendtochaterror The module is not ready to submit yet. Use the \"submit\" command to make the module enter submission mode.";
-				yield break;
-			}
 			List<string> segmentString = new List<string>() { "1", "2", "3", "4", "5", "6", "7" };
 			List<KMSelectable> pressables = new List<KMSelectable>();
 			foreach (string commandPart in commandLower.Split())
@@ -656,6 +651,11 @@ public class SevenHandler : MonoBehaviour {
 					yield return "sendtochaterror Sorry but what is \"" + commandPart + "\" supposed to be?";
 					yield break;
 				}
+			}
+			if (!isSubmitting)
+			{
+				yield return "sendtochaterror The module is not ready to submit yet. Use the \"submit\" command to make the module enter submission mode.";
+				yield break;
 			}
 			yield return null;
 			yield return pressables.ToArray();
