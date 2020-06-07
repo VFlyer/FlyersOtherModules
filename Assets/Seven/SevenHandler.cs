@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SevenHandler : MonoBehaviour {
 
@@ -36,6 +37,8 @@ public class SevenHandler : MonoBehaviour {
 	// Detection and Logging
 	bool zenDetected, timeDetected, hasStarted, isSubmitting, interactable = false, colorblinddetected;
 	int curIdx = 0, curStrikeCount, localStrikes = 0;
+
+	IEnumerator currentHandler;
 
 	// Use this for initialization
 	void Awake()
@@ -171,6 +174,10 @@ public class SevenHandler : MonoBehaviour {
 						UpdateSegments(true);
 						localStrikes += timeDetected ? 1 : 0;
 						segmentsColored = new int[7];
+						if (currentHandler != null)
+							StopCoroutine(currentHandler);
+						currentHandler = AnimateText();
+						StartCoroutine(currentHandler);
 					}
 				}
 			}
@@ -323,6 +330,19 @@ public class SevenHandler : MonoBehaviour {
 			colorblindIndc.text = colorblinddetected ? (idxOperations[curIdx] < 0 || idxOperations[curIdx] >= 4 ? "K": cPalleteCBlind[idxOperations[curIdx]]) : "";
 		}
 	}
+	IEnumerator AnimateText()
+	{
+		string allTextPossible = segmentCodings.possibleValues;
+		for (int x = 0; x < 20; x++)
+		{
+			stageIndc.color = Color.red;
+			stageIndc.text = new char[] { allTextPossible[Random.Range(0, allTextPossible.Length)], allTextPossible[Random.Range(0, allTextPossible.Length)], allTextPossible[Random.Range(0, allTextPossible.Length)] }.Join("");
+			yield return new WaitForSeconds(0f);
+		}
+		stageIndc.text = "SUB";
+		stageIndc.color = Color.white;
+		yield break;
+	}
 	void UpdateSegments(bool canValidCheck)
 	{
 		for (int x = 0; x < segments.Length; x++)
@@ -441,7 +461,7 @@ public class SevenHandler : MonoBehaviour {
 				yield return new WaitForSeconds(0.1f);
 			}
 		}
-
+		// Old auto-solve handler.
 /*		for (int x = 0; x < segmentsSolution.Length; x++)
 		{
 			if (segmentsColored[x] != segmentsSolution[x])
@@ -470,6 +490,11 @@ public class SevenHandler : MonoBehaviour {
 #pragma warning restore IDE0044 // Add readonly modifier
 	IEnumerator ProcessTwitchCommand(string command)
 	{
+		if (!hasStarted)
+		{
+			yield return "sendtochaterror I'm not letting you interact with this module immediately. Wait for a bit until the module is ready.";
+			yield break;
+		}
 		string commandLower = command.ToLower();
 		if (commandLower.RegexMatch(@"^led\scycle\s\d+\s\d+$"))
 		{
@@ -602,11 +627,17 @@ public class SevenHandler : MonoBehaviour {
 			if (timePossible > 0 && timePossible < 10)
 			{
 				curCycleDelay = timePossible;
-				yield return "sendtochat {0}, I have setted the cycle speed for this module to " + intereptedDigit + " second(s).";
+				yield return "sendtochat {0}, I have setted the cycle speed for 7 (Mod ID {1}) to " + intereptedDigit + " second(s).";
 			}
 			else
-				yield return "sendtochaterror {0}, I am not setting the cycle speed for this module to " + intereptedDigit + " second(s).";
+				yield return "sendtochaterror {0}, I am not setting the cycle speed for 7 (Mod ID {1}) to " + intereptedDigit + " second(s).";
 			
+		}
+		else if (commandLower.RegexMatch(@"^colou?rblind$"))
+		{
+			yield return null;
+			colorblinddetected = !colorblinddetected;
+			DisplayGivenValue(displayedValues[curIdx]);
 		}
 		else if (commandLower.RegexMatch(@"^segments$"))
 		{

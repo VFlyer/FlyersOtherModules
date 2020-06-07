@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using KModkit;
 using System.Linq;
+using NUnit.Framework;
 
 public class NonverbalSimonHandler : MonoBehaviour {
 
@@ -32,7 +33,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
     private bool isActive = false;
     private int stagesCompleted = 0;
     private int stagesToComplete = 3;
-    private bool canPlaySound = false;
+    private bool canPlaySound = false, hasStruck = false, forceMute = false;
 
     // Use this for initialization
     public List<string> GrabCombinedFlashes() // In case of Souvenir Support. 
@@ -138,7 +139,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
             int y = x;
             buttons[x].OnInteract += delegate()
             {
-                //canPlaySound = true;
+                canPlaySound = !forceMute;
                 buttons[y].AddInteractionPunch();
                 someAudio.PlayGameSoundAtTransform( KMSoundOverride.SoundEffect.BigButtonPress, transform);
                 HandlePress(y);
@@ -272,6 +273,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
                 modself.HandleStrike();
                 QuickDebug("The defuser pressed " + colorlist[input] + " which is wrong for the " + new string[] { "1st", "2nd", "3rd", "4th", "5th" }[currentpos] + " flash.");
                 currentpos = 0;
+                hasStruck = true;
             }
         }
     }
@@ -289,13 +291,21 @@ public class NonverbalSimonHandler : MonoBehaviour {
         yield return true;
     }
 
-    KMSelectable[] ProcessTwitchCommand(string command)
+    IEnumerator ProcessTwitchCommand(string command)
     {
         string input = command.ToLower();
-        if (input.RegexMatch(@"^press\s[royg]+$"))
+        List<KMSelectable> kMSelectables = new List<KMSelectable>();
+        if (input.RegexMatch(@"^(always)?mute$"))
+        {
+            yield return null;
+            yield return "sendtochat {0}, the sounds will now stop playing from this module.";
+            forceMute = true;
+            canPlaySound = false;
+            yield break;
+        }
+        else if (input.RegexMatch(@"^press\s[royg]+$"))
         {
             input = input.Substring(6).ToLower();
-            List<KMSelectable> kMSelectables = new List<KMSelectable>();
             foreach (char press in input)
             {
                 switch (press)
@@ -312,16 +322,14 @@ public class NonverbalSimonHandler : MonoBehaviour {
                     case 'g':
                         kMSelectables.Add(buttons[3]);
                         break;
-                    default: return null;
+                    default: yield break;
                 }
             }
-            return kMSelectables.ToArray();
         }
-        else if (input.RegexMatch(@"^press\s"))
+        else if (input.RegexMatch(@"^press(\s(r(ed)?|o(range)?|y(ellow)?|g(reen)?))+$"))
         {
             input = input.Substring(6).ToLower();
             string[] presses = input.Trim().Split(' ');
-            List<KMSelectable> kMSelectables = new List<KMSelectable>();
             foreach (string press in presses)
             {
                 switch (press)
@@ -342,11 +350,19 @@ public class NonverbalSimonHandler : MonoBehaviour {
                     case "g":
                         kMSelectables.Add(buttons[3]);
                         break;
-                    default: return null;
+                    default: yield break;
                 }
             }
-            return kMSelectables.ToArray();
         }
-        return null;
+        if (kMSelectables.Any())
+        {
+            hasStruck = false;
+            for (int x = 0; x < kMSelectables.Count && !hasStruck; x++)
+            {
+                yield return null;
+                kMSelectables[x].OnInteract();
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
     }
 }
