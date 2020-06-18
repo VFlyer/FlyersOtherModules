@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class SevenHandler : MonoBehaviour {
 
@@ -117,7 +116,7 @@ public class SevenHandler : MonoBehaviour {
 				else
 				{
 					curStrikeCount = info.GetStrikes();
-					if (zenDetected || (timeDetected && localStrikes >= 2) || (!zenDetected && !timeDetected && curStrikeCount > 1))
+					if (zenDetected || (timeDetected && localStrikes > 0) || (!zenDetected && !timeDetected && curStrikeCount > 0))
 					{
 						isSubmitting = false;
 						for (int x = 0; x < colorTriangles.Length; x++)
@@ -354,7 +353,7 @@ public class SevenHandler : MonoBehaviour {
 	}
 	// Update is called once per frame
 	int animPrt = 0;
-	void Update () {
+	void FixedUpdate () {
 		if (isSubmitting && interactable)
 		{
 			animPrt++;
@@ -368,11 +367,11 @@ public class SevenHandler : MonoBehaviour {
 				{
 					LEDMesh.material.color = Color.cyan;
 				}
-				else if (timeDetected && localStrikes >= 2)
+				else if (timeDetected && localStrikes > 0)
 				{
 					LEDMesh.material.color = new Color(1, 0.5f, 0);
 				}
-				else if (!zenDetected && !timeDetected && info.GetStrikes() > 1)
+				else if (!zenDetected && !timeDetected && info.GetStrikes() > 0)
 				{
 					LEDMesh.material.color = Color.red;
 				}

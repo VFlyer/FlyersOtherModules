@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
-using KMBombInfoExtensions;
 using System.Linq;
+using KModkit;
+
 public class ThreeXThreeGridHandlerScript : MonoBehaviour {
 
     // Use this for initialization

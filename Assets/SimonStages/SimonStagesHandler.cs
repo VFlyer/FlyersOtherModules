@@ -695,7 +695,7 @@ public class SimonStagesHandler : MonoBehaviour
             while (moduleLocked);
             yield return null;
             presses[x].OnInteract();
-            yield return new WaitForSeconds(0);
+            yield return new WaitForSeconds(0.1f);
             if (lastTotalPresses == totalPresses) // Check if the input correctly got processed. 
                 x--;
             else

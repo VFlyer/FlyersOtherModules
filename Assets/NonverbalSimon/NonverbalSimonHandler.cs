@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using KModkit;
 using System.Linq;
-using NUnit.Framework;
 
 public class NonverbalSimonHandler : MonoBehaviour {
 
