@@ -205,10 +205,10 @@ public class RapidSubtractionHandler : MonoBehaviour {
 	void IncreaseStreak()
 	{
 		progressHandler.Increment();
-		needyHandler.HandlePass();
 		isActivated = false;
 		debugValInput = 0;
 		ModifyDelay();
+		needyHandler.HandlePass();
 	}
 	void ResetStreak()
 	{

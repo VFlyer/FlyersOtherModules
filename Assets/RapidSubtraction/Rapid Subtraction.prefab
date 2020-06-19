@@ -1793,7 +1793,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 3d2e2ed63c7a0ed4cb4a7a6d1661e19e, type: 3}
+  - {fileID: 2100000, guid: b8adafa40120aea4ab25d07fca18d76c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2541,7 +2541,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 3d2e2ed63c7a0ed4cb4a7a6d1661e19e, type: 3}
+  - {fileID: 2100000, guid: b8adafa40120aea4ab25d07fca18d76c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3226,7 +3226,7 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Parent: {fileID: 114287927975405372}
   Children: []
   IsPassThrough: 0
   ChildRowLength: 0
@@ -3367,7 +3367,7 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Parent: {fileID: 114287927975405372}
   Children: []
   IsPassThrough: 0
   ChildRowLength: 0
@@ -3389,7 +3389,7 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Parent: {fileID: 114287927975405372}
   Children: []
   IsPassThrough: 0
   ChildRowLength: 0
@@ -3450,7 +3450,7 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Parent: {fileID: 114287927975405372}
   Children: []
   IsPassThrough: 0
   ChildRowLength: 0
@@ -3498,7 +3498,7 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Parent: {fileID: 114287927975405372}
   Children: []
   IsPassThrough: 0
   ChildRowLength: 0
@@ -3520,7 +3520,7 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Parent: {fileID: 114287927975405372}
   Children: []
   IsPassThrough: 0
   ChildRowLength: 0
@@ -3619,7 +3619,7 @@ MonoBehaviour:
   - {fileID: 114256746552272088}
   - {fileID: 114429025285188146}
   - {fileID: 114252097353221358}
-  IsPassThrough: 0
+  IsPassThrough: 1
   ChildRowLength: 3
   Highlight: {fileID: 114049409042590154}
   SelectableColliders: []
@@ -3730,7 +3730,7 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Parent: {fileID: 114287927975405372}
   Children: []
   IsPassThrough: 0
   ChildRowLength: 0
@@ -3832,7 +3832,7 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Parent: {fileID: 114287927975405372}
   Children: []
   IsPassThrough: 0
   ChildRowLength: 0
@@ -3878,7 +3878,7 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Parent: {fileID: 114287927975405372}
   Children: []
   IsPassThrough: 0
   ChildRowLength: 0
@@ -3981,7 +3981,7 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Parent: {fileID: 114287927975405372}
   Children: []
   IsPassThrough: 0
   ChildRowLength: 0
@@ -4003,7 +4003,7 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Parent: {fileID: 114287927975405372}
   Children: []
   IsPassThrough: 0
   ChildRowLength: 0
@@ -4194,7 +4194,7 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Parent: {fileID: 114287927975405372}
   Children: []
   IsPassThrough: 0
   ChildRowLength: 0
