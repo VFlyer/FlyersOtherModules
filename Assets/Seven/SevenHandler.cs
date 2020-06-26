@@ -34,23 +34,75 @@ public class SevenHandler : MonoBehaviour {
 	int curModID;
 
 	// Detection and Logging
-	bool zenDetected, timeDetected, hasStarted, isSubmitting, interactable = false, colorblinddetected;
+	bool zenDetected, timeDetected, hasStarted, isSubmitting, interactable = false, colorblinddetected, uncapAll = false, delayChallenge = false, hasSubmitted = false;
 	int curIdx = 0, curStrikeCount, localStrikes = 0;
 
 	IEnumerator currentHandler;
+	SevenSettings sevenSettings = new SevenSettings();
 
 	// Use this for initialization
 	void Awake()
 	{
 		segmentCodings = new SevenSegmentCodings();
 		curModID = ++modID;
+		for (int x = 0; x < segments.Length; x++)
+			segments[x].material = matSwitch[0];
+		for (int x = 0; x < colorTriangles.Length; x++)
+			colorTriangles[x].material = matSwitch[0];
+		LEDMesh.material = matSwitch[0];
+		stageIndc.text = "";
+		try {
+			ModConfig<SevenSettings> config = new ModConfig<SevenSettings>("SevenSettings");
+			sevenSettings = config.Settings;
+			config.Settings = sevenSettings;
 
+			uncapAll = !sevenSettings.hardCapStageGeneration;
+		}
+		catch {
+			Debug.LogWarningFormat("<7 #{0}>: Settings for 7 do not work as intended! Using default settings instead!", curModID);
+			uncapAll = false;
+		}
+		finally
+		{
+			try
+			{
+				colorblinddetected = colorblindMode.ColorblindModeActive;
+			}
+			catch
+			{
+				colorblinddetected = false;
+			}
+		}
+		colorblindIndc.text = "";
+	}
+	void Start () {
+		modSelf.OnActivate += delegate {
+			for (int x = 0; x < segments.Length; x++)
+				segments[x].material = matSwitch[1];
+			for (int z = 0; z < colorTriangles.Length; z++)
+			{
+				colorTriangles[z].material = matSwitch[1];
+				colorTriangles[z].material.color = Color.black;
+			}
+			LEDMesh.material = matSwitch[1];
+			int modCount = info.GetSolvableModuleNames().Count;
+			int stagesToGenerate = uncapAll ? modCount : Mathf.Min(modCount, 7);
+			Debug.LogFormat("[7 #{0}]: Modules detected: {1}", curModID, modCount);
+			GenerateStages(stagesToGenerate);
+			CalculateSolution();
+			zenDetected = ZenModeActive;
+			timeDetected = TimeModeActive;
+			DisplayGivenValue(displayedValues[curIdx]);
+			hasStarted = true;
+			interactable = true;
+
+		};
 		for (int x = 0; x < segmentSelectables.Length; x++)
 		{
 			int y = x;
 			segmentSelectables[x].OnInteract += delegate {
 				segmentSelectables[y].AddInteractionPunch();
-				audioMod.PlaySoundAtTransform(soundsPressNames[Random.Range(0,soundsPressNames.Length)], transform);
+				audioMod.PlaySoundAtTransform(soundsPressNames[Random.Range(0, soundsPressNames.Length)], transform);
 				if (isSubmitting && interactable)
 				{
 					segmentsColored[y] = curSelectedColor;
@@ -59,19 +111,20 @@ public class SevenHandler : MonoBehaviour {
 				return false;
 			};
 			segmentSelectables[x].OnHighlight += delegate {
-				if (isSubmitting) return;
+				if (isSubmitting || !hasStarted) return;
 				//Debug.LogFormat("segment {0} Highlighted", y);
 				Color segmentColor = segments[y].material.color;
 				int idx = Mathf.RoundToInt(segmentColor.r)
 				+ Mathf.RoundToInt(segmentColor.g) * 2
 				+ Mathf.RoundToInt(segmentColor.b) * 4;
-				if (idx >= 0 && idx < colorTrianglesHL.Length) {
+				if (idx >= 0 && idx < colorTrianglesHL.Length)
+				{
 					colorTrianglesHL[idx].enabled = true;
 					colorTriangles[idx].material.color = new Color(idx % 2, idx / 2 % 2, idx / 4 % 2);
 				}
 			};
 			segmentSelectables[x].OnHighlightEnded += delegate {
-				if (isSubmitting) return;
+				if (isSubmitting || !hasStarted) return;
 				//Debug.LogFormat("segment {0} Dehighlighted", y);
 				for (int z = 0; z < colorTrianglesHL.Length; z++)
 				{
@@ -153,6 +206,7 @@ public class SevenHandler : MonoBehaviour {
 				}
 				else
 				{
+					hasSubmitted = true;
 					if (segmentsColored.SequenceEqual(segmentsSolution))
 					{
 						audioMod.PlaySoundAtTransform("InputCorrect", transform);
@@ -181,45 +235,6 @@ public class SevenHandler : MonoBehaviour {
 				}
 			}
 			return false;
-		};
-		for (int x = 0; x < segments.Length; x++)
-			segments[x].material = matSwitch[0];
-		for (int x = 0; x < colorTriangles.Length; x++)
-			colorTriangles[x].material = matSwitch[0];
-		LEDMesh.material = matSwitch[0];
-		stageIndc.text = "";
-
-		try
-		{
-			colorblinddetected = colorblindMode.ColorblindModeActive;
-		}
-		catch
-		{
-			colorblinddetected = false;
-		}
-		colorblindIndc.text = "";
-	}
-	void Start () {
-		modSelf.OnActivate += delegate {
-			for (int x = 0; x < segments.Length; x++)
-				segments[x].material = matSwitch[1];
-			for (int z = 0; z < colorTriangles.Length; z++)
-			{
-				colorTriangles[z].material = matSwitch[1];
-				colorTriangles[z].material.color = Color.black;
-			}
-			LEDMesh.material = matSwitch[1];
-			int modCount = info.GetSolvableModuleNames().Count;
-			int stagesToGenerate = Mathf.Min(modCount, 7);
-			Debug.LogFormat("[7 #{0}]: Modules detected: {1}", curModID, modCount);
-			GenerateStages(stagesToGenerate);
-			CalculateSolution();
-			zenDetected = ZenModeActive;
-			timeDetected = TimeModeActive;
-			DisplayGivenValue(displayedValues[curIdx]);
-			hasStarted = true;
-			interactable = true;
-
 		};
 	}
 
@@ -340,7 +355,6 @@ public class SevenHandler : MonoBehaviour {
 		}
 		stageIndc.text = "SUB";
 		stageIndc.color = Color.white;
-		yield break;
 	}
 	void UpdateSegments(bool canValidCheck)
 	{
@@ -430,8 +444,64 @@ public class SevenHandler : MonoBehaviour {
 		
 		yield return null;
 	}
-	// TP Handler Begins here
+	// Uncapping Stage Gen
+	bool isSegmentAnim = false; 
+	IEnumerator HandleUncapSegmentDisplay()
+	{
+		
+		string allTextPossible = segmentCodings.possibleValues;
+		string displayText = "uncapped";
+		foreach (char letter in displayText)
+		{
+			for (int x = 0; x < segmentLogging.Length; x++)
+			{
+				int segIdx = segmentLogging[x];
+				int valIdx = segmentCodings.possibleValues.IndexOf(letter);
+				segments[x].material.color = valIdx != -1 && segmentCodings.segmentStates[valIdx, segIdx] ? Color.white : Color.black;
+			}
+			yield return new WaitForSeconds(0.25f);
+			for (int x = 0; x < segmentLogging.Length; x++)
+			{
+				segments[x].material.color = Color.black;
+			}
+			yield return new WaitForSeconds(0.05f);
+		}
+		isSegmentAnim = false;
+		yield return true;
+	}
+	IEnumerator UncapStageGen()
+	{
+		uncapAll = true;
+		string allTextPossible = segmentCodings.possibleValues;
+		audioMod.PlaySoundAtTransform("StaticStart", transform);
+		hasStarted = false;
+		isSegmentAnim = true;
+		StartCoroutine(HandleUncapSegmentDisplay());
+		Debug.LogFormat("[7 #{0}]: Uncapping 7 to the number of solvable modules on the bomb! Restarting entire procedure...", curModID);
+		while (isSegmentAnim)
+		{
+			stageIndc.color = new Color(Random.value, Random.value, Random.value);
+			stageIndc.text = new char[] { allTextPossible[Random.Range(0, allTextPossible.Length)], allTextPossible[Random.Range(0, allTextPossible.Length)], allTextPossible[Random.Range(0, allTextPossible.Length)] }.Join("");
+			yield return new WaitForSeconds(0.05f);
+		}
+		audioMod.PlaySoundAtTransform("StaticEnd", transform);
+		int totalSolvableCount = info.GetSolvableModuleNames().Count;
+		displayedValues.Clear();
+		idxOperations.Clear();
+		stageIndc.color = Color.white;
+		GenerateStages(totalSolvableCount);
+		DisplayGivenValue(displayedValues[curIdx]);
+		CalculateSolution();
+		hasStarted = true;
+		yield return true;
+	}
 
+	public class SevenSettings
+	{
+		public bool hardCapStageGeneration = true;
+	}
+
+	// TP Handler Begins here
 	IEnumerator TwitchHandleForcedSolve()
 	{
 		while (!hasStarted) yield return true;
@@ -443,9 +513,8 @@ public class SevenHandler : MonoBehaviour {
 		List<int> segementsSolSorted = segmentsSolution.OrderBy(a => a).ToList();
 		List<int> idxSorted = new int[] { 0, 1, 2, 3, 4, 5, 6 }.OrderBy(a => segmentsSolution[a]).ToList();
 
-
-		Debug.Log(segementsSolSorted.Join());
-		Debug.Log(idxSorted.Join());
+		Debug.LogFormat("<7 #{0}>: Debug, Solution Segments Sorted: {1}", curModID, segementsSolSorted.Join());
+		Debug.LogFormat("<7 #{0}>: Debug, Idx Segments Sorted by Solution Segments: {1}", curModID, idxSorted.Join());
 
 		for (int x = 0; x < idxSorted.Count; x++)
 		{
@@ -485,8 +554,14 @@ public class SevenHandler : MonoBehaviour {
 		"Cycle the stages with \"!{0} led cycle\" or \"!{0} led cycle # #\" for specific stages, go to a specific stage with \"!{0} led #\", or press the LED once with \"!{0} led\". Modify the cycle speed with \"!{0} cyclespeed #\" (1-9 seconds only) Highlight the segment's in reading order with \"!{0} segments\". Submit the current setup or enter submission mode with \"!{0} submit\"";
 	bool TwitchShouldCancelCommand;
 	int curCycleDelay = 3;
-
 #pragma warning restore IDE0044 // Add readonly modifier
+	IEnumerator HandleDelay()
+	{
+		delayChallenge = true;
+		yield return new WaitForSeconds(5f);
+		delayChallenge = false;
+	}
+
 	IEnumerator ProcessTwitchCommand(string command)
 	{
 		if (!hasStarted)
@@ -495,7 +570,41 @@ public class SevenHandler : MonoBehaviour {
 			yield break;
 		}
 		string commandLower = command.ToLower();
-		if (commandLower.RegexMatch(@"^led\scycle\s\d+\s\d+$"))
+		if (commandLower.RegexMatch(@"^(uncap|challenge\s?me)$"))
+		{
+			int totalSolvableCount = info.GetSolvableModuleNames().Count;
+			if (uncapAll)
+			{
+				yield return "sendtochaterror The module already uncapped the stage limits.";
+				yield break;
+			}
+			else if (totalSolvableCount <= 7)
+			{
+				yield return "sendtochaterror Uncapping seems to be redundant with this few modules on the bomb. Maybe do it when there are more modules on the bomb.";
+				yield break;
+			}
+			else if (isSubmitting || hasSubmitted)
+			{
+				yield return "sendtochat {0}, someone already tampered with 7 (#{1}). You'll have to do this when the module has not yet been submitted yet.";
+				yield break;
+			}
+			else if (!delayChallenge)
+			{
+				
+				StartCoroutine(HandleDelay());
+				yield return "sendtochat {0}, are you sure you want to uncap 7 (#{1})? Type in the same command within 5 seconds to confirm.";
+				yield break;
+			}
+			else
+			{
+				StopCoroutine("HandleDelay");
+				yield return null;
+				StartCoroutine(UncapStageGen());
+				yield return "sendtochat {0}, you've asked for it.";
+				yield break;
+			}
+		}
+		else if (commandLower.RegexMatch(@"^led\scycle\s\d+\s\d+$"))
 		{
 			if (isSubmitting)
 			{
@@ -545,7 +654,7 @@ public class SevenHandler : MonoBehaviour {
 			}
 
 		}
-		else if (commandLower.RegexMatch(@"^led(\s(cycle|\d))?$"))
+		else if (commandLower.RegexMatch(@"^led(\s(cycle|\d+))?$"))
 		{
 
 			string leftover = commandLower.Length > 4 ? commandLower.Substring(4) : "";
@@ -577,18 +686,18 @@ public class SevenHandler : MonoBehaviour {
 						}
 						break;
 					}
-				case "0":
-				case "1":
-				case "2":
-				case "3":
-				case "4":
-				case "5":
-				case "6":
-				case "7":
-				case "8":
-				case "9":
+				case "":
+					yield return null;
+					LED.OnInteract();
+					yield break;
+				default:
 					{
-						string stagesAccessible = "0123456789".Substring(0, displayedValues.Count);
+						
+						List<string> stagesAccessible = new List<string>();
+						for (var x = 0; x < idxOperations.Count; x++)
+						{
+							stagesAccessible.Add(x.ToString());
+						}
 						int specifiedStage = stagesAccessible.IndexOf(leftover);
 						if (specifiedStage == -1)
 						{
@@ -600,7 +709,7 @@ public class SevenHandler : MonoBehaviour {
 							yield return "sendtochaterror Sorry, but the specified stage \"" + leftover + "\" is already being shown.";
 							yield break;
 						}
-						while (curIdx != specifiedStage)
+						while (curIdx != specifiedStage && !TwitchShouldCancelCommand)
 						{
 							yield return new WaitForSeconds(0.1f);
 							yield return null;
@@ -608,13 +717,6 @@ public class SevenHandler : MonoBehaviour {
 						}
 						break;
 					}
-				case "":
-					yield return null;
-					LED.OnInteract();
-					yield break;
-				default:
-					yield return "sendtochaterror You aren't supposed to get this error.";
-					yield break;
 			}
 		}
 		else if (commandLower.RegexMatch(@"^cycle\s?speed\s\d+$"))
@@ -626,10 +728,10 @@ public class SevenHandler : MonoBehaviour {
 			if (timePossible > 0 && timePossible < 10)
 			{
 				curCycleDelay = timePossible;
-				yield return "sendtochat {0}, I have setted the cycle speed for 7 (Mod ID {1}) to " + intereptedDigit + " second(s).";
+				yield return "sendtochat {0}, I have setted the cycle speed for 7 (#{1}) to " + intereptedDigit + " second(s).";
 			}
 			else
-				yield return "sendtochaterror {0}, I am not setting the cycle speed for 7 (Mod ID {1}) to " + intereptedDigit + " second(s).";
+				yield return "sendtochaterror {0}, I am not setting the cycle speed for 7 (#{1}) to " + intereptedDigit + " second(s).";
 			
 		}
 		else if (commandLower.RegexMatch(@"^colou?rblind$"))
@@ -651,6 +753,12 @@ public class SevenHandler : MonoBehaviour {
 		}
 		else if (commandLower.RegexMatch(@"^sub(mit)?$"))
 		{
+			if (isSubmitting && segmentsColored.SequenceEqual(segmentsSolution) && uncapAll)
+			{
+				yield return "sendtochat {0}, You really got this in the bag huh?";
+				yield return "awardpoints " + ((idxOperations.Count-8)*2).ToString();
+			}
+
 			yield return null;
 			stageDisplay.OnInteract();
 			yield return "solve";

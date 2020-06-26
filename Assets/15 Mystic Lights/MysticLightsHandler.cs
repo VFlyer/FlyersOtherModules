@@ -735,7 +735,7 @@ public class MysticLightsHandler : MonoBehaviour {
             }
             else
             {
-                yield return "sendtochaterror I'm sorry but what is " + cord + "?";
+                yield return "sendtochaterror I'm sorry but what coordinate is \"" + cord + "\" supposed to be?";
                 yield break;
             }
         }

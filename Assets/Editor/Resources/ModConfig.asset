@@ -13,20 +13,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: flyerModulesMisc
   title: Flyer's Other Modules
-  description: "A collection of 8 (and possibly growing) modules made by VFlyer with
-    some modules from other ideas.\n\nMod contains 3x3 Grid, \u2756, Time Accumulation,
+  description: "A collection of 11 (and possibly growing) modules made by VFlyer with
+    some modules from other ideas.\r\n\r\nMod contains 3x3 Grid, \u2756, Time Accumulation,
     BuzzFizz, Forget It Not, 15 Mystic Lights, Simon Stages, Forget Infinity, Faulty
-    7 Segment Displays\nThe following original ideas are by the following users in
-    this pack:\n3x3 Grid: Lumbud84\n\u2756: Mirage Xel\nTime Accumulation: Kusane\nBuzzFizz:
-    Blananas2\nForget It Not: RubyBfdi\nForget Infinity: Oshisure, Ry0001 (Revived
-    by VFlyer to be more suitable)\nSimon Stages: Madela\n\nNon-example assets used:
-    Asset pack from Royal_Flu$h's tutorials, Simon's Stages assets, Divided Squares
-    backing by Timwi, Old FMN model by Hexicube, custom dial self-made\n\nThe 6 Manuals
-    can be found built-in or from these repository links:\n[url=https://ktane.timwi.de/HTML/BuzzFizz.html]BuzzFizz[/url]\n[url=https://ktane.timwi.de/HTML/3x3%20Grid.html]3x3
-    Grid[/url]\n[url=https://ktane.timwi.de/HTML/Forget%20It%20Not.html]Forget It
-    Not[/url]\n[url=https://ktane.timwi.de/HTML/%E2%9D%96.html]\u2756[/url]\n[url=https://ktane.timwi.de/HTML/Time%20Accumulation.html]Time
-    Accumulation[/url]\n[url=https://ktane.timwi.de/HTML/15%20Mystic%20Lights.html]15
-    Mystic Lights[/url]"
+    7 Segment Displays, 7\r, Rapid Subtraction\nThe following original ideas are by
+    the following users in this pack:\r\n3x3 Grid: Lumbud84\r\n\u2756: Mirage Xel\r\nTime
+    Accumulation: Kusane\r\nBuzzFizz: Blananas2\r\nForget It Not: RubyBfdi\r\nForget
+    Infinity: Oshisure, Ry0001 (Revived by VFlyer to be more suitable)\r\nSimon Stages:
+    Madela\r\n\r\nNon-example assets used: Asset pack from Royal_Flu$h's tutorials,
+    Simon's Stages assets, Divided Squares backing by Timwi, Old FMN model by Hexicube,
+    custom dial self-made\r\n\r\nThe 10 Manuals can be found built-in or from these
+    repository links:\r\n[url=https://ktane.timwi.de/HTML/BuzzFizz.html]BuzzFizz[/url]\r\n[url=https://ktane.timwi.de/HTML/3x3%20Grid.html]3x3
+    Grid[/url]\r\n[url=https://ktane.timwi.de/HTML/Forget%20It%20Not.html]Forget It
+    Not[/url]\r\n[url=https://ktane.timwi.de/HTML/%E2%9D%96.html]\u2756[/url]\r\n[url=https://ktane.timwi.de/HTML/Time%20Accumulation.html]Time
+    Accumulation[/url]\r\n[url=https://ktane.timwi.de/HTML/15%20Mystic%20Lights.html]15
+    Mystic Lights[/url]\r\n[url=https://ktane.timwi.de/HTML/Faulty%20Seven%20Segment%20Displays.html]Faulty
+    Seven Segment Displays[/url]\r\n[url=https://ktane.timwi.de/HTML/Forget%20Infinity.html]Forget
+    Infinity[/url]\r\n[url=https://ktane.timwi.de/HTML/Simon%20Stages.html]Simon Stages[/url]\n[url=https://ktane.timwi.de/HTML/7.html]7[/url]"
   version: 1.4
   outputFolder: build
   previewImage: {fileID: 2800000, guid: adc54d18d347d164ea052445ac10faef, type: 3}

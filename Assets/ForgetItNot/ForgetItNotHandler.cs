@@ -438,7 +438,7 @@ public class ForgetItNotHandler : MonoBehaviour {
         }
         //yield return "Forget It Not"; // Suggestively unnecessary 
         yield return "multiple strikes";
-        yield return mode.EqualsIgnoreCase("PANIC") ? "sendtochat panicBasket Got to get this out now!" : bombInfo.GetSolvableModuleNames().Count - 1 == bombInfo.GetSolvedModuleNames().Count ? "sendtochat Let's finish this! BlessRNG" : "sendtochat This better be it! BlessRNG";
+        yield return mode.EqualsIgnoreCase("PANIC") ? "sendtochat panicBasket Got to get this out now!" : bombInfo.GetSolvableModuleNames().Count - 1 == bombInfo.GetSolvedModuleNames().Count ? "sendtochat Let's finish this!" : "sendtochat This better be it!";
         int patientDigitsLeft = Random.Range(Mathf.Min(totalstages / 50, 1), 6);
         foreach (int d in digits)
         {

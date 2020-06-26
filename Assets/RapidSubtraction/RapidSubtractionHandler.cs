@@ -90,7 +90,7 @@ public class RapidSubtractionHandler : MonoBehaviour {
 						{
 							audioHandler.PlaySoundAtTransform("correct", transform);
 							digitsHidden = Mathf.Min(digitsHidden + 1, 2);
-							needyHandler.SetNeedyTimeRemaining(needyHandler.GetNeedyTimeRemaining() + (TwitchPlaysActive ? 7f : 5f));
+							needyHandler.SetNeedyTimeRemaining(needyHandler.GetNeedyTimeRemaining() + (TwitchPlaysActive ? 8f : 5f));
 						}
 					}
 					else
@@ -145,7 +145,7 @@ public class RapidSubtractionHandler : MonoBehaviour {
 
 	IEnumerator HandleButtonAnim(GameObject gameObject)
 	{
-		for (int x=0;x<5;x++)
+		for (int x = 0; x < 5; x++)
 		{
 			gameObject.transform.localPosition -= new Vector3(0, 0, 0.001f);
 			yield return new WaitForFixedUpdate();
@@ -227,7 +227,7 @@ public class RapidSubtractionHandler : MonoBehaviour {
 	}
 	// TP Handling
 #pragma warning disable IDE0051 // Remove unused private members
-	readonly string TwitchHelpMessage = "Submit an answer with \"!{0} submit ##\" Multiple answers can be submitted in one command. To check on the current value again for a short bit: \"!{0} reshow\" For Twitch Plays, the needy timer will start at 35 seconds and answering the question correctly will add 7 seconds rather than 5.";
+	readonly string TwitchHelpMessage = "Submit an answer with \"!{0} submit ##\" Multiple answers can be submitted in one command. To check on the current value again for a short bit: \"!{0} reshow\" For Twitch Plays, the needy timer will start at 35 seconds and answering correctly will add 8 seconds rather than 5.";
 	bool TwitchPlaysActive;
 #pragma warning restore IDE0051 // Remove unused private members
 
@@ -252,14 +252,15 @@ public class RapidSubtractionHandler : MonoBehaviour {
 		cmd = cmd.ToLower();
 		if (cmd.RegexMatch(@"^(reshow)$"))
 		{
-			
-			if (!inputText.text.Any())
+			if (inputText.text.Any())
 			{
 				yield return null;
 				clrButtonSelectable.OnInteract();
 			}
+			yield return null;
+			clrButtonSelectable.OnInteract();
 		}
-		if (cmd.RegexMatch(@"^submit(\s\d{1,2})+$"))
+		if (cmd.RegexMatch(@"^(answer|submit)(\s\d{1,2})+$"))
 		{
 			string[] cmdParts = cmd.Split();
 			if (inputText.text.Any())
@@ -271,9 +272,10 @@ public class RapidSubtractionHandler : MonoBehaviour {
 			{
 				if (!isActivated)
 				{
+					yield return "sendtochat {0}, Rapid Subtraction #{1} has already deactivated itself.";
 					yield break;
 				}
-				for (int y=0;y<cmdParts[x].Length;y++)
+				for (int y = 0; y < cmdParts[x].Length; y++)
 				{
 					yield return null;
 					buttonDigitsSelectables[int.Parse(cmdParts[x][y].ToString())].OnInteract();
@@ -283,8 +285,8 @@ public class RapidSubtractionHandler : MonoBehaviour {
 				if (int.Parse(inputText.text) != currentValue - valueToSubtract)
 					yield return string.Format("strikemessage incorrectly inputting {0} for the {1} input!", inputText.text, debugPositionalNums[debugValInput]);
 				subButtonSelectable.OnInteract();
-				yield return new WaitForSeconds(0.05f);
 				yield return "end multiple strikes";
+				yield return new WaitForSeconds(0.05f);
 			}
 		}
 		yield break;
