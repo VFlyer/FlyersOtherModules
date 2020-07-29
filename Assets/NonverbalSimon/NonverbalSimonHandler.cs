@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using KModkit;
 using System.Linq;
+using System;
+using uerng = UnityEngine.Random;
 
 public class NonverbalSimonHandler : MonoBehaviour {
 
@@ -44,7 +46,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
     }
     void Start() {
         modid = modid_counter++;
-        stagesToComplete = Random.Range(3,6);
+        stagesToComplete = uerng.Range(3,6);
         modself.OnActivate += delegate ()
         {
             // Calculate based on edgework shown.
@@ -156,7 +158,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
     bool canAutoSolve = false;
     void GenerateValidFlash()
     {
-        int toflash = Random.Range(0, 4);
+        int toflash = uerng.Range(0, 4);
         while (correctInputs[toflash] < 0 || correctInputs[toflash] >= 4)// Begin generate different flash for invalid presses
         {
             canAutoSolve = true;
@@ -168,7 +170,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
                 QuickDebug("The module can auto-solve by just pressing a button, no acceptable presses were created from the options possible.");
                 break;
             }
-            toflash = Random.Range(0, 4);
+            toflash = uerng.Range(0, 4);
         }
         flashes.Add(toflash);
         QuickDebug("Flash number " + flashes.Count +" is " + colorlist[toflash]);
@@ -356,12 +358,20 @@ public class NonverbalSimonHandler : MonoBehaviour {
         if (kMSelectables.Any())
         {
             hasStruck = false;
+            yield return "multiple strikes";
             for (int x = 0; x < kMSelectables.Count && !hasStruck; x++)
             {
+                int idxInput = Array.IndexOf(buttons, kMSelectables[x]);
+
                 yield return null;
                 kMSelectables[x].OnInteract();
                 yield return new WaitForSeconds(0.1f);
+                if (hasStruck)
+                {
+                    yield return string.Format("strikemessage by incorrectly pressing {0} for the {1} input!", idxInput < 0 ? "an unknown button" : colorlist[idxInput], new string[] { "1st", "2nd", "3rd", "4th", "5th" }[x]);
+                }
             }
+            yield return "end multiple strikes";
         }
     }
 }

@@ -16,6 +16,7 @@ public class SevenHandler : MonoBehaviour {
 	public KMColorblindMode colorblindMode;
 	private SevenSegmentCodings segmentCodings;
 	public TextMesh stageIndc, colorblindIndc;
+	public TextMesh[] colorblindTextTri, colorblindTextSeg;
 	public Material[] matSwitch = new Material[2];
 
 	int[] finalValues = new int[3];
@@ -34,7 +35,7 @@ public class SevenHandler : MonoBehaviour {
 	int curModID;
 
 	// Detection and Logging
-	bool zenDetected, timeDetected, hasStarted, isSubmitting, interactable = false, colorblinddetected, uncapAll = false, delayChallenge = false, hasSubmitted = false;
+	bool zenDetected, timeDetected, hasStarted, isSubmitting, interactable = false, colorblinddetected, uncapAll = false, delayChallenge = false, hasSubmitted = false, fastReads = false;
 	int curIdx = 0, curStrikeCount, localStrikes = 0;
 
 	IEnumerator currentHandler;
@@ -46,9 +47,15 @@ public class SevenHandler : MonoBehaviour {
 		segmentCodings = new SevenSegmentCodings();
 		curModID = ++modID;
 		for (int x = 0; x < segments.Length; x++)
+		{
 			segments[x].material = matSwitch[0];
+			colorblindTextSeg[x].text = "";
+		}
 		for (int x = 0; x < colorTriangles.Length; x++)
+		{
 			colorTriangles[x].material = matSwitch[0];
+			colorblindTextTri[x].text = "";
+		}
 		LEDMesh.material = matSwitch[0];
 		stageIndc.text = "";
 		try {
@@ -57,10 +64,12 @@ public class SevenHandler : MonoBehaviour {
 			config.Settings = sevenSettings;
 
 			uncapAll = !sevenSettings.hardCapStageGeneration;
+			fastReads = sevenSettings.forceFastReads;
 		}
 		catch {
 			Debug.LogWarningFormat("<7 #{0}>: Settings for 7 do not work as intended! Using default settings instead!", curModID);
 			uncapAll = false;
+			fastReads = false;
 		}
 		finally
 		{
@@ -121,6 +130,8 @@ public class SevenHandler : MonoBehaviour {
 				{
 					colorTrianglesHL[idx].enabled = true;
 					colorTriangles[idx].material.color = new Color(idx % 2, idx / 2 % 2, idx / 4 % 2);
+					if (colorblinddetected)
+						colorblindTextTri[idx].text = colorList.Substring(idx, 1);
 				}
 			};
 			segmentSelectables[x].OnHighlightEnded += delegate {
@@ -130,6 +141,7 @@ public class SevenHandler : MonoBehaviour {
 				{
 					colorTrianglesHL[z].enabled = false;
 					colorTriangles[z].material.color = Color.black;
+					colorblindTextTri[z].text = "";
 				}
 			};
 		}
@@ -173,11 +185,15 @@ public class SevenHandler : MonoBehaviour {
 					{
 						isSubmitting = false;
 						for (int x = 0; x < colorTriangles.Length; x++)
+						{
 							colorTriangles[x].material.color = Color.black;
+							colorblindTextTri[x].text = "";
+						}
 						DisplayGivenValue(displayedValues[curIdx]);
 						for (int z = 0; z < colorTrianglesHL.Length; z++)
 						{
 							colorTrianglesHL[z].enabled = false;
+							
 						}
 					}
 				}
@@ -197,8 +213,12 @@ public class SevenHandler : MonoBehaviour {
 					LEDMesh.material.color = Color.black;
 					colorblindIndc.text = "";
 					stageIndc.text = "SUB";
+					stageIndc.color = Color.white;
 					for (int x = 0; x < colorTriangles.Length; x++)
+					{
 						colorTriangles[x].material.color = new Color(x % 2, x / 2 % 2, x / 4 % 2);
+						colorblindTextTri[x].text = colorList.Substring(x, 1);
+					}
 					for (int idx = 0; idx < colorTrianglesHL.Length; idx++)
 					{
 						colorTrianglesHL[idx].enabled = idx == curSelectedColor;
@@ -213,9 +233,13 @@ public class SevenHandler : MonoBehaviour {
 						Debug.LogFormat("[7 #{0}]: Correct segment colors submitted. Module passed.", curModID);
 						interactable = false;
 						modSelf.HandlePass();
+						foreach (TextMesh mesh in colorblindTextSeg)
+							mesh.text = "";
+
 						for (int x = 0; x < colorTrianglesHL.Length; x++)
 						{
 							colorTrianglesHL[x].enabled = false;
+							colorblindTextTri[x].text = "";
 						}
 						stageIndc.text = "";
 						StartCoroutine(PlaySolveAnim());
@@ -336,8 +360,13 @@ public class SevenHandler : MonoBehaviour {
 					}
 				}
 				segments[x].material.color = new Color(displayCnl[0] ? 1: 0, displayCnl[1] ? 1 : 0, displayCnl[2] ? 1 : 0);
+				if (fastReads && colorblinddetected)
+					colorblindTextSeg[x].text = colorList.Substring((displayCnl[0] ? 1 : 0) + (displayCnl[1] ? 2 : 0) + (displayCnl[2] ? 4 : 0), 1);
+				else
+					colorblindTextSeg[x].text = "";
 			}
 			stageIndc.text = curIdx.ToString();
+			stageIndc.color = uncapAll ? new Color(0.5f, 1f, 1f) : Color.white;
 			Color[] cPallete = { Color.red, Color.green, Color.blue, Color.white };
 			string[] cPalleteCBlind = { "R", "G", "B", "W" };
 			LEDMesh.material.color = idxOperations[curIdx] < 0 || idxOperations[curIdx] >= 4 ? Color.black : cPallete[idxOperations[curIdx]] ;
@@ -351,31 +380,36 @@ public class SevenHandler : MonoBehaviour {
 		{
 			stageIndc.color = Color.red;
 			stageIndc.text = new char[] { allTextPossible[Random.Range(0, allTextPossible.Length)], allTextPossible[Random.Range(0, allTextPossible.Length)], allTextPossible[Random.Range(0, allTextPossible.Length)] }.Join("");
-			yield return new WaitForSeconds(0f);
+			yield return new WaitForSeconds(Time.deltaTime);
 		}
 		stageIndc.text = "SUB";
 		stageIndc.color = Color.white;
 	}
-	void UpdateSegments(bool canValidCheck)
+	void UpdateSegments(bool canValidCheck = false)
 	{
 		for (int x = 0; x < segments.Length; x++)
 		{
 			segments[x].material.color = canValidCheck
 				? segmentsColored[x] == segmentsSolution[x] ? Color.green : Color.red
 				: new Color(segmentsColored[x] % 2, segmentsColored[x] / 2 % 2, segmentsColored[x] / 4 % 2);
+			if (colorblinddetected)
+				colorblindTextSeg[x].text = canValidCheck
+					? segmentsColored[x] == segmentsSolution[x] ? "!" : "X"
+					: colorList.Substring(segmentsColored[x], 1);
+				
 		}
 	}
 	// Update is called once per frame
-	int animPrt = 0;
-	void FixedUpdate () {
+	float animDelay = 0;
+	void Update () {
 		if (isSubmitting && interactable)
 		{
-			animPrt++;
-			if (animPrt >= 90)
+            animDelay += Time.deltaTime;
+			if (animDelay >= 1f)
 			{
-				animPrt = 0;
+				animDelay = 0;
 			}
-			else if (animPrt > 45)
+			else if (animDelay > 0.5f)
 			{
 				if (zenDetected)
 				{
@@ -499,6 +533,7 @@ public class SevenHandler : MonoBehaviour {
 	public class SevenSettings
 	{
 		public bool hardCapStageGeneration = true;
+		public bool forceFastReads = false;
 	}
 
 	// TP Handler Begins here
@@ -550,10 +585,11 @@ public class SevenHandler : MonoBehaviour {
 #pragma warning disable IDE0044 // Add readonly modifier
 	bool TimeModeActive;
 	bool ZenModeActive;
-	string TwitchHelpMessage = "\"!{0} R G B C M Y K W\" to select the color, \"!{0} 1 2 3 4 5 6 7\" to select the segments in reading order. These two commands can be chained, I.E \"!{0} R 1 C 2...\".\n"+
-		"Cycle the stages with \"!{0} led cycle\" or \"!{0} led cycle # #\" for specific stages, go to a specific stage with \"!{0} led #\", or press the LED once with \"!{0} led\". Modify the cycle speed with \"!{0} cyclespeed #\" (1-9 seconds only) Highlight the segment's in reading order with \"!{0} segments\". Submit the current setup or enter submission mode with \"!{0} submit\"";
+	string TwitchHelpMessage = "\"!{0} R G B C M Y K W\" to select the color, \"!{0} 1 2 3 4 5 6 7\" to select the segments in reading order. These two commands can be chained, I.E \"!{0} R 1 C 2...\".\n" +
+		"Cycle the stages with \"!{0} led cycle\" or \"!{0} led cycle # #\" for specific stages, go to a specific stage with \"!{0} led #\", or press the LED once with \"!{0} led\". Modify the cycle speed with \"!{0} cyclespeed #\" (0.5-9.5 seconds only) Highlight the segment's in reading order with \"!{0} segments\".\n" +
+		"Submit the current setup or enter submission mode with \"!{0} submit\". Colorblind mode can be enabled viva \"!{0} colorblind\". Get each segment's color quicker with colorblind enabled by doing \"!{0} colorblind fastreads\".";
 	bool TwitchShouldCancelCommand;
-	int curCycleDelay = 3;
+	float curCycleDelay = 3;
 #pragma warning restore IDE0044 // Add readonly modifier
 	IEnumerator HandleDelay()
 	{
@@ -630,9 +666,15 @@ public class SevenHandler : MonoBehaviour {
 						yield return new WaitForSeconds(0.1f);
 						LED.OnInteract();
 					}
-					for (int x = leftValue; x < rightValue + 1; x++)
+					for (int x = leftValue; x < rightValue + 1 && !TwitchShouldCancelCommand; x++)
 					{
-						yield return new WaitForSeconds(TwitchShouldCancelCommand ? 0.1f : curCycleDelay);
+						float timeProcessed = 0;
+						do
+						{
+							yield return new WaitForSeconds(Time.deltaTime);
+							timeProcessed += Time.deltaTime;
+						}
+						while (timeProcessed < curCycleDelay || TwitchShouldCancelCommand);
 						LED.OnInteract();
 					}
 					while (curIdx != lastStage)
@@ -640,6 +682,8 @@ public class SevenHandler : MonoBehaviour {
 						yield return new WaitForSeconds(0.1f);
 						LED.OnInteract();
 					}
+					if (TwitchShouldCancelCommand)
+						yield return "cancelled";
 				}
 				else
 				{
@@ -674,9 +718,16 @@ public class SevenHandler : MonoBehaviour {
 							yield return new WaitForSeconds(0.1f);
 							LED.OnInteract();
 						}
-						for (int x = 0; x < displayedValues.Count; x++)
+						for (int x = 0; x < displayedValues.Count && !TwitchShouldCancelCommand; x++)
 						{
-							yield return new WaitForSeconds(TwitchShouldCancelCommand ? 0.1f : curCycleDelay);
+							float timeProcessed = 0;
+							do
+							{
+								yield return new WaitForSeconds(Time.deltaTime);
+								timeProcessed += Time.deltaTime;
+							}
+							while (timeProcessed < curCycleDelay || TwitchShouldCancelCommand);
+							
 							LED.OnInteract();
 						}
 						while (curIdx != lastStage)
@@ -684,6 +735,8 @@ public class SevenHandler : MonoBehaviour {
 							yield return new WaitForSeconds(0.1f);
 							LED.OnInteract();
 						}
+						if (TwitchShouldCancelCommand)
+							yield return "cancelled";
 						break;
 					}
 				case "":
@@ -715,53 +768,98 @@ public class SevenHandler : MonoBehaviour {
 							yield return null;
 							LED.OnInteract();
 						}
+						if (TwitchShouldCancelCommand)
+							yield return "cancelled";
 						break;
 					}
 			}
 		}
-		else if (commandLower.RegexMatch(@"^cycle\s?speed\s\d+$"))
+		else if (commandLower.RegexMatch(@"^cycle\s?speed\s\d+(\.\d+)?$"))
 		{
 			yield return null;
 			string[] commandParts = commandLower.Split();
-			string intereptedDigit = commandParts[commandParts.Length - 1];
-			int timePossible = int.Parse(intereptedDigit);
-			if (timePossible > 0 && timePossible < 10)
+			string intereptedValue = commandParts[commandParts.Length - 1];
+			float timePossible = float.Parse(intereptedValue);
+			if (timePossible >= 0.5f && timePossible <= 9.5f)
 			{
 				curCycleDelay = timePossible;
-				yield return "sendtochat {0}, I have setted the cycle speed for 7 (#{1}) to " + intereptedDigit + " second(s).";
+				yield return "sendtochat {0}, I have setted the cycle speed for 7 (#{1}) to " + timePossible.ToString("0.00") + " second(s).";
 			}
 			else
-				yield return "sendtochaterror {0}, I am not setting the cycle speed for 7 (#{1}) to " + intereptedDigit + " second(s).";
+				yield return "sendtochaterror {0}, I am not setting the cycle speed for 7 (#{1}) to " + timePossible.ToString("0.00") + " second(s).";
 			
 		}
-		else if (commandLower.RegexMatch(@"^colou?rblind$"))
+		else if (commandLower.RegexMatch(@"^colou?rblind(\s(fastreads?|toggle))?$"))
 		{
-			yield return null;
-			colorblinddetected = !colorblinddetected;
-			DisplayGivenValue(displayedValues[curIdx]);
+			string[] splitted = commandLower.Split();
+			if (splitted.Length <= 1 || splitted[1] == "toggle")
+			{
+				yield return null;
+				colorblinddetected = !colorblinddetected;
+				if (!isSubmitting)
+					DisplayGivenValue(displayedValues[curIdx]);
+				else
+					UpdateSegments(false);
+			}
+			else
+            {
+				yield return null;
+				fastReads = !fastReads;
+				colorblinddetected = true;
+				if (!isSubmitting)
+					DisplayGivenValue(displayedValues[curIdx]);
+				else
+					UpdateSegments(false);
+				yield return "sendtochat Colorblind fast read for 7 (#{1}) have been " + (fastReads ? "enabled" : "disabled")+".";
+			}
 		}
 		else if (commandLower.RegexMatch(@"^segments$"))
 		{
-			for (int x = 0; x < segmentSelectables.Count(); x++)
+			if (isSubmitting)
+            {
+				yield return "sendtochaterror I'm not going to get the segments' colors while the module is in submission phase.";
+				yield break;
+			}
+			for (int x = 0; x < segmentSelectables.Count() && !TwitchShouldCancelCommand; x++)
 			{
+				var curSelected = segmentSelectables[x].Highlight.gameObject;
+				var highlight = curSelected.transform.Find("Highlight(Clone)");
+				if (highlight != null)
+					curSelected = highlight.gameObject ?? curSelected;
+
 				yield return new WaitForSeconds(0.1f);
 				yield return null;
 				segmentSelectables[x].OnHighlight();
+				curSelected.SetActive(true);
 				yield return new WaitForSeconds(TwitchShouldCancelCommand ? 0.1f : 3f);
 				segmentSelectables[x].OnHighlightEnded();
+				curSelected.SetActive(false);
 			}
+			if (TwitchShouldCancelCommand)
+				yield return "cancelled";
 		}
 		else if (commandLower.RegexMatch(@"^sub(mit)?$"))
 		{
-			if (isSubmitting && segmentsColored.SequenceEqual(segmentsSolution) && uncapAll)
+			yield return "multiple strikes";
+			if (isSubmitting && uncapAll)
 			{
 				yield return "sendtochat {0}, You really got this in the bag huh?";
-				yield return "awardpoints " + ((idxOperations.Count-8)*2).ToString();
 			}
-
+			if (isSubmitting && segmentsColored.SequenceEqual(segmentsSolution) && uncapAll)
+			{
+				yield return "sendtochat Of course you did.";
+				int pointsToGive = (idxOperations.Count - 8) * 2;
+				if (pointsToGive > 0)
+					yield return "awardpointsonsolve " + pointsToGive.ToString();
+			}
+			else if (isSubmitting && !segmentsColored.SequenceEqual(segmentsSolution) && uncapAll)
+			{
+				yield return "sendtochat Well nevermind.";
+			}
 			yield return null;
 			stageDisplay.OnInteract();
 			yield return "solve";
+			yield return "end multiple strikes";
 		}
 		else
 		{
