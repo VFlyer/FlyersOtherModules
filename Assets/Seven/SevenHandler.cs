@@ -35,8 +35,10 @@ public class SevenHandler : MonoBehaviour {
 	int curModID;
 
 	// Detection and Logging
-	bool zenDetected, timeDetected, hasStarted, isSubmitting, interactable = false, colorblinddetected, uncapAll = false, delayChallenge = false, hasSubmitted = false, fastReads = false;
-	int curIdx = 0, curStrikeCount, localStrikes = 0;
+	bool zenDetected, timeDetected, hasStarted, isSubmitting, interactable, colorblinddetected,
+		uncapAll, delayChallenge, hasStruckTimeMode, hasEnteredSubmission, hasSubmitted, fastReads, disableUncapTP;
+	int curIdx = 0, curStrikeCount, maxPPA = -1;
+	float PPAScaling;
 
 	IEnumerator currentHandler;
 	SevenSettings sevenSettings = new SevenSettings();
@@ -65,11 +67,17 @@ public class SevenHandler : MonoBehaviour {
 
 			uncapAll = !sevenSettings.hardCapStageGeneration;
 			fastReads = sevenSettings.forceFastReads;
+			PPAScaling = sevenSettings.PPAScale;
+			maxPPA = sevenSettings.maxPPA;
+			disableUncapTP = sevenSettings.noTPUncapping;
 		}
 		catch {
 			Debug.LogWarningFormat("<7 #{0}>: Settings for 7 do not work as intended! Using default settings instead!", curModID);
 			uncapAll = false;
 			fastReads = false;
+			PPAScaling = 1f;
+			maxPPA = -1;
+			disableUncapTP = false;
 		}
 		finally
 		{
@@ -181,7 +189,7 @@ public class SevenHandler : MonoBehaviour {
 				else
 				{
 					curStrikeCount = info.GetStrikes();
-					if (zenDetected || (timeDetected && localStrikes > 0) || (!zenDetected && !timeDetected && curStrikeCount > 0))
+					if (zenDetected || (timeDetected && hasStruckTimeMode) || (!zenDetected && !timeDetected && curStrikeCount > 0))
 					{
 						isSubmitting = false;
 						for (int x = 0; x < colorTriangles.Length; x++)
@@ -209,6 +217,7 @@ public class SevenHandler : MonoBehaviour {
 				if (!isSubmitting)
 				{
 					isSubmitting = true;
+					hasEnteredSubmission = true;
 					UpdateSegments(false);
 					LEDMesh.material.color = Color.black;
 					colorblindIndc.text = "";
@@ -249,7 +258,7 @@ public class SevenHandler : MonoBehaviour {
 						modSelf.HandleStrike();
 						Debug.LogFormat("[7 #{0}]: Strike! You submitted the following segment colors in reading order: {1}", curModID, segmentsColored.Select(a => colorList[a]).Join(", "));
 						UpdateSegments(true);
-						localStrikes += timeDetected ? 1 : 0;
+						hasStruckTimeMode = timeDetected;
 						segmentsColored = new int[7];
 						if (currentHandler != null)
 							StopCoroutine(currentHandler);
@@ -366,7 +375,7 @@ public class SevenHandler : MonoBehaviour {
 					colorblindTextSeg[x].text = "";
 			}
 			stageIndc.text = curIdx.ToString();
-			stageIndc.color = uncapAll ? new Color(0.5f, 1f, 1f) : Color.white;
+			stageIndc.color = uncapAll && displayedValues.Count() > 8 ? new Color(0.5f, 1f, 1f) : Color.white;
 			Color[] cPallete = { Color.red, Color.green, Color.blue, Color.white };
 			string[] cPalleteCBlind = { "R", "G", "B", "W" };
 			LEDMesh.material.color = idxOperations[curIdx] < 0 || idxOperations[curIdx] >= 4 ? Color.black : cPallete[idxOperations[curIdx]] ;
@@ -415,7 +424,7 @@ public class SevenHandler : MonoBehaviour {
 				{
 					LEDMesh.material.color = Color.cyan;
 				}
-				else if (timeDetected && localStrikes > 0)
+				else if (timeDetected && hasStruckTimeMode)
 				{
 					LEDMesh.material.color = new Color(1, 0.5f, 0);
 				}
@@ -524,6 +533,38 @@ public class SevenHandler : MonoBehaviour {
 		idxOperations.Clear();
 		stageIndc.color = Color.white;
 		GenerateStages(totalSolvableCount);
+		curIdx = 0;
+		DisplayGivenValue(displayedValues[curIdx]);
+		CalculateSolution();
+		hasStarted = true;
+		yield return true;
+	}
+	IEnumerator RecapStageGen()
+	{
+		uncapAll = false;
+		audioMod.PlaySoundAtTransform("StaticEnd", transform);
+		hasStarted = false;
+		Debug.LogFormat("[7 #{0}]: Recapping 7! Restarting entire procedure...", curModID);
+		for (int u = 0; u < 5; u++)
+		{
+			yield return new WaitForSeconds(0.1f);
+			for (int x = 0; x < segments.Length; x++)
+			{
+				if ((u % 2 == 0 && x % 3 == 0 && u / 2 == x / 3) || (u % 2 != 0 && u / 2 == x / 3))
+				{
+					segments[x].material = matSwitch[0];
+					colorblindTextSeg[x].text = "";
+				}
+			}
+			stageIndc.text = segmentCodings.possibleValues[Random.Range(0, segmentCodings.possibleValues.Length)].ToString();
+
+			yield return new WaitForSeconds(0.1f);
+		}
+		displayedValues.Clear();
+		idxOperations.Clear();
+		stageIndc.color = Color.white;
+		GenerateStages(7);
+		curIdx = 0;
 		DisplayGivenValue(displayedValues[curIdx]);
 		CalculateSolution();
 		hasStarted = true;
@@ -534,6 +575,9 @@ public class SevenHandler : MonoBehaviour {
 	{
 		public bool hardCapStageGeneration = true;
 		public bool forceFastReads = false;
+		public float PPAScale = 1f;
+		public int maxPPA = 35;
+		public bool noTPUncapping = false;
 	}
 
 	// TP Handler Begins here
@@ -597,7 +641,6 @@ public class SevenHandler : MonoBehaviour {
 		yield return new WaitForSeconds(5f);
 		delayChallenge = false;
 	}
-
 	IEnumerator ProcessTwitchCommand(string command)
 	{
 		if (!hasStarted)
@@ -606,6 +649,39 @@ public class SevenHandler : MonoBehaviour {
 			yield break;
 		}
 		string commandLower = command.ToLower();
+		if (commandLower.RegexMatch(@"^((re)?cap|too\s?scared|nomore)$"))
+        {
+			int totalSolvableCount = info.GetSolvableModuleNames().Count;
+			if (!uncapAll)
+			{
+				yield return "sendtochaterror The module already capped to 8 stages.";
+				yield break;
+			}
+			else if (totalSolvableCount <= 7)
+			{
+				yield return "sendtochaterror Why is this necessary? You don't need to use that.";
+				yield break;
+			}
+			else if (!hasSubmitted)
+            {
+				yield return "sendtochat {0}, you need to submit something 7 (#{1}) in order to recap this.";
+			}
+			else if (!delayChallenge)
+			{
+				StartCoroutine(HandleDelay());
+				yield return "sendtochat {0}, are you sure you want to recap 7 (#{1})? Type in the same command within 5 seconds to confirm.";
+				yield break;
+			}
+			else
+			{
+				StopCoroutine("HandleDelay");
+				yield return null;
+				StartCoroutine(RecapStageGen());
+				yield return "sendtochat {0}, I don't blame you. It was too hard anyway.";
+				yield break;
+			}
+		}
+		else
 		if (commandLower.RegexMatch(@"^(uncap|challenge\s?me)$"))
 		{
 			int totalSolvableCount = info.GetSolvableModuleNames().Count;
@@ -619,14 +695,17 @@ public class SevenHandler : MonoBehaviour {
 				yield return "sendtochaterror Uncapping seems to be redundant with this few modules on the bomb. Maybe do it when there are more modules on the bomb.";
 				yield break;
 			}
-			else if (isSubmitting || hasSubmitted)
+			else if (isSubmitting || hasSubmitted || hasEnteredSubmission)
 			{
-				yield return "sendtochat {0}, someone already tampered with 7 (#{1}). You'll have to do this when the module has not yet been submitted yet.";
+				yield return "sendtochat {0}, someone already tampered with 7 (#{1}). You'll have to do this when the module has not yet entered submission.";
 				yield break;
 			}
 			else if (!delayChallenge)
 			{
-				
+				if (disableUncapTP)
+                {
+					yield return "antitroll Uncapping 7 is too dangerous! Who knows how long this attempt will last for!?";
+                }
 				StartCoroutine(HandleDelay());
 				yield return "sendtochat {0}, are you sure you want to uncap 7 (#{1})? Type in the same command within 5 seconds to confirm.";
 				yield break;
@@ -674,7 +753,7 @@ public class SevenHandler : MonoBehaviour {
 							yield return new WaitForSeconds(Time.deltaTime);
 							timeProcessed += Time.deltaTime;
 						}
-						while (timeProcessed < curCycleDelay || TwitchShouldCancelCommand);
+						while (timeProcessed < curCycleDelay && !TwitchShouldCancelCommand);
 						LED.OnInteract();
 					}
 					while (curIdx != lastStage)
@@ -726,7 +805,7 @@ public class SevenHandler : MonoBehaviour {
 								yield return new WaitForSeconds(Time.deltaTime);
 								timeProcessed += Time.deltaTime;
 							}
-							while (timeProcessed < curCycleDelay || TwitchShouldCancelCommand);
+							while (timeProcessed < curCycleDelay && !TwitchShouldCancelCommand);
 							
 							LED.OnInteract();
 						}
@@ -841,20 +920,19 @@ public class SevenHandler : MonoBehaviour {
 		else if (commandLower.RegexMatch(@"^sub(mit)?$"))
 		{
 			yield return "multiple strikes";
-			if (isSubmitting && uncapAll)
+			if (isSubmitting && uncapAll && displayedValues.Count > 8)
 			{
-				yield return "sendtochat {0}, You really got this in the bag huh?";
-			}
-			if (isSubmitting && segmentsColored.SequenceEqual(segmentsSolution) && uncapAll)
-			{
-				yield return "sendtochat Of course you did.";
-				int pointsToGive = (idxOperations.Count - 8) * 2;
-				if (pointsToGive > 0)
-					yield return "awardpointsonsolve " + pointsToGive.ToString();
-			}
-			else if (isSubmitting && !segmentsColored.SequenceEqual(segmentsSolution) && uncapAll)
-			{
-				yield return "sendtochat Well nevermind.";
+				if (segmentsColored.SequenceEqual(segmentsSolution))
+                {
+					yield return "sendtochat Was it worth it?";
+					int pointsToGive = Mathf.FloorToInt((idxOperations.Count - 8) * PPAScaling);
+					if (pointsToGive > 0)
+						yield return "awardpointsonsolve " + (maxPPA >= 0 ? Mathf.Min(maxPPA, pointsToGive).ToString() : pointsToGive.ToString());
+				}
+				else
+				{
+					yield return "sendtochat Uncapped 7's are always the bane. Always.";
+				}
 			}
 			yield return null;
 			stageDisplay.OnInteract();

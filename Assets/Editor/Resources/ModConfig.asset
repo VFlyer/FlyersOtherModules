@@ -30,6 +30,6 @@ MonoBehaviour:
     Mystic Lights[/url]\r\n[url=https://ktane.timwi.de/HTML/Faulty%20Seven%20Segment%20Displays.html]Faulty
     Seven Segment Displays[/url]\r\n[url=https://ktane.timwi.de/HTML/Forget%20Infinity.html]Forget
     Infinity[/url]\r\n[url=https://ktane.timwi.de/HTML/Simon%20Stages.html]Simon Stages[/url]\n[url=https://ktane.timwi.de/HTML/7.html]7[/url]"
-  version: 1.4
+  version: 1.4_01
   outputFolder: build
   previewImage: {fileID: 2800000, guid: adc54d18d347d164ea052445ac10faef, type: 3}

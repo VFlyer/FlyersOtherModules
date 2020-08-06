@@ -686,7 +686,7 @@ public class ForgetInfinity : MonoBehaviour {
             if (input.Length >= 5)
             {
                 if (unsolvedStages.Count == 1 && input.Equals(solution[unsolvedStages[0]].Join("")))
-                    yield return "awardpoints " + Math.Max(Mathf.CeilToInt(PPAScaling * stagestoGenerate), 1).ToString();
+                    yield return "awardpointsonsolve " + Math.Max(Mathf.CeilToInt(PPAScaling * stagestoGenerate), 1).ToString();
                 yield return "solve";
                 yield return "strike";
             }

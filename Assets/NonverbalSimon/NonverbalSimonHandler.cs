@@ -368,7 +368,7 @@ public class NonverbalSimonHandler : MonoBehaviour {
                 yield return new WaitForSeconds(0.1f);
                 if (hasStruck)
                 {
-                    yield return string.Format("strikemessage by incorrectly pressing {0} for the {1} input!", idxInput < 0 ? "an unknown button" : colorlist[idxInput], new string[] { "1st", "2nd", "3rd", "4th", "5th" }[x]);
+                    yield return string.Format("strikemessage incorrectly pressing {0} for the {1} input!", idxInput < 0 ? "an unknown button" : colorlist[idxInput], new string[] { "1st", "2nd", "3rd", "4th", "5th" }[x]);
                 }
             }
             yield return "end multiple strikes";
