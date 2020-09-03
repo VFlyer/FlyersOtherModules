@@ -226,7 +226,8 @@ public class SevenHandler : MonoBehaviour {
 					for (int x = 0; x < colorTriangles.Length; x++)
 					{
 						colorTriangles[x].material.color = new Color(x % 2, x / 2 % 2, x / 4 % 2);
-						colorblindTextTri[x].text = colorList.Substring(x, 1);
+						if (colorblinddetected)
+							colorblindTextTri[x].text = colorList.Substring(x, 1);
 					}
 					for (int idx = 0; idx < colorTrianglesHL.Length; idx++)
 					{
@@ -563,6 +564,18 @@ public class SevenHandler : MonoBehaviour {
 		displayedValues.Clear();
 		idxOperations.Clear();
 		stageIndc.color = Color.white;
+		isSubmitting = false;
+		for (int x = 0; x < colorTriangles.Length; x++)
+		{
+			colorTriangles[x].material.color = Color.black;
+			colorblindTextTri[x].text = "";
+		}
+		DisplayGivenValue(displayedValues[curIdx]);
+		for (int z = 0; z < colorTrianglesHL.Length; z++)
+		{
+			colorTrianglesHL[z].enabled = false;
+
+		}
 		GenerateStages(7);
 		curIdx = 0;
 		DisplayGivenValue(displayedValues[curIdx]);
@@ -576,7 +589,7 @@ public class SevenHandler : MonoBehaviour {
 		public bool hardCapStageGeneration = true;
 		public bool forceFastReads = false;
 		public float PPAScale = 1f;
-		public int maxPPA = 35;
+		public int maxPPA = -1;
 		public bool noTPUncapping = false;
 	}
 

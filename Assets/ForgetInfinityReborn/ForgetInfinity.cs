@@ -605,29 +605,29 @@ public class ForgetInfinity : MonoBehaviour {
         if (autosolvable)
         {
             ButtonDigits[0].OnInteract();
-            yield return true;
-            yield break;
         }
-
-        inFinale = true;
-        yield return new WaitForFixedUpdate();
-        List<int> autoSolveStages = possibleStages.Where(a => a >= 0).ToList();
-        isRecapturing = false;
-        while (input.Length > 0)
+        else
         {
-            BackSpaceButton.OnInteract();
-            yield return new WaitForSeconds(0.1f);
-        }
-        foreach (int oneStage in autoSolveStages)
-        {
-            while (!interactable)
-                yield return new WaitForSeconds(0);
-            for (int x = 0; x < stages[oneStage].Length; x++)
+            inFinale = true;
+            yield return new WaitForFixedUpdate();
+            List<int> autoSolveStages = possibleStages.Where(a => a >= 0).ToList();
+            isRecapturing = false;
+            while (input.Length > 0)
             {
-                ButtonDigits[solution[oneStage][x]].OnInteract();
+                BackSpaceButton.OnInteract();
                 yield return new WaitForSeconds(0.1f);
             }
-            
+            foreach (int oneStage in autoSolveStages)
+            {
+                while (!interactable)
+                    yield return new WaitForSeconds(0);
+                for (int x = 0; x < stages[oneStage].Length; x++)
+                {
+                    ButtonDigits[solution[oneStage][x]].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                }
+
+            }
         }
     }
     void TwitchHandleForcedSolve()

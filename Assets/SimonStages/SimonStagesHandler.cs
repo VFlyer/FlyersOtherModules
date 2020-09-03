@@ -650,11 +650,13 @@ public class SimonStagesHandler : MonoBehaviour
             increaser = 0;
             yield return "sendtochat Inputs cleared.";
             Debug.LogFormat("[Simon Stages #{0}] Inputs resetted viva TP handler.", moduleId);
+            yield break;
         }
         else if (command.RegexMatch(@"^(mute|shut up|shuddup|sush|shut the fuck up)$"))
         {
             yield return null;
             canPlaySound = false;
+            yield break;
         }
         command = Regex.Replace(command.Trim(), "^(press|hit|enter|push) ", "", RegexOptions.IgnoreCase);
         // If the command contains the following start commands, trim it off.

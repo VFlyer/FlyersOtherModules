@@ -1,29 +1,31 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public partial class SingularityButtonHandler : MonoBehaviour {
 
-	public GameObject disarmButtonObject, buttonFrontObject, entireModule,animatedPortion;
-	public MeshRenderer buttonMainRenderer,buttonBacking;
-	public TextMesh textDisplay, textColorblind;
+	public GameObject disarmButtonObject, buttonFrontObject, entireModule, animatedPortion;
+	public MeshRenderer buttonMainRenderer, buttonBacking, disarmBacking;
+	public TextMesh textDisplay, textColorblind, textDisarm;
 	public KMSelectable disarmButton, buttonFront;
 	public KMBombInfo bombInfo;
 	public KMBombModule modSelf;
 	public KMColorblindMode colorblindMode;
 	public KMAudio audioSelf;
-
+	public Light lightStrike;
 
 
 	private bool isSolved, hasDisarmed, hasActivated, colorblindDetected;
 	private bool isPressedDisarm, isPressedMain;
 
-	
+
 
 	private static int modID = 1;
 	private int curmodID;
 	private static readonly Dictionary<KMBomb, SingularityButtonInfo> groupedSingularityButtons = new Dictionary<KMBomb, SingularityButtonInfo>();
 	private SingularityButtonInfo singularityButtonInfo;
+	IEnumerator flashingAnim;
 	// Commented out because of some solve dependent modules not being easily detectable.
 	/*
 	private bool alwaysFlipToBack = false;
@@ -182,10 +184,11 @@ public partial class SingularityButtonHandler : MonoBehaviour {
 	{
 		curmodID = modID++;
 		groupedSingularityButtons.Clear();
+		colorblindDetected = colorblindMode.ColorblindModeActive;
 	}
 	// Use this for initialization
 	bool onHoldState;
-	void Start () {
+	void Start() {
 		disarmButton.OnInteract += delegate {
 			audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
 			isPressedDisarm = true;
@@ -198,14 +201,22 @@ public partial class SingularityButtonHandler : MonoBehaviour {
 			isPressedDisarm = false;
 			if (isSolved)
 			{
+				if (!hasDisarmed)
+				{
+					Debug.LogFormat("[Singularity Button #{0}]: Module disarmed.", curmodID);
+					string[] possibleDisarmMessages = { "MODULE\nDISARMED", "CHECK\nYOUR\nMODULES" };
+					textDisarm.text = possibleDisarmMessages.PickRandom();
+					disarmBacking.material.color = Color.green * 0.5f;
+				}
 				modSelf.HandlePass();
 				hasDisarmed = true;
+
 			}
 		};
 		buttonFront.OnInteract += delegate
 		{
 			audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, transform);
-			if (!isSolved && hasActivated)
+			if (!isSolved && hasActivated && !singularityButtonInfo.canDisarm)
 			{
 				singularityButtonInfo.HandleInteraction(this, (int)bombInfo.GetTime());
 			}
@@ -217,32 +228,56 @@ public partial class SingularityButtonHandler : MonoBehaviour {
 		{
 			audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonRelease, transform);
 			buttonFront.AddInteractionPunch();
-			if (!isSolved && hasActivated && onHoldState)
+			if (!isSolved && hasActivated && onHoldState && !singularityButtonInfo.canDisarm)
 			{
 				singularityButtonInfo.HandleInteraction(this, (int)bombInfo.GetTime());
+				singularityButtonInfo.HandleButtonRelease();
 			}
 			isPressedMain = false;
 		};
 		modSelf.OnActivate += delegate
 		{
+			textDisarm.text = "";
 			// Setup Global Interaction
 			KMBomb bombAlone = entireModule.GetComponentInParent<KMBomb>(); // Get the bomb that the module is attached on. Required for intergration due to modified value.
-			//Required for Multiple Bombs stable interaction in case of different bomb seeds.
-
+																			//Required for Multiple Bombs stable interaction in case of different bomb seeds.
 			if (!groupedSingularityButtons.ContainsKey(bombAlone))
 				groupedSingularityButtons[bombAlone] = new SingularityButtonInfo();
 			singularityButtonInfo = groupedSingularityButtons[bombAlone];
 			singularityButtonInfo.singularButtons.Add(this);
-			colorblindDetected = colorblindMode.ColorblindModeActive;
 			// Start Main Handling
 			//AddOthersModulesOntoList();
 			StartCoroutine(HandleGlobalModule());
-			hasActivated = true;
 		};
 		bombInfo.OnBombExploded += delegate
 		{
 			singularityButtonInfo.StopAll();
+			StopAllCoroutines();
 		};
+		lightStrike.range *= modSelf.transform.lossyScale.x;
+		textDisarm.text = "";
+		hasActivated = true;
+	}
+	void HandleStrikeSelf()
+    {
+		modSelf.HandleStrike();
+		if (flashingAnim != null)
+			StopCoroutine(flashingAnim);
+		flashingAnim = FlashLight();
+		StartCoroutine(flashingAnim);
+	}
+
+	IEnumerator FlashLight()
+	{
+		lightStrike.intensity = 100;
+		yield return new WaitForSeconds(0.5f);
+		for (int x = 90; x >= 0; x = x * 4 / 5)
+		{
+			lightStrike.intensity = x;
+			if (x <= 0) break;
+			yield return new WaitForSeconds(0.1f);
+		}
+		yield return null;
 	}
 	IEnumerator HandleGlobalModule()
 	{
@@ -256,11 +291,13 @@ public partial class SingularityButtonHandler : MonoBehaviour {
 				lastSolveCount = curSolveCount;
 				//UpdateCautionaryList();
 			}
-			yield return new WaitForSeconds(0);
+			yield return new WaitForEndOfFrame();
 		}
+		yield return new WaitForSeconds(Random.Range(0f, 4f));
 		isSolved = true;
-		audioSelf.PlaySoundAtTransform("paul368_sfx-door-open", transform);
+		
 		Debug.LogFormat("[Singularity Button #{0}]: A correct set of actions caused the Singularity Buttons to enter a solve state.", curmodID);
+
 		// Commented out because of some solve dependent modules not being easily detectable.
 		/*
 		if (!alwaysFlipToBack && (!bombInfo.GetSolvableModuleNames().Any(a => cautionaryModules.Contains(a)) || singularityButtonInfo.CountSingularityButtons() == 1))
@@ -273,13 +310,24 @@ public partial class SingularityButtonHandler : MonoBehaviour {
 		else
 			Debug.LogFormat("[Singularity Button #{0}]: At least one cautionary module is present on the bomb. You must instead press the manual disarm button to disarm this module!", curmodID);
 		*/
+		audioSelf.PlaySoundAtTransform("paul368_sfx-door-open", transform);
+		if (bombInfo.GetSolvableModuleIDs().Count(a => a == modSelf.ModuleType) == bombInfo.GetSolvableModuleIDs().Count() && !TwitchPlaysActive)
+        {
+			Debug.LogFormat("[Singularity Button #{0}]: Module disarmed. Only Singulaity Buttons are present.", curmodID);
+			string[] possibleDisarmMessages = { "BOMB\nDISARMED", "BOMB\nDEFUSED" };
+			textDisarm.text = possibleDisarmMessages.PickRandom();
+			disarmBacking.material.color = Color.green * 0.5f;
+			hasDisarmed = true;
+			modSelf.HandlePass();
+		}
+		else
+        {
+			textDisarm.text = "DISARM\nMODULE\nMANUALLY";
+		}
 		yield return null;
 	}
 	// Update is called once per frame
-	int frameMain = 45;
-	int frameDisarm = 45;
-	public int frameSwitch = 30;
-	int animLength = 30;
+	int frameMain = 45, frameDisarm = 45, frameSwitch = 30, animLength = 30;
 	void Update () {
 		if (!hasActivated) return;
 		if (!isPressedMain)
@@ -294,7 +342,7 @@ public partial class SingularityButtonHandler : MonoBehaviour {
 		}
 		else
 			frameDisarm = Mathf.Max(frameDisarm - 1, 40);
-		if (isSolved&&!hasDisarmed)
+		if (isSolved)
 		{
 			frameSwitch = Mathf.Min(frameSwitch + 1, animLength);
 		}
@@ -314,42 +362,39 @@ public partial class SingularityButtonHandler : MonoBehaviour {
 		}
 	}
 	// Handle Twitch Plays
-	IEnumerator HandleForcedSolve()
-	{
-		while (frameSwitch < animLength)
-		{
-			if (hasDisarmed) yield break;
-			yield return new WaitForSeconds(0);
-		}
-		disarmButton.OnInteract();
-		yield return new WaitForSeconds(0.2f);
-		disarmButton.OnInteractEnded();
-	}
-
-	void TwitchHandleForcedSolve()
+	IEnumerator TwitchHandleForcedSolve()
 	{
 		Debug.LogFormat("[Singularity Button #{0}]: A force solve has been issued viva TP Handler. ALL Singularity Buttons will be set to a solve state because of it.", curmodID);
 		if (!isSolved)
 			singularityButtonInfo.DisarmAll(); // Call the protected method, if the module is not solved yet.
-		StartCoroutine(HandleForcedSolve());
+		while (frameSwitch < animLength)
+		{
+			if (hasDisarmed) yield return true;
+			yield return true;
+		}
+		disarmButton.OnInteract();
+		yield return new WaitForSeconds(0.2f);
+		disarmButton.OnInteractEnded();
+		textDisarm.text = "FORCE\nSOLVED";
+		yield return true;
 	}
 	#pragma warning disable 0414
 		string TwitchHelpMessage = "To press the disarm button: \"!{0} disarm\", To grab the info of the button: \"!{0} state/color\"\n" +
-		"To tap the main button based on seconds digits: \"!{0} tap ##\"; based on the digit being present: \"!{0} tap #\"; anytime: \"!{0} tap\"\n" +
-		"To hold the main button based on seconds digits: \"!{0} hold ##\"; based on the digit being present: \"!{0} hold #\"; anytime: \"!{0} hold\"\n" +
-		"To release the main button based on seconds digits: \"!{0} release ##\"; based on the digit being present: \"!{0} release #\". Multiple time stamps based on seconds digits can be used.\n" +
+		"To interact the main button based on seconds digits: \"!{0} tap/hold/release ##\"; based on the digit being present: \"!{0} tap/hold/release #\"; anytime: \"!{0} tap/hold\"\n" +
+		"Multiple time stamps based on seconds digits can be used. I.E \"!{0} tap 55 44 33\"...\n" +
 		"To interact with the button based on even/odd conditions \"!{0} hold/tap/release even/odd\"";
+		bool TwitchPlaysActive;
 	#pragma warning restore 0414
 	IEnumerator ProcessTwitchCommand(string command)
 	{
 		string interpetedCommand = command.ToLower();
 		string[] separatedCommands = command.Split(';');
-		string pressDisarm = @"^disarm$";
-		string tapTimeStamp = @"^tap( \d{2})+$", tapDigit = @"^tap( \d)?$";
-		string holdTimeStamp = @"^hold( \d{2})+$", holdDigit = @"^hold( \d)?$";
-		string releaseTimeStamp = @"^release( \d{2})+$", releaseDigit = @"^release \d$";
-		string tapTimeParity = @"^tap (at |on )?(even|odd)$", releaseTimeParity = @"^release (at |on )?(even|odd)$", holdTimeParity = @"^hold (at |on )?(even|odd)$";
-		string grabState = @" ^ state$", grabColor = @"^color$", enableColorblind = @"^colou?rblind$";
+		string pressDisarm = @"^disarm$",
+			tapTimeStamp = @"^tap( \d{2})+$", tapDigit = @"^tap( \d)?$",
+			holdTimeStamp = @"^hold( \d{2})+$", holdDigit = @"^hold( \d)?$",
+			releaseTimeStamp = @"^release( \d{2})+$", releaseDigit = @"^release \d$",
+			tapTimeParity = @"^tap (at |on )?(even|odd)$", releaseTimeParity = @"^release (at |on )?(even|odd)$", holdTimeParity = @"^hold (at |on )?(even|odd)$",
+			grabState = @"^state$", grabColor = @"^color$", enableColorblind = @"^colou?rblind$";
 
 		string[] commandParts = interpetedCommand.Split(' ');
 
@@ -358,7 +403,8 @@ public partial class SingularityButtonHandler : MonoBehaviour {
 			yield return "sendtochaterror Are you trying to interact the button when its already solved? You might want to think again. (This is an anarchy command prevention message.)";
 			yield break;
 		}
-		else if (interpetedCommand.RegexMatch(pressDisarm))
+		else
+		if (interpetedCommand.RegexMatch(pressDisarm))
 		{
 			if (!isSolved)
 			{
@@ -387,7 +433,8 @@ public partial class SingularityButtonHandler : MonoBehaviour {
 		else if (interpetedCommand.RegexMatch(enableColorblind))
 		{
 			yield return null;
-			colorblindDetected = true;
+			colorblindDetected = !colorblindDetected;
+			yield break;
 		}
 		else if (interpetedCommand.RegexMatch(grabColor))
 		{
@@ -436,7 +483,6 @@ public partial class SingularityButtonHandler : MonoBehaviour {
 					yield return null;
 					yield return buttonFront;
 					yield return "strike";
-					yield return "solve";
 				}
 			}
 			else
@@ -459,7 +505,6 @@ public partial class SingularityButtonHandler : MonoBehaviour {
 			yield return buttonFront;
 			yield return buttonFront;
 			yield return "strike";
-			yield return "solve";
 		}
 		else if (interpetedCommand.RegexMatch(tapTimeParity))
 		{
