@@ -293,7 +293,7 @@ public partial class SingularityButtonHandler : MonoBehaviour {
 			}
 			yield return new WaitForEndOfFrame();
 		}
-		yield return new WaitForSeconds(Random.Range(0f, 4f));
+		//yield return new WaitForSeconds(Random.Range(0f, 4f));
 		isSolved = true;
 		
 		Debug.LogFormat("[Singularity Button #{0}]: A correct set of actions caused the Singularity Buttons to enter a solve state.", curmodID);
