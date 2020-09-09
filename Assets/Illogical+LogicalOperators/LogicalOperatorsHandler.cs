@@ -202,9 +202,10 @@ public class LogicalOperatorsHandler : MonoBehaviour {
 	void Update () {
 
 	}
-
+	// TP Section Begins Here
 	IEnumerator TwitchHandleForcedSolve()
     {
+		Debug.LogFormat("[Logical Operators #{0}]: Force solve requested viva TP Handler", modID);
 		while (!forceSolveStates.SequenceEqual(buttonInverts.Select(a => a.toggled)))
         {
 			for (int x = 0; x < forceSolveStates.Length; x++)
@@ -220,9 +221,10 @@ public class LogicalOperatorsHandler : MonoBehaviour {
     }
 #pragma warning disable IDE0051 // Remove unused private members
     readonly string TwitchHelpMessage = "Toggle selected LEDs with \"!{0} toggle # # #\", where the LEDs are labeled 1-8 from top to bottom. Submit the current state with \"!{0} submit\"";
-	#pragma warning restore IDE0051 // Remove unused private members
+	bool TwitchPlaysActive;
+#pragma warning restore IDE0051 // Remove unused private members
 
-    IEnumerator ProcessTwitchCommand(string cmd)
+	IEnumerator ProcessTwitchCommand(string cmd)
     {
 		string cmdLower = cmd.ToLower().Trim();
 

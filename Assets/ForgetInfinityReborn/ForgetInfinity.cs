@@ -581,6 +581,7 @@ public class ForgetInfinity : MonoBehaviour {
     {
         public float PPAScaleFactor = 0.5f;
     }
+    /*
     static readonly Dictionary<string, object>[] TweaksEditorSettings = new Dictionary<string, object>[]
       {
             new Dictionary<string, object>
@@ -595,7 +596,7 @@ public class ForgetInfinity : MonoBehaviour {
                     },
                 } }
             }
-      };
+      };*/
     // Twitch Plays support
 #pragma warning disable IDE0051 // Remove unused private members
     public readonly string TwitchHelpMessage = "Enter the sequence with \"!{0} press 01234\". To press the back space button, append as many \"back\" commands as needed to press the backspace button. 0-9 are acceptable digits. Space out the commands (digits excluded)!";

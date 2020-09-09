@@ -500,7 +500,7 @@ public class SevenHandler : MonoBehaviour {
 			for (int x = 0; x < segmentLogging.Length; x++)
 			{
 				int segIdx = segmentLogging[x];
-				int valIdx = segmentCodings.possibleValues.IndexOf(letter);
+				int valIdx = allTextPossible.IndexOf(letter);
 				segments[x].material.color = valIdx != -1 && segmentCodings.segmentStates[valIdx, segIdx] ? Color.white : Color.black;
 			}
 			yield return new WaitForSeconds(0.25f);
