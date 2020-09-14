@@ -62,7 +62,6 @@ public class MastermindRestrictedCore : MonoBehaviour {
         {
 			int y = x;
 			possibleSelectables[x].OnInteract += delegate {
-				queryButton.AddInteractionPunch(0.1f);
 				audioKM.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, queryButton.transform);
 				if (interactable)
                 {
@@ -255,7 +254,7 @@ public class MastermindRestrictedCore : MonoBehaviour {
 		yield return true;
     }
 #pragma warning disable IDE0051 // Remove unused private members
-	readonly string TwitchHelpMessage = "Query the current state with \"!{0} query\", or specific colors with \"!{0} query W W W W\" Available colors are white, magenta, yellow, green, red, blue. Reset the module with \"!{0} reset\". Colorblind? You may use \"!{0} colorblind\" to get the color of these.";
+	readonly string TwitchHelpMessage = "Query the current state with \"!{0} query\", or specific colors with \"!{0} query W W W W\" Available colors are white, magenta, yellow, green, red, blue. Reset the module with \"!{0} reset\". Toggle colorblind mode with \"!{0} colorblind/colourblind\".";
 #pragma warning restore IDE0051 // Remove unused private members
 	Dictionary<int, string[]> intereptedValues = new Dictionary<int, string[]> {
 		{ 0, new string[] { "white", "w", } },
@@ -269,7 +268,18 @@ public class MastermindRestrictedCore : MonoBehaviour {
     {
 		if (Application.isEditor)
 			cmd = cmd.Trim();
-		if (Regex.IsMatch(cmd, @"^query\s*", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+		if (!interactable)
+        {
+			yield return string.Format("sendtochaterror The module cannot be interacted right now. Wait a bit until you can interact with the module again.");
+			yield break;
+		}
+		if (Regex.IsMatch(cmd, @"^colou?rblind$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+			yield return null;
+			colorblindDetected = !colorblindDetected;
+			UpdateCurrentDisplay();
+        }
+		else if (Regex.IsMatch(cmd, @"^query\s*", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
         {
 			string modifiedCommand = cmd.Substring(5).Trim().ToLower();
 			string[] splittedCommands = modifiedCommand.Split();

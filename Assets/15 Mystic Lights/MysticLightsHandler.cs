@@ -700,7 +700,7 @@ public class MysticLightsHandler : MonoBehaviour {
                 StartCoroutine(PlayResetAnim());
                 resetsCounted++;
 
-                yield return "sendtochat 15 Mystic Lights has activate its " +resetString[resetsCounted]+" reset.";
+                yield return "sendtochat 15 Mystic Lights (#{1}) has activate its " +resetString[resetsCounted]+" reset.";
                 yield break;
             }
             else
