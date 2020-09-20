@@ -66,7 +66,7 @@ public class LogicalOperatorsHandler : MonoBehaviour {
         {
 			usedCharacters = hexDigits;
         }
-		Debug.LogFormat("[Logical Operators #{0}]: Rule seed handler for Logical Operators detected with rule seed {1}. PLEASE REPORT ANY RULE SEED BUGS WITH UNFILTERED LOGS!", modID, nextRNG.Seed);
+		Debug.LogFormat("[Logical Operators #{0}]: Rule seed handler for Logical Operators detected with rule seed {1}. PLEASE REPORT ANY RULE SEED BUGS WITH PREFERABLY UNFILTERED LOGS!", modID, nextRNG.Seed);
 		// Assign each valid character on the list with a given value
 		for (int x = 0; x < trueStates.GetLength(0); x++)
 		{

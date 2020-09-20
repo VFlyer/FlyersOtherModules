@@ -508,9 +508,11 @@ public class DigitalGridHandler : MonoBehaviour {
 			resetBtn.OnInteract();
 			for (int x = 0; x < correctPresses.Length; x++)
             {
-				yield return null;
 				if (correctPresses[x])
+				{
+					yield return null;
 					gridSelectables[x].OnInteract();
+				}
             }
         }
 		yield return null;

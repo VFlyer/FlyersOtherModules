@@ -24,11 +24,11 @@ public class MastermindRestrictedCore : MonoBehaviour {
 	List<int> queryCorrectColorAndPos = new List<int>(),
 		queryCorrectColorNotPos = new List<int>();
 
-	int[] currentInputs, correctInputs;
-	int queriesLeft, maxPossible;
+	protected int[] currentInputs, correctInputs;
+	protected int queriesLeft, maxPossible;
 	private static int modCounter = 1;
-	int loggingID;
-	bool interactable = true, colorblindDetected;
+	protected int loggingID;
+	protected bool interactable = true, colorblindDetected;
 	// Use this for initialization
 	void Awake()
     {
@@ -79,11 +79,11 @@ public class MastermindRestrictedCore : MonoBehaviour {
             }
         }
 	}
-	void QuickLog(string toLog)
+	protected virtual void QuickLog(string toLog)
     {
 		Debug.LogFormat("[Mastermind Restricted #{0}]: {1}", loggingID, toLog);
 	}
-	void QueryModule()
+	protected virtual void QueryModule()
     {
 		int idx = -1;
         for (int x = 0; x < allQueries.Count; x++)
@@ -154,7 +154,7 @@ public class MastermindRestrictedCore : MonoBehaviour {
             }
         }
     }
-	void UpdateCurrentDisplay()
+	protected virtual void UpdateCurrentDisplay()
     {
 		for (int x = 0; x < selectableRenderer.Length; x++)
         {
@@ -171,7 +171,7 @@ public class MastermindRestrictedCore : MonoBehaviour {
         }
     }
 
-	void ResetModule()
+	protected virtual void ResetModule()
     {
 		queryCorrectColorAndPos.Clear();
 		queryCorrectColorNotPos.Clear();
@@ -190,7 +190,7 @@ public class MastermindRestrictedCore : MonoBehaviour {
 		correctColorDisplay.text = "";
 		queryLeftDisplay.text = "";
 	}
-	IEnumerator RevealCorrectAnim()
+	protected IEnumerator RevealCorrectAnim()
     {
 		Vector3 endPos = new Vector3(0, 0, -0.025f), startPos = new Vector3(0, 0, -0.045f);
 		for (int x = 0; x < correctRenderer.Length; x++)
@@ -214,7 +214,7 @@ public class MastermindRestrictedCore : MonoBehaviour {
 			yield return new WaitForEndOfFrame();
 		}
 	}
-	IEnumerator HandleQueryExhaustAnim()
+	protected IEnumerator HandleQueryExhaustAnim()
     {
 		yield return RevealCorrectAnim();
 		yield return new WaitForSeconds(2f);
@@ -236,7 +236,7 @@ public class MastermindRestrictedCore : MonoBehaviour {
 	}
 	// TP Section Begins Here
 
-	IEnumerator TwitchHandleForcedSolve()
+	protected virtual IEnumerator TwitchHandleForcedSolve()
     {
 		QuickLog("Force solve requested viva TP Handler");
 		while (!currentInputs.SequenceEqual(correctInputs))
@@ -264,7 +264,7 @@ public class MastermindRestrictedCore : MonoBehaviour {
 		{ 4, new string[] { "red", "r", } },
 		{ 5, new string[] { "blue", "b", } },
 	};
-	IEnumerator ProcessTwitchCommand(string cmd)
+	protected virtual IEnumerator ProcessTwitchCommand(string cmd)
     {
 		if (Application.isEditor)
 			cmd = cmd.Trim();
