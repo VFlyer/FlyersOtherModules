@@ -6,7 +6,7 @@ using UnityEngine;
 public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 
 	private static int modCounter = 1;
-
+	
 	// Use this for initialization
 	void Start () {
 		loggingID = modCounter++;

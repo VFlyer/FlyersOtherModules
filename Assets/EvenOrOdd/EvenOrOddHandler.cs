@@ -95,7 +95,8 @@ public class EvenOrOddHandler : MonoBehaviour {
 			LogModule(string.Format("For reference, all digits shown before this strike were {0}", allDigits.Join(", ")));
 			modSelf.HandleStrike();
 			ResetModule();
-        }
+			LogModule("Tap the display to restart the module.");
+		}
     }
 
 	void GenerateValue()
@@ -246,7 +247,7 @@ public class EvenOrOddHandler : MonoBehaviour {
     }
 
 #pragma warning disable IDE0051 // Remove unused private members
-	readonly string TwitchHelpMessage = "Press the display with \"!{0} display\", \"!{0} even/odd\" to press the even or odd buttons respectively. On Twitch Plays, the timer resets to 30 seconds for every correct press.";
+	readonly string TwitchHelpMessage = "Press the display with \"!{0} display\", \"!{0} even/odd\" or \"!{0} e/o\" to press the even or odd buttons respectively. On Twitch Plays, the timer resets to 30 seconds for every correct press.";
 	bool TwitchPlaysActive;
 #pragma warning restore IDE0051 // Remove unused private members
     IEnumerator ProcessTwitchCommand(string command)
@@ -257,13 +258,13 @@ public class EvenOrOddHandler : MonoBehaviour {
 			displaySelectable.OnInteract();
 			yield return "strike";
         }
-		else if (command.EqualsIgnoreCase("even"))
+		else if (command.EqualsIgnoreCase("even") || command.EqualsIgnoreCase("e"))
 		{
 			yield return null;
 			evenSelectable.OnInteract();
 			yield return "strike";
 		}
-		else if (command.EqualsIgnoreCase("odd"))
+		else if (command.EqualsIgnoreCase("odd") || command.EqualsIgnoreCase("o"))
 		{
 			yield return null;
 			oddSelectable.OnInteract();
