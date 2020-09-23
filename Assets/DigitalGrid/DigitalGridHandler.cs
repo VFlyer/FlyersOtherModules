@@ -308,7 +308,7 @@ public class DigitalGridHandler : MonoBehaviour {
 						{
 							for (int x = 0; x < 25; x++)
 							{
-                                if (digitsGrid[x] % 2 == 1 && !new[] { 0, 6 }.Contains(idxColors[x])) // All even numbers not red or white
+                                if (digitsGrid[x] % 2 == 0 && !new[] { 0, 6 }.Contains(idxColors[x])) // All even numbers not red or white
                                     correctPresses[x] = true;
 							}
 							break;

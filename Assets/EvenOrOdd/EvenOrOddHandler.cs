@@ -210,7 +210,10 @@ public class EvenOrOddHandler : MonoBehaviour {
 		isActive = false;
 		modSelf.HandleStrike();
 		ResetModule();
-    }
+		LogModule("You've ran out of time! Strike!");
+		LogModule(string.Format("For reference, all digits shown before this strike were {0}", allDigits.Join(", ")));
+		LogModule("Tap the display to restart the module.");
+	}
 
 	// Update is called once per frame
 	void Update () {
