@@ -208,10 +208,10 @@ public class EvenOrOddHandler : MonoBehaviour {
 			timerMesh.text = timeLeft < 9.9f ? timeLeft.ToString("0.0") : timeLeft.ToString("00");
 		}
 		isActive = false;
-		modSelf.HandleStrike();
-		ResetModule();
 		LogModule("You've ran out of time! Strike!");
 		LogModule(string.Format("For reference, all digits shown before this strike were {0}", allDigits.Join(", ")));
+		modSelf.HandleStrike();
+		ResetModule();
 		LogModule("Tap the display to restart the module.");
 	}
 

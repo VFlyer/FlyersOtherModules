@@ -538,6 +538,7 @@ public class SevenHandler : MonoBehaviour {
 		DisplayGivenValue(displayedValues[curIdx]);
 		CalculateSolution();
 		hasStarted = true;
+		interactable = true;
 		yield return true;
 	}
 	IEnumerator RecapStageGen()
@@ -570,7 +571,6 @@ public class SevenHandler : MonoBehaviour {
 			colorTriangles[x].material.color = Color.black;
 			colorblindTextTri[x].text = "";
 		}
-		DisplayGivenValue(displayedValues[curIdx]);
 		for (int z = 0; z < colorTrianglesHL.Length; z++)
 		{
 			colorTrianglesHL[z].enabled = false;
@@ -581,6 +581,7 @@ public class SevenHandler : MonoBehaviour {
 		DisplayGivenValue(displayedValues[curIdx]);
 		CalculateSolution();
 		hasStarted = true;
+		interactable = true;
 		yield return true;
 	}
 
@@ -597,6 +598,8 @@ public class SevenHandler : MonoBehaviour {
 	IEnumerator TwitchHandleForcedSolve()
 	{
 		while (!hasStarted) yield return true;
+		Debug.LogFormat("<7 #{0}>: Debug, Enforcing autosolve handling for TP", curModID);
+		interactable = true;
 		if (!isSubmitting)
 		{
 			stageDisplay.OnInteract();
