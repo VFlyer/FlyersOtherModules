@@ -12,7 +12,7 @@ public class NumberedButtonsScript : MonoBehaviour {
 	public KMBombModule modSelf;
 	public KMAudio audioSelf;
 	public KMBombInfo mBombInfo;
-	public GameObject panelAnim, allKeys;
+	public GameObject panelAnim, allKeys, sticker, textSolve;
 	bool moduleSolved, interactable, hasStruck, isSolving;
 	int[] buttonNums = new int[16];
 	bool[] correctPresses = new bool[16];
@@ -117,6 +117,8 @@ public class NumberedButtonsScript : MonoBehaviour {
         }
 		RenderButtons();
 		StartCoroutine(AnimateOpeningAnim());
+
+		sticker.SetActive(uernd.value < 0.01f);
 	}
 	void RenderButtons()
     {
@@ -197,6 +199,7 @@ public class NumberedButtonsScript : MonoBehaviour {
 			}
 		}
 		yield return new WaitForSeconds(0.5f);
+		textSolve.SetActive(uernd.value < 0.01f);
 		yield return AnimateClosingAnim();
 		moduleSolved = true;
 		audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, transform);
@@ -342,6 +345,7 @@ public class NumberedButtonsScript : MonoBehaviour {
 				yield break;
 			}
 		}
+		hasStruck = false;
 		for (int x = 0; x < cordList.Count; x++)
 		{
 			yield return null;

@@ -436,12 +436,7 @@ public class ForgetInfinity : MonoBehaviour {
 
     string FormatListInt(List<int> IntArray)
     {
-        string output = "";
-        foreach (int sgl in IntArray)
-        {
-            output += sgl;
-        }
-        return output;
+        return FormatListInt(IntArray.ToArray());
     }
     string FormatListInt(int[] IntArray)
     {

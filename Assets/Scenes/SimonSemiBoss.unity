@@ -259,6 +259,46 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 23366554229685008, guid: f1d0d097dbe40484ebb1ff737862b745,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 080192272140b14458f885b7968cc2f5, type: 2}
+    - target: {fileID: 23327242373459046, guid: f1d0d097dbe40484ebb1ff737862b745,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 080192272140b14458f885b7968cc2f5, type: 2}
+    - target: {fileID: 23096497315478070, guid: f1d0d097dbe40484ebb1ff737862b745,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 080192272140b14458f885b7968cc2f5, type: 2}
+    - target: {fileID: 23565389560138668, guid: f1d0d097dbe40484ebb1ff737862b745,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 080192272140b14458f885b7968cc2f5, type: 2}
+    - target: {fileID: 23184245082932144, guid: f1d0d097dbe40484ebb1ff737862b745,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 080192272140b14458f885b7968cc2f5, type: 2}
+    - target: {fileID: 23669381819217862, guid: f1d0d097dbe40484ebb1ff737862b745,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 080192272140b14458f885b7968cc2f5, type: 2}
+    - target: {fileID: 23330910889805574, guid: f1d0d097dbe40484ebb1ff737862b745,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 080192272140b14458f885b7968cc2f5, type: 2}
+    - target: {fileID: 23937447734078462, guid: f1d0d097dbe40484ebb1ff737862b745,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 080192272140b14458f885b7968cc2f5, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f1d0d097dbe40484ebb1ff737862b745, type: 2}
   m_IsPrefabParent: 0

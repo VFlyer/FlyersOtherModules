@@ -20,8 +20,8 @@ public class MastermindRestrictedCore : MonoBehaviour {
 	public Color[] colorList;
 	public char[] colorblindLetters;
 	public bool[] invertColorblindLetter;
-	List<int[]> allQueries = new List<int[]>();
-	List<int> queryCorrectColorAndPos = new List<int>(),
+	protected List<int[]> allQueries = new List<int[]>();
+	protected List<int> queryCorrectColorAndPos = new List<int>(),
 		queryCorrectColorNotPos = new List<int>();
 
 	protected int[] currentInputs, correctInputs;
