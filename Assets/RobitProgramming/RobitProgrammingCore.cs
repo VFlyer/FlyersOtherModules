@@ -5,7 +5,8 @@ using UnityEngine;
 public class RobitProgrammingCore : MonoBehaviour {
 
 	public GridDisplayer gridToDisplay;
-	/*public KMSelectable delay10thUp, delay10thDown, delay100thUp, delay100thDown, genreateSelectable, playPauseSelectable, bit0, bit1, arrowUp, arrowDown, backspaceArrow;*/
+	/*public KMSelectable delayDeciSecUp, delayDeciSecDown, delayCentSecUp, delayCentSecDown, 
+	 * genreateSelectable, playPauseSelectable, bit0, bit1, arrowUp, arrowDown, backspaceArrow;*/
 
 
 
