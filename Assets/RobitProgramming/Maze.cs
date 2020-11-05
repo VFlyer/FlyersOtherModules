@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 
 public partial class Maze {
@@ -7,22 +9,38 @@ public partial class Maze {
 	protected const int directionUp = 0, directionDown = 1, directionRight = 2, directionLeft = 3;
 
 	public string[,] maze;
+	public bool[,] markSpecial;
 	protected int curLength, curWidth, curX, curY;
 	public int startingRow, startingCol;
 	protected bool isGenerating = false;
 	public Maze()
-    {
+	{
 		maze = new string[1, 1];
 		curWidth = 1;
 		curLength = 1;
 	}
 	public Maze(int length, int width)
-    {
+	{
 		maze = new string[length, width];
+		markSpecial = new bool[length, width];
 		curLength = length;
 		curWidth = width;
-    }
-
+	}
+	public int ObtainOppositeDirection(int directionIdx)
+	{
+		switch(directionIdx)
+        {
+			case directionUp:
+				return directionDown;
+			case directionDown:
+				return directionUp;
+			case directionRight:
+				return directionLeft;
+			case directionLeft:
+				return directionRight;
+        }
+		return -1;
+	}
 	public int GetLength()
     {
 		return curLength;
@@ -56,6 +74,10 @@ public partial class Maze {
 			}
 		}
 	}
+	/**
+	 * <summary>Creates a passage with the specified direction index ranging from 0 - 3 inclusive.</summary>
+	 * <param name="directionIdx">The index of the given direction to carve it to.</param>
+	 */
 	public void CreatePassage(int directionIdx)
     {
 		switch (directionIdx)
@@ -88,6 +110,41 @@ public partial class Maze {
 				break;
         }
     }
+	public void CreatePassageFrom(int xCord, int yCord, int directionIdx)
+	{
+		if (xCord < 0 || xCord >= curLength || yCord < 0 || yCord >= curWidth)
+			return;
+
+		switch (directionIdx)
+		{
+			case directionUp:
+				{
+					maze[xCord, yCord - 1] += "D";
+					maze[xCord, yCord] += "U";
+					break;
+				}
+			case directionDown:
+				{
+					maze[xCord, yCord + 1] += "U";
+					maze[xCord, yCord] += "D";
+					break;
+				}
+			case directionRight:
+				{
+					maze[xCord + 1, yCord] += "L";
+					maze[xCord, yCord] += "R";
+					break;
+				}
+			case directionLeft:
+				{
+					maze[xCord - 1, yCord] += "R";
+					maze[xCord, yCord] += "L";
+					break;
+				}
+			default:
+				break;
+		}
+	}
 
 	public void MoveToNewPosition(int newX, int newY)
     {

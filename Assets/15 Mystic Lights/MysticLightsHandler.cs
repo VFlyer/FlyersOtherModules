@@ -678,9 +678,10 @@ public class MysticLightsHandler : MonoBehaviour {
         moduleSelf.HandlePass();
         yield return null;
     }
-    public readonly string TwitchHelpMessage = "Press a button with “!{0} A1 B2 C3 D4...”. Columns are labeled A-D from left to right, rows are labeled 1-4 from top to bottom. Commands may be voided if the module enters a generation state or a solve state. \"press\" is optional.\nTo toggle colorblind: \"!{0} colorblind\" To generate a new board: \"!{0} regen[erate]\" or \"!{0} reset\". You can only regenerate up to 3 times on this module! To get the number of resets this module currently used up: \"!{0} resetcount\"";
-
+#pragma warning disable IDE0051 // Remove unused private members
+    private readonly string TwitchHelpMessage = "Press a button with “!{0} A1 B2 C3 D4...”. Columns are labeled A-D from left to right, rows are labeled 1-4 from top to bottom. Commands may be voided if the module enters a generation state or a solve state. \"press\" is optional.\nTo toggle colorblind: \"!{0} colorblind\" To generate a new board: \"!{0} regen[erate]\" or \"!{0} reset\". You can only regenerate up to 3 times on this module! To get the number of resets this module currently used up: \"!{0} resetcount\"";
     bool TwitchPlaysActive;
+#pragma warning restore IDE0051 // Remove unused private members
     readonly string RowIDX = "abcd";
     readonly string ColIDX = "1234";
     readonly string[] resetString = new string[] { "0th", "first", "second", "last" };

@@ -250,8 +250,10 @@ public class EvenOrOddHandler : MonoBehaviour {
     }
 
 #pragma warning disable IDE0051 // Remove unused private members
+#pragma warning disable IDE0044 // Add readonly modifier
 	readonly string TwitchHelpMessage = "Press the display with \"!{0} display\", \"!{0} even/odd\" or \"!{0} e/o\" to press the even or odd buttons respectively. On Twitch Plays, the timer resets to 30 seconds for every correct press.";
-	bool TwitchPlaysActive;
+    bool TwitchPlaysActive;
+#pragma warning restore IDE0044 // Add readonly modifier
 #pragma warning restore IDE0051 // Remove unused private members
     IEnumerator ProcessTwitchCommand(string command)
 	{

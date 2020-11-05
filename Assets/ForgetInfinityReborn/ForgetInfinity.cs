@@ -372,7 +372,7 @@ public class ForgetInfinity : MonoBehaviour {
                 }
                 else
                 { // Implement Failsafe to enforce this module to be solvable if Forget Infinity is NOT ignored by Organization AND Organization is present on the bomb.
-                    /*
+                    
                     string[] dialog = new string[]
                     {// A reminder of why Forget Infinity was received poorly to the community. Yes. It's a thing still. -VFlyer
                         "Organization: Why do you even exist!? No one wanted you to show up anyway!",
@@ -385,7 +385,7 @@ public class ForgetInfinity : MonoBehaviour {
                     };
                     foreach (string line in dialog)
                         Debug.LogFormat("[Forget Infinity #{0}]: {1}", curModID,line);
-
+                    /*
                     Debug.LogFormat("[Forget Infinity #{0}]: Organization is present AND not ignoring Forget Infinity! This module can be auto-solved by pressing any button.", curModID);
                     autosolvable = true;
                     */

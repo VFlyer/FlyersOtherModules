@@ -3,12 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+/** Summary:
+  * Start at a given point and walk in a random direction to any unvisited cells.
+  * Keep walking until the currently visited cell has no adjacent unvisited cells.
+  * Backtrack to the previous cell and check if that cell has any adjacent unvisited cells. If so, walk randomly towards those cells.
+  * Repeat backtracking until the starting cell is reached.
+  * If at this point the starting cell has no adjacent unvisited cells, the maze is considered generated.
+  */
 public class MazeBacktracker : Maze {
-
     public MazeBacktracker(int length, int width)
     {
         maze = new string[length, width];
+        markSpecial = new bool[length, width];
         curLength = length;
         curWidth = width;
     }
@@ -18,6 +24,7 @@ public class MazeBacktracker : Maze {
         isGenerating = true;
         bool[,] isRevealed = new bool[curLength, curWidth];
         var visitedCells = new List<int[]>() { new[] { curX, curY } };
+        markSpecial[curX, curY] = true;
         while (visitedCells.Any())
         {
             //Debug.LogFormat("({0})",visitedCells.Select(a => a.Join(",")).Join(");("));
@@ -60,10 +67,12 @@ public class MazeBacktracker : Maze {
                             break;
                         }
                 }
+                markSpecial[curX, curY] = true;
                 visitedCells.Add(new[] { curX, curY });
             }
             else
             {
+                markSpecial[curX, curY] = false;
                 visitedCells.Remove(curPos);
             }
             yield return new WaitForSeconds(delay);

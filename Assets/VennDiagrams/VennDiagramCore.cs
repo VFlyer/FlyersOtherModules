@@ -63,6 +63,25 @@ public class VennDiagramCore : MonoBehaviour
         }
     }
 
+    readonly string allOperatorSymbols = "∪∩\\Δ";
+
+    string[] ApplyOperatorIdx(string[] setL, string[] setR, int idx)
+    {
+        switch (idx)
+        {
+            case 0: // Union
+                return setL.Union(setR).ToArray();
+            case 1: // Intersect
+                return setL.Intersect(setR).ToArray();
+            case 2: // Relative Complement
+                return setL.Except(setR).ToArray();
+            case 3: // Symmetric Difference
+                return setL.Union(setR).Where(a => !setL.Intersect(setR).Contains(a)).ToArray();
+            default:
+                return setL;
+        }
+    }
+
     void GenerateCorrectStates()
     {
         char[] LToRLetters = new[] { 'A', 'B', 'C' }.Shuffle();
@@ -78,7 +97,7 @@ public class VennDiagramCore : MonoBehaviour
 
         // Assign the idxs that are going to be used in the operators.
         for (int x = 0; x < operatorIdx.Length; x++)
-            operatorIdx[x] = (byte)uernd.Range(0, 3);
+            operatorIdx[x] = (byte)uernd.Range(0, 4);
 
         string[][] startingStates = new string[3][];
         Debug.LogFormat("<Venn Diagrams #{0}> All starting states: ", modID);
@@ -93,23 +112,17 @@ public class VennDiagramCore : MonoBehaviour
             string[] operatedLeftSet = startingStates[0];
             for (int x = 0; x < operatorIdx.Length; x++)
             {
-                switch (operatorIdx[x])
-                {
-                    case 0: // Union
-                        operatedLeftSet = operatedLeftSet.Union(startingStates[x + 1]).ToArray();
-                        break;
-                    case 1: // Intersect
-                        operatedLeftSet = operatedLeftSet.Intersect(startingStates[x + 1]).ToArray();
-                        break;
-                    case 2: // Relative Complement
-                        operatedLeftSet = operatedLeftSet.Where(a => !startingStates[x + 1].Contains(a)).ToArray();
-                        break;
-                    default:
-                        break;
-                }
+                operatedLeftSet = ApplyOperatorIdx(operatedLeftSet, startingStates[x + 1], operatorIdx[x]);
             }
 
-            string statementToDisplay = string.Format("({0}{5} {1} {2}{6}) {3} {4}{7}", LToRLetters[0], "∪∩\\"[operatorIdx[0]], LToRLetters[1], "∪∩\\"[operatorIdx[1]], LToRLetters[2], LToRInvert[0] ? "'" : "", LToRInvert[1] ? "'" : "", LToRInvert[2] ? "'" : "");
+            string statementToDisplay = string.Format("({0}{5} {1} {2}{6}) {3} {4}{7}",
+                LToRLetters[0],
+                allOperatorSymbols[operatorIdx[0]],
+                LToRLetters[1],
+                allOperatorSymbols[operatorIdx[1]],
+                LToRLetters[2], LToRInvert[0] ? "'" : "",
+                LToRInvert[1] ? "'" : "",
+                LToRInvert[2] ? "'" : "");
 
             Debug.LogFormat("[Venn Diagrams #{0}] Statement Displayed: {1}", modID, statementToDisplay);
 
@@ -122,23 +135,17 @@ public class VennDiagramCore : MonoBehaviour
             string[] operatedRightSet = startingStates[2];
             for (int x = operatorIdx.Length - 1; x >= 0; x--)
             {
-                switch (operatorIdx[x])
-                {
-                    case 0: // Union
-                        operatedRightSet = startingStates[x].Union(operatedRightSet).ToArray();
-                        break;
-                    case 1: // Intersect
-                        operatedRightSet = startingStates[x].Intersect(operatedRightSet).ToArray();
-                        break;
-                    case 2: // Relative Complement
-                        operatedRightSet = startingStates[x].Where(a => !operatedRightSet.Contains(a)).ToArray();
-                        break;
-                    default:
-                        break;
-                }
+                operatedRightSet = ApplyOperatorIdx(startingStates[x], operatedRightSet, operatorIdx[x]);
             }
 
-            string statementToDisplay = string.Format("{0}{5} {1} ({2}{6} {3} {4}{7})", LToRLetters[0], "∪∩\\"[operatorIdx[0]], LToRLetters[1], "∪∩\\"[operatorIdx[1]], LToRLetters[2], LToRInvert[0] ? "'" : "", LToRInvert[1] ? "'" : "", LToRInvert[2] ? "'" : "");
+            string statementToDisplay = string.Format("{0}{5} {1} ({2}{6} {3} {4}{7})",
+                LToRLetters[0],
+                allOperatorSymbols[operatorIdx[0]],
+                LToRLetters[1],
+                allOperatorSymbols[operatorIdx[1]],
+                LToRLetters[2], LToRInvert[0] ? "'" : "",
+                LToRInvert[1] ? "'" : "",
+                LToRInvert[2] ? "'" : "");
 
             Debug.LogFormat("[Venn Diagrams #{0}] Statement Displayed: {1}", modID, statementToDisplay);
 

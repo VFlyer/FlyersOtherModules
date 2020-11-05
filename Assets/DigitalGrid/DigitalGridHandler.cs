@@ -433,11 +433,11 @@ public class DigitalGridHandler : MonoBehaviour {
 			List<string> logInCorrectPresses = new List<string>();
 			for (int x = 0; x < currentPresses.Length; x++)
 			{
-				logCorrectPresses.Add(currentPresses[x] != correctPresses[x] ? "!" : "-");
-				if (logCorrectPresses.Count == 5)
+				logInCorrectPresses.Add(currentPresses[x] != correctPresses[x] ? "!" : "-");
+				if (logInCorrectPresses.Count == 5)
 				{
-					Debug.LogFormat("[Digital Grid #{0}]: {1}", modIDLog, logCorrectPresses.Join(""));
-					logCorrectPresses.Clear();
+					Debug.LogFormat("[Digital Grid #{0}]: {1}", modIDLog, logInCorrectPresses.Join(""));
+					logInCorrectPresses.Clear();
 				}
 			}
 			modSelf.HandleStrike();

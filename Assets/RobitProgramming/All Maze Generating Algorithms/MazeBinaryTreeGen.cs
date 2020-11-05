@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class MazeBinaryTree : Maze {
@@ -12,6 +10,7 @@ public class MazeBinaryTree : Maze {
     public MazeBinaryTree(int length, int width)
     {
         maze = new string[length, width];
+        markSpecial = new bool[length, width];
         curLength = length;
         curWidth = width;
         biasEast = false;
@@ -21,6 +20,7 @@ public class MazeBinaryTree : Maze {
     public MazeBinaryTree(int length, int width, bool LRBias, bool TBBias)
     {
         maze = new string[length, width];
+        markSpecial = new bool[length, width];
         curLength = length;
         curWidth = width;
         biasEast = LRBias;
@@ -36,7 +36,6 @@ public class MazeBinaryTree : Maze {
 	public override IEnumerator AnimateGeneratedMaze(float delay)
     {
         isGenerating = true;
-        bool[,] isRevealed = new bool[curLength, curWidth];
         for (int x = 0; x < curLength; x++)
         {
             for (int y = 0; y < curWidth; y++)
@@ -44,10 +43,10 @@ public class MazeBinaryTree : Maze {
                 curX = biasEast ? x : curLength - 1 - x;
                 curY = biasSouth ? y : curWidth - 1 - y;
                 bool[] validDirections = {
-                    curY - 1 >= 0 && !isRevealed[curX, curY - 1] && !biasSouth,
-                    curY + 1 < curWidth && !isRevealed[curX, curY + 1] && biasSouth,
-                    curX + 1 < curLength && !isRevealed[curX + 1, curY] && biasEast,
-                    curX - 1 >= 0 && !isRevealed[curX - 1, curY] && !biasEast,
+                    curY - 1 >= 0 && !biasSouth,
+                    curY + 1 < curWidth && biasSouth,
+                    curX + 1 < curLength && biasEast,
+                    curX - 1 >= 0 && !biasEast,
                 };
                 if (validDirections.Any(a => a))
                 {

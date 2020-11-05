@@ -90,7 +90,7 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 	}
 	protected override void QuickLog(string toLog)
 	{
-		Debug.LogFormat("[Mastermind Cruel Restricted #{0}]: {1}", loggingID, toLog);
+		Debug.LogFormat("[Mastermind Restricted Cruel #{0}]: {1}", loggingID, toLog);
 	}
 
 	protected override void ResetModule()
@@ -283,7 +283,7 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 
 	IEnumerator HandleCycleByOneAnim()
     {
-		yield return new WaitForSeconds(0.05f);
+		yield return new WaitForSeconds(0.2f);
 		for (int x = 0; x < currentInputs.Length; x++)
 		{
 			currentInputs[x] = (currentInputs[x] + 1) % colorList.Length;
@@ -305,7 +305,11 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 			colorblindDisplayTextL.text = "!";
 			colorblindDisplayTextM.text = "!";
 			colorblindDisplayTextR.text = "!";
-
+			for (int y = 0; y < currentInputs.Length; y++)
+			{
+				currentInputs[y] = (currentInputs[y] + 1) % colorList.Length;
+				UpdateCurrentDisplay();
+			}
 		}
     }
 	IEnumerator HandleCruelDisarmAnim()
@@ -316,30 +320,40 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 
 		audioKM.PlaySoundAtTransform("StaticEnd", transform);
 
-		for (int y = 0; y < 3; y++)
+		Vector2 selectedDirection = uernd.insideUnitCircle;
+
+		for (int y = 0; y < 1; y++)
 		{
 			for (float x = 0; x < 1f; x += 0.2f)
 			{
-				yield return HandleCycleByOneAnim();
+				yield return new WaitForSeconds(0.1f);
 				backingRenderer.material.color = Color.white * x + Color.red * (1 - x);
+				coreRotatable.transform.localEulerAngles = new Vector3(selectedDirection.x * 10, 180, selectedDirection.y * 10);
+				//coreRotatable.transform.localScale = new Vector3(uernd.value, uernd.value, uernd.value);
+				selectedDirection = uernd.insideUnitCircle;
 			}
-            coreRotatable.transform.Rotate(Vector3.up * 180);
+            
 			for (float x = 0; x < 1f; x += 0.2f)
 			{
-				yield return HandleCycleByOneAnim();
+				yield return new WaitForSeconds(0.1f);
 				backingRenderer.material.color = Color.red * x + Color.white * (1 - x);
+				coreRotatable.transform.localEulerAngles = new Vector3(selectedDirection.x * 10, 180, selectedDirection.y * 10);
+				coreRotatable.transform.localScale = new Vector3(uernd.value, uernd.value, uernd.value);
+				selectedDirection = uernd.insideUnitCircle;
 			}
-			coreRotatable.transform.Rotate(Vector3.down * 180);
+			
 			
 		}
-
-		for (float x = 0; x < 1f; x += 0.2f)
+		Vector3 lastScale = coreRotatable.transform.localScale, lastRotation = coreRotatable.transform.localEulerAngles;
+		for (float x = 0; x < 1f; x += .17f)
 		{
-			yield return HandleCycleByOneAnim();
+			yield return new WaitForSeconds(0.17f);
 			backingRenderer.material.color = Color.white * x + Color.red * (1 - x);
-
+			coreRotatable.transform.localEulerAngles = lastRotation * (1f - x);
+			coreRotatable.transform.localScale = lastScale * (1f - x) + Vector3.one * x;
 		}
-		coreRotatable.transform.Rotate(Vector3.up * 180);
+		coreRotatable.transform.localEulerAngles = Vector3.zero;
+		coreRotatable.transform.localScale = Vector3.one;
 		StopCoroutine(colorCycleAnim);
 		backingRenderer.material.color = Color.white;
 		currentInputs = correctInputs;

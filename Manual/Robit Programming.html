@@ -12,7 +12,8 @@
     <style>
 		.bittable
 		{
-			width: 25%;
+			width: 30%;
+			margin: none;
 			display: inline-table;
 		}
 		td
@@ -33,6 +34,10 @@
         {
             text-decoration: line-through;
         }
+		.bitTitle
+		{
+			margin: 0%;
+		}
     </style>
 </head>
 <body>
@@ -45,13 +50,13 @@
             <div class="page-content">
                 <img src="img/Component/Robit Programming.svg" class="diagram">
                 <h2>On the Subject of Robit Programming</h2>
-                <p class="flavour-text">Now it's your turn to distinguish between the mazes.</p>
+                <p class="flavour-text">This is not simply Maze Identification nor Robot Programming. This module is on a whole other level.</p>
                 <p>On the module is a giant square which is the interface used for viewing the maze. Initially, the module will show a "Generate" button and a numeric display denoting how much delay the module generates its mazes.</p>
                 <p>Pressing the "Generate" button will start creating the maze by carving out the giant square at a specified delay which can be customized for the defuser. The defuser can press the "Generate" button to generate a new maze until the defuser finds one that is sufficient. Generating the maze for the first time on the module also reveals a terminal on the right of the maze.</p>
-				<p>To disarm the module, the defuser must figure out how the maze was generated, and the expert must modify the starting instructions to grab the combination of bits that tells the robit to move in a specific direction. The robit must be guided to the 4 corners of the provided quadrants, noted by the small square on each, and then move towards the center row/column of the maze to disarm the module. The four quadrants may also modify the robit's behavior when its corner has not been visited yet.</p>
-				<p> The terminal consists of a screen with a highlight denoting the current pair the robit is scanning. The defuser can input a series of 1's or 0's on the terminal and can scroll the instruction sets with the up or down keys. The play/pause button on the terminal starts or pauses the robit from processing its command. The defuser will not be able to regenerate a maze or adjust the delay on how the maze is generated, so caution is in mind when pressing the play/pause button.</p>
+				<p>To disarm the module, the defuser must figure out how the maze was generated, and the expert must modify the starting instructions to grab the combination of bits that tells the robit to move in a specific direction. The robit must be guided to the 4 corners of the provided quadrants, noted by the small square on each, and then move towards the middle row/column of the maze to disarm the module. The four quadrants may also modify the robit's behavior when its corner has not been visited yet.</p>
+				<p> The terminal consists of a screen with a highlight denoting the current pair the robit is scanning. The defuser can input a series of 1's or 0's on the terminal and can scroll the instruction sets with the up or down keys. The backspace button in between the 0 and 1 buttons can be used to delete the previous inputs. If that button is held for a few seconds, it will clear ALL inputted bits from the terminal. The play/pause button on the terminal starts or pauses the robit from processing its command. The defuser will not be able to regenerate a maze or adjust the delay on how the maze is generated, so caution is advised when pressing the play/pause button.</p>
             </div>
-            <div class="page-footer relative-footer">Page 1 of 1</div>
+            <div class="page-footer relative-footer">Page 1 of 6+</div>
         </div>
         <div class="page page-bg-01">
             <div class="page-header">
@@ -61,14 +66,14 @@
             <div class="page-content">
                 <h2>Step 1: Figuring Out How The Maze Was Generated</h2>
                 <p>The maze generated from this module is random however how the maze generates can be predicted with repeated regenerations of that maze.</p>
-				<p>For ease of access, a red cube is placed to point where the current position is during its corridor generating and checking procedures. This table consists of each algorithm used in this module and their respective descriptions on how the algorithm determines when generating a maze.</p>
+				<p>For ease of access, a red cube is placed to point where the current position is during its corridor generating and checking procedures. This table consists of each algorithm used in this module and their respective descriptions on how the algorithm determines when generating a maze. Yellow cubes are also place to denote special properties of that algorithm.</p>
 				<table class="mazegen">
 					<tr>
 						<th>Maze Algorithm</th>
 						<th>Description</th>
 					</tr>
 					<tr>
-						<td>Backtracking Generator</td>
+						<td>Recursive Backtracking</td>
 						<td>The simplest algorithm to understand and to implement. Creates mainly long winding corridors with few dead ends. If it finds no unvisited cells around itself, it will simply "backtrack" to the last cell and try to continue from there. The maze is considered generated if it backtracks to the starting cell and finds no unvisited cells around that area.</td>
 					</tr>
 					<tr>
@@ -77,15 +82,59 @@
 					</tr>
 					<tr>
 						<td>Hunt And Kill</td>
-						<td>Creates mainly long winding corridors with few dead ends. If it finds no unvisited cells around itself, it will scan for any unvisited cells adjacent to at a visited cell and stop on the first one it finds. It will then continue generating the corridor by connecting that unvisited cell with a visited cell and resume normally like the Backtracking Generator. The maze is considered generated if there are no unvisited cells.</td>
+						<td>Similar to Backtracking Generator except if it finds no unvisited cells around itself, it will scan either randomly, row by row, or column by column for any unvisited cells adjacent to at a visited cell and stop on the first one it finds. It will then continue generating the corridor by connecting that unvisited cell with a visited cell and resume normally like the Backtracking Generator. The maze is considered generated when all the cells are visited.</td>
 					</tr>
 					<tr>
 						<td>Prim's</td>
-						<td></td>
+						<td>One of the "minimal spanning tree algorithms." Chooses an unvisited cell based off of the starting cell as a new potential cell to connect. Randomly visit a new cell based off any potential cells currently and connects it to any other visited cells if needed. Adds new adjacent cells to this visited cell if needed. Repeat until all cells are visited and connected.</td>
+					</tr>
+					<tr>
+						<td>Kruskal's</td>
+						<td>One of the "minimal spanning tree algorithms." Grabs all the possible edges from the given maze and randomizes the set. Select a random edge to connect and check if the cell pair connected to that edge are in the same group. Connect the cells connecting to that edge if either are not in a group or both cells are in different groups. Repeat until all edges on that set have all been used at least once.</td>
 					</tr>
 				</table>
             </div>
-            <div class="page-footer relative-footer">Page 1 of 1</div>
+            <div class="page-footer relative-footer">Page 2 of 6</div>
+        </div>
+        <div class="page page-bg-01">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Robit Programming</span>
+            </div>
+            <div class="page-content">
+                <h2>Step 1: Figuring Out How The Maze Was Generated (Continued)</h2>
+				<table class="mazegen">
+					<tr>
+						<th>Maze Algorithm</th>
+						<th>Description</th>
+					</tr>
+					<tr>
+						<td>Aldous-Broder</td>
+						<td>One of the "uniform spanning tree algorithms." Starting at the provided cell, walk in ANY random direction to visit that cell. Connect if the cell was previous unvisited. Continuously walk in a random directions within the maze until all cells have been visited at least once.<br><strong>This algorithm may take a long time to generate a maze.</strong></td>
+					</tr>
+					<tr>
+						<td>Wilson's</td>
+						<td>One of the "uniform spanning tree algorithms." Marks the starting cell as a branch to start off. Then starting at a random unbranched cell, walk in ANY random direction and leave a mark on the previous cell denoting the direction for later. Continuously walk in a random directions within the maze until entering a branch. Use the starting unbranched cell and the final path given to draw a branch that connects that given cell. Clear all directions not used. Repeat with a new unbranched cell as a new starting cell until all cells are branched.<br><strong>This algorithm may take a long time to generate a maze.</strong></td>
+					</tr>
+					<tr>
+						<td>Sidewinder</td>
+						<td>A simple and fast algorithm not fully researched for maximum capabilities. The difference between Binary Tree and this algorithm is the only 1 spanning corridor given at the very edge of this maze generated with this algorithm.</td>
+					</tr>
+					<tr>
+						<td>Eller's</td>
+						<td>A very complicated algorithm to understand utilizing grouping cells only based off of the previous row. Utilized to generate infinite tall mazes while using small amounts of memory.</td>
+					</tr>
+					<tr>
+						<td>Growing Tree</td>
+						<td>A configurable maze generator utilizing generating mazes based on how cells are picked. The main difference from all the other algorithms is determined by modifying the odds of picking any cell in particular. This can even mimic other algorithms such as Recursive Backtracking and Prim's if configured.</td>
+					</tr>
+					<tr>
+						<td>Recursive Division</td>
+						<td>This special algorithm utilizes a different way of generating passages. Instead of starting with a maze with a bunch of walls, the algorithm will instead generate as many walls as possible while leaving a possible corridor. The algorithm will always try to split based off of what side is longer.</td>
+					</tr>
+				</table>
+            </div>
+            <div class="page-footer relative-footer">Page 2 of 6</div>
         </div>
         <div class="page page-bg-01">
             <div class="page-header">
@@ -101,7 +150,7 @@
 						<th>Starting Instructions</th>
 					</tr>
 					<tr>
-						<td>Backtracking Generator</td>
+						<td>Recursive Backtracking</td>
 						<td>
 							<table class="bittable">
 								<tr>
@@ -115,6 +164,25 @@
 									<td>D</td>
 									<td>L</td>
 									<td>R</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>Aldous-Broder</td>
+						<td>
+							<table class="bittable">
+								<tr>
+									<th>00</th>
+									<th>01</th>
+									<th>10</th>
+									<th>11</th>
+								</tr>
+								<tr>
+									<td>L</td>
+									<td>U</td>
+									<td>R</td>
+									<td>D</td>
 								</tr>
 							</table>
 						</td>
@@ -122,90 +190,62 @@
 					<tr>
 						<td>Binary Tree</td>
 						<td>
+							<h3 class="bitTitle">Determined Skew</h3>
 							<div style="column-count: 2">
-							<table class="bittable">
-								<tr>
-									<th colspan="4">North-West Skew</th>
-								</tr>
-								<tr>
-									<th>00</th>
-									<th>01</th>
-									<th>10</th>
-									<th>11</th>
-								</tr>
-								<tr>
-									<td>D</td>
-									<td>L</td>
-									<td>U</td>
-									<td>R</td>
-								</tr>
-							</table>
-							<table class="bittable">
-								<tr>
-									<th colspan="4">North-East Skew</th>
-								</tr>
-								<tr>
-									<th>00</th>
-									<th>01</th>
-									<th>10</th>
-									<th>11</th>
-								</tr>
-								<tr>
-									<td>U</td>
-									<td>R</td>
-									<td>D</td>
-									<td>L</td>
-								</tr>
-							</table>
-							<table class="bittable">
-								<tr>
-									<th colspan="4">South-West Skew</th>
-								</tr>
-								<tr>
-									<th>00</th>
-									<th>01</th>
-									<th>10</th>
-									<th>11</th>
-								</tr>
-								<tr>
-									<td>L</td>
-									<td>D</td>
-									<td>R</td>
-									<td>U</td>
-								</tr>
-							</table>
-							<table class="bittable">
-								<tr>
-									<th colspan="4">South-East Skew</th>
-								</tr>
-								<tr>
-									<th>00</th>
-									<th>01</th>
-									<th>10</th>
-									<th>11</th>
-								</tr>
-								<tr>
-									<td>R</td>
-									<td>U</td>
-									<td>L</td>
-									<td>D</td>
-								</tr>
-							</table>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>Hunt And Kill</td>
-						<td>
-							<div style="column-count: 2">
-								<ul style="font-size: 75%; margin: 0%">
-									<li>If the algorithm is scanning left to right; swap the directions in 01 and 10.</li>
-									<li>If the algorithm is scanning bottom to top; swap the directions in 11 and 00.</li>
-									<li>If the algorithm is scanning horizontally first, flip the directions.</li>
-								</ul>
 								<table class="bittable">
 									<tr>
-										<th colspan="4">Base Sequence</th>
+										<th colspan="4">North-West Skew</th>
+									</tr>
+									<tr>
+										<th>00</th>
+										<th>01</th>
+										<th>10</th>
+										<th>11</th>
+									</tr>
+									<tr>
+										<td>D</td>
+										<td>L</td>
+										<td>U</td>
+										<td>R</td>
+									</tr>
+								</table>
+								<table class="bittable">
+									<tr>
+										<th colspan="4">North-East Skew</th>
+									</tr>
+									<tr>
+										<th>00</th>
+										<th>01</th>
+										<th>10</th>
+										<th>11</th>
+									</tr>
+									<tr>
+										<td>U</td>
+										<td>R</td>
+										<td>D</td>
+										<td>L</td>
+									</tr>
+								</table>
+								<table class="bittable">
+									<tr>
+										<th colspan="4">South-West Skew</th>
+									</tr>
+									<tr>
+										<th>00</th>
+										<th>01</th>
+										<th>10</th>
+										<th>11</th>
+									</tr>
+									<tr>
+										<td>L</td>
+										<td>D</td>
+										<td>R</td>
+										<td>U</td>
+									</tr>
+								</table>
+								<table class="bittable">
+									<tr>
+										<th colspan="4">South-East Skew</th>
 									</tr>
 									<tr>
 										<th>00</th>
@@ -215,8 +255,8 @@
 									</tr>
 									<tr>
 										<td>R</td>
-										<td>L</td>
 										<td>U</td>
+										<td>L</td>
 										<td>D</td>
 									</tr>
 								</table>
@@ -226,11 +266,372 @@
 					<tr>
 						<td>Prim's</td>
 						<td>
+							<table class="bittable">
+								<tr>
+									<th>00</th>
+									<th>01</th>
+									<th>10</th>
+									<th>11</th>
+								</tr>
+								<tr>
+									<td>U</td>
+									<td>L</td>
+									<td>D</td>
+									<td>R</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>Kruskal's</td>
+						<td>
+							<table class="bittable">
+								<tr>
+									<th>00</th>
+									<th>01</th>
+									<th>10</th>
+									<th>11</th>
+								</tr>
+								<tr>
+									<td>U</td>
+									<td>R</td>
+									<td>L</td>
+									<td>D</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>Growing Tree</td>
+						<td>
+							<table class="bittable">
+								<tr>
+									<th>00</th>
+									<th>01</th>
+									<th>10</th>
+									<th>11</th>
+								</tr>
+								<tr>
+									<td>L</td>
+									<td>R</td>
+									<td>D</td>
+									<td>U</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>Wilson's</td>
+						<td>
+							<table class="bittable">
+								<tr>
+									<th>00</th>
+									<th>01</th>
+									<th>10</th>
+									<th>11</th>
+								</tr>
+								<tr>
+									<td>D</td>
+									<td>L</td>
+									<td>R</td>
+									<td>U</td>
+								</tr>
+							</table>
 						</td>
 					</tr>
 				</table>
             </div>
-            <div class="page-footer relative-footer">Page 1 of 1</div>
+            <div class="page-footer relative-footer">Page 3 of 6</div>
+        </div>
+        <div class="page page-bg-01">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Robit Programming</span>
+            </div>
+            <div class="page-content">
+                <h2>Step 2: Obtaining The Starting Instructions (Continued)</h2>
+				<table class="mazegen">
+					<tr>
+						<th>Maze Algorithm</th>
+						<th>Starting Instructions</th>
+					</tr>
+					<tr>
+						<td>Hunt And Kill</td>
+						<td>
+							<h3 class="bitTitle">Unvisited Cell Scanning Order</h3>
+							<table class="bittable">
+								<tr>
+									<th colspan="4">Scanning Randomly</th>
+								</tr>
+								<tr>
+									<th>00</th>
+									<th>01</th>
+									<th>10</th>
+									<th>11</th>
+								</tr>
+								<tr>
+									<td>L</td>
+									<td>R</td>
+									<td>U</td>
+									<td>D</td>
+								</tr>
+							</table>
+							<table class="bittable">
+								<tr>
+									<th colspan="4">Scanning Row per Row</th>
+								</tr>
+								<tr>
+									<th>00</th>
+									<th>01</th>
+									<th>10</th>
+									<th>11</th>
+								</tr>
+								<tr>
+									<td>L</td>
+									<td>U</td>
+									<td>D</td>
+									<td>R</td>
+								</tr>
+							</table>
+							<table class="bittable">
+								<tr>
+									<th colspan="4">Scanning Otherwise...</th>
+								</tr>
+								<tr>
+									<th>00</th>
+									<th>01</th>
+									<th>10</th>
+									<th>11</th>
+								</tr>
+								<tr>
+									<td>L</td>
+									<td>D</td>
+									<td>U</td>
+									<td>R</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>Sidewinder</td>
+						<td>
+							<h3 class="bitTitle">Longest Edge Corridor Generated From This Algorithm</h3>
+							<div style="column-count: 2">
+								<table class="bittable">
+									<tr>
+										<th colspan="4">North Corridor</th>
+									</tr>
+									<tr>
+										<th>00</th>
+										<th>01</th>
+										<th>10</th>
+										<th>11</th>
+									</tr>
+									<tr>
+										<td>D</td>
+										<td>R</td>
+										<td>L</td>
+										<td>U</td>
+									</tr>
+								</table>
+								<table class="bittable">
+									<tr>
+										<th colspan="4">West Corridor</th>
+									</tr>
+									<tr>
+										<th>00</th>
+										<th>01</th>
+										<th>10</th>
+										<th>11</th>
+									</tr>
+									<tr>
+										<td>R</td>
+										<td>D</td>
+										<td>L</td>
+										<td>U</td>
+									</tr>
+								</table>
+								<table class="bittable">
+									<tr>
+										<th colspan="4">East Corridor</th>
+									</tr>
+									<tr>
+										<th>00</th>
+										<th>01</th>
+										<th>10</th>
+										<th>11</th>
+									</tr>
+									<tr>
+										<td>R</td>
+										<td>D</td>
+										<td>U</td>
+										<td>L</td>
+									</tr>
+								</table>
+								<table class="bittable">
+									<tr>
+										<th colspan="4">South Corridor</th>
+									</tr>
+									<tr>
+										<th>00</th>
+										<th>01</th>
+										<th>10</th>
+										<th>11</th>
+									</tr>
+									<tr>
+										<td>D</td>
+										<td>R</td>
+										<td>U</td>
+										<td>L</td>
+									</tr>
+								</table>
+							</div>
+						</td>
+					</tr>
+				</table>
+            </div>
+            <div class="page-footer relative-footer">Page 3 of 6</div>
+        </div>
+        <div class="page page-bg-01">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Robit Programming</span>
+            </div>
+            <div class="page-content">
+                <h2>Step 3: Determine the Quadrant's Quarks</h2>
+                <p>Each quadrant is colored one of 8 different possibilities with each of these modifying the behavior of the robit. When the move is performed on that quadrant, the robit may move in a direction that does not exactly match up with the bit table obtained from the previous step. Once the robit has reached the corner of the given quadrant, the quadrant's quark will stop applying. When the robit is at the axis of the maze, no quark would apply to that command.</p>
+				<p>Common colors are found on this page. These colors on this table may repeat on the module.</p>
+				<table>
+					<tr>
+						<th>Quadrant Color</th>
+						<th>Quark</th>
+					</tr>
+					<tr>
+						<td>Red</td>
+						<td>The robit moves in opposite directions while in that quadrant in repsect of that command.<br>(L &rarr; R, R &rarr; L, U &rarr; D, D &rarr; U)</td>
+					</tr>
+					<tr>
+						<td>Magenta</td>
+						<td>
+							The robit may not move for 1 command every 4 successful moves while in this quadrant.
+						</td>
+					</tr>
+					<tr>
+						<td>Green</td>
+						<td>Perform the red quark if the number of commands so far while in the quadrant is even. Otherwise, perform like there is no quark.</td>
+					</tr>
+					<tr>
+						<td>Blue</td>
+						<td>Perform the red quark if the Xth character of the serial number is a digit, where X is the number of commands the robit has performed so far, modulo 6, plus 1. Otherwise, perform like there is no quark.</td>
+					</tr>
+					<tr>
+						<td>Gray</td>
+						<td>If the number of moves the robit has performed so far while in this quadrant is divisible by 10, forcibly pause the robit. This requires the defuser to manually resume the robit's instructions.</td>
+					</tr>
+				</table>
+            </div>
+            <div class="page-footer relative-footer">Page 4 of 6</div>
+        </div>
+        <div class="page page-bg-01">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Robit Programming</span>
+            </div>
+            <div class="page-content">
+                <h2>Step 3: Determine the Quadrant's Quarks (Continued)</h2>
+                <p>Table continues from the previous page. These are rarer colors that can show up on the module. At most one of these can show up.</p>
+				<table>
+					<tr>
+						<th>Quadrant Color</th>
+						<th>Quark</th>
+					</tr>
+					<tr>
+						<td>Yellow</td>
+						<td>
+							Rotate the directions the robit will actually go by 90&deg; clockwise for every command the robit has performed overall. For clarification:<br>
+							For 4N moves, (U &rarr; U, R &rarr; R, D &rarr; D, L &rarr; L).<br>
+							For 4N+1 moves, (U &rarr; R, R &rarr; D, D &rarr; L, L &rarr; U).<br>
+							For 4N+2 moves, (U &rarr; D, R &rarr; L, D &rarr; U, L &rarr; R)<br>
+							For 4N+3 moves, (U &rarr; L, R &rarr; U, D &rarr; R, L &rarr; D)
+						</td>
+					</tr>
+					<tr>
+						<td>Cyan</td>
+						<td>
+							<p>For each marked indicator on the table provided, if the indicator is present and lit, it is on the "*" section. Otherwise, if the indicator is present but not lit, it is on the respective indicator name. Otherwise, it is marked on the "-" section. In the case of consecutive tiles being marked on the same row, or multiple indicators being present and conflicting, then there is no quark. Otherwise, take the number of commands the robit has performed so far, modulo 6. Add 1 and count this many columns to the left. If the that column is only marked with a "*", perform the red quark. Otherwise if the current column is marked with a "-", the robit will not move during this command. Otherwise, there is no quark.</p>
+							<table style="display: inline-table">
+								<tr>
+									<td>*</td>
+									<td>*</td>
+									<td>*</td>
+									<td>*</td>
+									<td>*</td>
+									<td>*</td>
+									<td>*</td>
+									<td>*</td>
+								</tr>
+								<tr>
+									<td>BOB</td>
+									<td>CAR</td>
+									<td>CLR</td>
+									<td>FRK</td>
+									<td>FRQ</td>
+									<td>IND</td>
+									<td>MSA</td>
+									<td>NSA</td>
+								</tr>
+								<tr>
+									<td>-</td>
+									<td>-</td>
+									<td>-</td>
+									<td>-</td>
+									<td>-</td>
+									<td>-</td>
+									<td>-</td>
+									<td>-</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>Orange</td>
+						<td>
+							<p>Take the number of commands the robit has performed so far and modulo this by 15. Add 1 and count this many tiles in this table provided underneath, starting from the left. If that tile is a "-", the red quark will be applied. Otherwise, if that tile is "X", the robit will be forcably paused. Otherwise, there is no quark.</p>
+							<table style="display: inline-table">
+								<tr>
+									<td>X</td>
+									<td>*</td>
+									<td>*</td>
+									<td>-</td>
+									<td>-</td>
+									<td>*</td>
+									<td>*</td>
+									<td>-</td>
+									<td>*</td>
+									<td>-</td>
+									<td>*</td>
+									<td>-</td>
+									<td>*</td>
+									<td>*</td>
+									<td>-</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+            </div>
+            <div class="page-footer relative-footer">Page 5 of 6</div>
+        </div>
+        <div class="page page-bg-01">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Robit Programming</span>
+            </div>
+            <div class="page-content">
+                <h2>Step 4: Converting Directions To Inputs</h2>
+                <p>Once the expert figures out each quadrant's quarks and starting instructions, have the defuser request the directions to all four corners in any order. Modify these directions based on the quadrant the robit will be on </p>
+            </div>
+            <div class="page-footer relative-footer">Page 6 of 6</div>
         </div>
     </div>
 </body>

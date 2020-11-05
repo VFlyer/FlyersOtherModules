@@ -1,9 +1,9 @@
 {
-  "Author": "VFlyer, Eltrick, Kusane",
+  "Author": "VFlyer, Kusane",
   "Compatibility": "Compatible",
   "Contributors": {
     "Maintainer": [ "VFlyer" ],
-	"Developer": [ "Eltrick" ],
+	"Developer": [ "VFlyer, Eltrick" ],
     "Manual": [ "Kusane" ]
   },
   "DefuserDifficulty": "VeryEasy",

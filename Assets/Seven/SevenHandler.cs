@@ -335,8 +335,8 @@ public class SevenHandler : MonoBehaviour {
 			for (int y = 0; y < displayCnl.Length; y++)
 			{
 				int grabbedValue = finalValues[y];
-				bool invert = finalValues[y] < 0;
-				string absVal = Mathf.Abs(finalValues[y]).ToString();
+				bool invert = grabbedValue < 0;
+				string absVal = Mathf.Abs(grabbedValue).ToString();
 				int valIdx = segmentCodings.possibleValues.IndexOf(absVal[0]);
 				if (valIdx != -1)
 				{
@@ -361,8 +361,8 @@ public class SevenHandler : MonoBehaviour {
 				for (int y = 0; y < displayCnl.Length; y++)
 				{
 					int grabbedValue = curVal[y];
-					bool invert = curVal[y] < 0;
-					string absVal = Mathf.Abs(curVal[y]).ToString();
+					bool invert = grabbedValue < 0;
+					string absVal = Mathf.Abs(grabbedValue).ToString();
 					int valIdx = segmentCodings.possibleValues.IndexOf(absVal[0]);
 					if (valIdx != -1)
 					{
