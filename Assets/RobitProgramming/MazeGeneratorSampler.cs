@@ -7,11 +7,14 @@ public class MazeGeneratorSampler : MonoBehaviour {
 	public GridDisplayer gridRenderer;
 	public Maze selectedMaze;
 	public Color[] highlightColors;
+	public bool generateSpecifiedMaze;
 	// Use this for initialization
 	void Start () {
-		selectedMaze = new MazeWilsons(5,5);
-		//StartCoroutine(GenerateMazeXTimes());
-		StartCoroutine(SampleAllGeneratedMazes());
+		selectedMaze = new MazeEllers(5, 5);
+		if (generateSpecifiedMaze)
+			StartCoroutine(GenerateMazeXTimes());
+		else
+			StartCoroutine(SampleAllGeneratedMazes());
 	}
 	IEnumerator SampleAllGeneratedMazes()
     {
@@ -43,6 +46,12 @@ public class MazeGeneratorSampler : MonoBehaviour {
 		yield return GenerateMazeXTimes();
 		// Wilson's
 		selectedMaze = new MazeWilsons(5, 5);
+		yield return GenerateMazeXTimes();
+		// Recursive Division
+		selectedMaze = new MazeRecursiveDivision(5, 5);
+		yield return GenerateMazeXTimes();
+		// Eller's
+		selectedMaze = new MazeEllers(5, 5, true);
 		yield return GenerateMazeXTimes();
 	}
 	IEnumerator GenerateMazeXTimes(int repeatCount = 1)
@@ -99,6 +108,17 @@ public class MazeGeneratorSampler : MonoBehaviour {
 			for (int y = 1; y < gridRenderer.rowRenderers[x].canRender.Length; y += 2)
 			{
 				gridRenderer.rowRenderers[x].canRender[y] = true;
+			}
+		}
+		for (int x = 1; x < gridRenderer.rowRenderers.Length; x += 2)
+		{
+			for (int y = 1; y < gridRenderer.rowRenderers[x].canRender.Length; y += 2)
+			{
+				gridRenderer.rowRenderers[x].canRender[y] =
+					gridRenderer.rowRenderers[x + 1].canRender[y] ||
+					gridRenderer.rowRenderers[x - 1].canRender[y] ||
+					gridRenderer.rowRenderers[x].canRender[y + 1] ||
+					gridRenderer.rowRenderers[x].canRender[y - 1];
 			}
 		}
 		UpdateDisplay();

@@ -40,8 +40,12 @@ public class MazeBinaryTree : Maze {
         {
             for (int y = 0; y < curWidth; y++)
             {
+                /*
                 curX = biasEast ? x : curLength - 1 - x;
                 curY = biasSouth ? y : curWidth - 1 - y;
+                */
+                curX = x;
+                curY = y;
                 bool[] validDirections = {
                     curY - 1 >= 0 && !biasSouth,
                     curY + 1 < curWidth && biasSouth,

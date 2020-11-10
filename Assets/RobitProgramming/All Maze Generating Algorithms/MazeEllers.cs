@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using UnityEngine;
 using uernd = UnityEngine.Random;
 
@@ -20,7 +19,16 @@ public class MazeEllers : Maze {
         topToBottom = false;
         vertStart = false;
     }
-
+    public MazeEllers(int length, int width, bool VStart)
+    {
+        maze = new string[length, width];
+        markSpecial = new bool[length, width];
+        curLength = length;
+        curWidth = width;
+        leftToRight = false;
+        topToBottom = false;
+        vertStart = VStart;
+    }
     public MazeEllers(int length, int width, bool LRBias, bool TBBias, bool VStart)
     {
         maze = new string[length, width];
@@ -45,121 +53,60 @@ public class MazeEllers : Maze {
     {
         isGenerating = true;
         bool[,] isRevealed = new bool[curLength, curWidth];
-        if (vertStart)
+        if (vertStart) // Generating corridors column per column
         {
-            for (int y = 0; y < curWidth; y++)
-            {
-                curX = leftToRight ? 0 : curLength - 1;
-                curY = topToBottom ? y : curWidth - 1 - y;
-                if (y + 1 < curWidth)
-                {
-                    if (topToBottom)
-                        CreatePassage(directionDown);
-                    else
-                        CreatePassage(directionUp);
-                }
-                yield return new WaitForSeconds(delay);
-            }
-            for (int x = 1; x < curLength; x++)
-            {
-                List<int> curColIdxs = new List<int>();
-                for (int y = 0; y < curWidth; y++)
-                {
-                    curX = leftToRight ? x : curLength - 1 - x;
-                    curY = topToBottom ? y : curWidth - 1 - y;
-                    curColIdxs.Add(curY);
-                    bool forceVert = uernd.value < 0.5f;
-                    if (y + 1 < curWidth)
-                    {
-                        if (!forceVert)
-                        {
-                            if (topToBottom)
-                                CreatePassage(directionDown);
-                            else
-                                CreatePassage(directionUp);
-                        }
-                        else
-                        {
-                            int selectedRowIdx = curColIdxs.PickRandom();
-                            curY = selectedRowIdx;
-                            if (leftToRight)
-                                CreatePassage(directionLeft);
-                            else
-                                CreatePassage(directionRight);
-                            curColIdxs.Clear();
-                        }
-                    }
-                    else
-                    {
-                        int selectedRowIdx = curColIdxs.PickRandom();
-                        curY = selectedRowIdx;
-                        if (leftToRight)
-                            CreatePassage(directionLeft);
-                        else
-                            CreatePassage(directionRight);
-                        curColIdxs.Clear();
-                    }
-
-                    yield return new WaitForSeconds(delay);
-                }
-            }
+            
         }
         else
-        { // Generating corridors horizontally
-            for (int x = 0; x < curLength; x++)
+        { // Generating corridors row per row
+            int[] curGroupSet = new int[curWidth];
+            int counterSetIdx = 0;
+            for (int y = 0; y < curWidth - 1; y++)
             {
-                curX = leftToRight ? x : curLength - 1 - x;
-                curY = topToBottom ? 0 : curWidth - 1;
-                if (x + 1 < curLength)
+                curY = topToBottom ? y : curWidth - 1 - y;
+                for (int x = 0; x < curLength; x++)
                 {
-                    if (leftToRight)
-                        CreatePassage(directionRight);
-                    else
-                        CreatePassage(directionLeft);
+                    curGroupSet[x] = counterSetIdx++;
                 }
-                yield return new WaitForSeconds(delay);
-            }
-            for (int y = 1; y < curWidth; y++)
-            {
-                List<int> curRowIdxs = new List<int>();
+                for (int x = 0; x < curLength - 1; x++)
+                {
+                    curGroupSet[x] = counterSetIdx++;
+                    curX = leftToRight ? x : curLength - 1 - x;
+                    bool generateHorizCorridor = uernd.value < 0.5f;
+                    if (x + 1 < curLength && generateHorizCorridor) // Check if the corridor can be generated horizontally.
+                    {
+                        curGroupSet[x + 1] = curGroupSet[x];
+                        if (leftToRight)
+                        {
+                            CreatePassage(directionRight);
+                        }
+                        else
+                        {
+                            CreatePassage(directionLeft);
+                        }
+                    }
+                    yield return new WaitForSeconds(delay);
+                }
+
+                int[] lastGroupSet = curGroupSet.ToArray();
+                curGroupSet = new int[curWidth];
+                curY = topToBottom ? y + 1 : curWidth - 2 - y;
+                List<int> groupIdxsStretched = new List<int>();
                 for (int x = 0; x < curLength; x++)
                 {
                     curX = leftToRight ? x : curLength - 1 - x;
-                    curY = topToBottom ? y : curWidth - 1 - y;
-                    curRowIdxs.Add(curX);
-                    bool forceVert = uernd.value < 0.5f;
-                    if (x + 1 < curLength)
+                    if (!groupIdxsStretched.Contains(lastGroupSet[x]))
                     {
-                        if (!forceVert)
-                        {
-                            if (leftToRight)
-                                CreatePassage(directionRight);
-                            else
-                                CreatePassage(directionLeft);
-                        }
-                        else
-                        {
-                            int selectedColIdx = curRowIdxs.PickRandom();
-                            curX = selectedColIdx;
-                            if (topToBottom)
-                                CreatePassage(directionUp);
-                            else
-                                CreatePassage(directionDown);
-                            curRowIdxs.Clear();
-                        }
+                        groupIdxsStretched.Add(lastGroupSet[x]);
                     }
                     else
                     {
-                        int selectedColIdx = curRowIdxs.PickRandom();
-                        curX = selectedColIdx;
-                        if (topToBottom)
-                            CreatePassage(directionUp);
-                        else
-                            CreatePassage(directionDown);
-                        curRowIdxs.Clear();
+
                     }
                     yield return new WaitForSeconds(delay);
                 }
+
+
             }
         }
         isGenerating = false;

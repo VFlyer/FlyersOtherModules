@@ -71,7 +71,7 @@ public partial class Maze {
 		}
 	}
 	/**
-	 * <summary>Creates a passage with the specified direction index ranging from 0 - 3 inclusive.</summary>
+	 * <summary>Creates a passage with the specified direction index ranging from 0 - 3 inclusive from the current position.</summary>
 	 * <param name="directionIdx">The index of the given direction to carve it to.</param>
 	 */
 	public void CreatePassage(int directionIdx)
@@ -106,6 +106,12 @@ public partial class Maze {
 				break;
         }
     }
+	/**
+	 * <summary>Creates a passage with the specified direction index ranging from 0 - 3 inclusive from a specified point.</summary>
+	 * <param name="directionIdx">The index of the given direction to carve it to.</param>
+	 * <param name="xCord">The x-index of the given direction to carve it from.</param>
+	 * <param name="yCord">The y-index of the given direction to carve it from.</param>
+	 */
 	public void CreatePassageFrom(int xCord, int yCord, int directionIdx)
 	{
 		if (xCord < 0 || xCord >= curLength || yCord < 0 || yCord >= curWidth)

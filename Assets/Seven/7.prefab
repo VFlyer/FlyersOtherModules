@@ -5249,6 +5249,7 @@ MonoBehaviour:
   - {fileID: 23870020188184388}
   - {fileID: 23617911335874266}
   LEDMesh: {fileID: 23680613002457254}
+  stageRender: {fileID: 23652273031626694}
   segmentSelectables:
   - {fileID: 114217000779481332}
   - {fileID: 114646548801413086}

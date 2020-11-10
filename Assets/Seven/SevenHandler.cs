@@ -10,7 +10,7 @@ public class SevenHandler : MonoBehaviour {
 	public GameObject entireModule;
 	public KMBombInfo info;
 	public MeshRenderer[] segments, colorTriangles, colorTrianglesHL;
-	public MeshRenderer LEDMesh;
+	public MeshRenderer LEDMesh, stageRender;
 	public KMSelectable[] segmentSelectables, colorTriangleSelectables;
 	public KMSelectable LED, stageDisplay;
 	public KMColorblindMode colorblindMode;
@@ -256,8 +256,9 @@ public class SevenHandler : MonoBehaviour {
 					}
 					else
 					{
-						modSelf.HandleStrike();
+						
 						Debug.LogFormat("[7 #{0}]: Strike! You submitted the following segment colors in reading order: {1}", curModID, segmentsColored.Select(a => colorList[a]).Join(", "));
+						modSelf.HandleStrike();
 						UpdateSegments(true);
 						hasStruckTimeMode = timeDetected;
 						segmentsColored = new int[7];
@@ -385,12 +386,18 @@ public class SevenHandler : MonoBehaviour {
 	}
 	IEnumerator AnimateText()
 	{
-		string allTextPossible = segmentCodings.possibleValues;
-		for (int x = 0; x < 20; x++)
+		Material stageMat = stageRender.material;
+		if (stageMat.HasProperty("_MainTex"))
 		{
-			stageIndc.color = Color.red;
-			stageIndc.text = new char[] { allTextPossible[Random.Range(0, allTextPossible.Length)], allTextPossible[Random.Range(0, allTextPossible.Length)], allTextPossible[Random.Range(0, allTextPossible.Length)] }.Join("");
-			yield return new WaitForSeconds(Time.deltaTime);
+			string allTextPossible = segmentCodings.possibleValues;
+			for (int x = 0; x < 20; x++)
+			{
+				stageMat.SetTextureScale("_MainTex", Vector2.one * Mathf.Abs(x - 10) / 10f);
+				stageIndc.color = Color.red;
+				stageIndc.text = new char[] { allTextPossible[Random.Range(0, allTextPossible.Length)], allTextPossible[Random.Range(0, allTextPossible.Length)], allTextPossible[Random.Range(0, allTextPossible.Length)] }.Join("");
+				yield return new WaitForSeconds(Time.deltaTime);
+			}
+			stageMat.SetTextureScale("_MainTex", Vector2.one);
 		}
 		stageIndc.text = "SUB";
 		stageIndc.color = Color.white;

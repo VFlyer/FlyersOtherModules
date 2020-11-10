@@ -171,6 +171,7 @@ public class NumberedButtonsScript : MonoBehaviour {
     {
 		interactable = false;
 		yield return new WaitForSeconds(0.5f);
+		textSolve.SetActive(false);
 		yield return AnimateClosingAnim();
 		RenderButtons();
 		for (int x = 0; x < sampleNumberedKeys.Length; x++)

@@ -122,7 +122,7 @@
 					</tr>
 					<tr>
 						<td>Eller's</td>
-						<td>A very complicated algorithm to understand utilizing grouping cells only based off of the previous row. Utilized to generate infinite tall mazes while using small amounts of memory.</td>
+						<td>A very complicated algorithm to understand utilizing grouping cells only based off of the previous row. Utilized to generate infinite mazes in linear time.</td>
 					</tr>
 					<tr>
 						<td>Growing Tree</td>
@@ -130,7 +130,7 @@
 					</tr>
 					<tr>
 						<td>Recursive Division</td>
-						<td>This special algorithm utilizes a different way of generating passages. Instead of starting with a maze with a bunch of walls, the algorithm will instead generate as many walls as possible while leaving a possible corridor. The algorithm will always try to split based off of what side is longer.</td>
+						<td>This special algorithm utilizes a different way of generating passages. Instead of starting with a maze with a bunch of walls, the algorithm will instead generate as many walls as possible while leaving a possible corridor. The algorithm will always try to split based off of what side is longer down to a 1-wide or 1-tall corridor.</td>
 					</tr>
 				</table>
             </div>
@@ -486,6 +486,65 @@
 									</tr>
 								</table>
 							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>Eller's</td>
+						<td>
+							<h3 class="bitTitle">Grouping Order</h3>
+							<table class="bittable">
+								<tr>
+									<th colspan="4">Row Per Row</th>
+								</tr>
+								<tr>
+									<th>00</th>
+									<th>01</th>
+									<th>10</th>
+									<th>11</th>
+								</tr>
+								<tr>
+									<td>U</td>
+									<td>D</td>
+									<td>R</td>
+									<td>L</td>
+								</tr>
+							</table>
+							<table class="bittable">
+								<tr>
+									<th colspan="4">Col Per Col</th>
+								</tr>
+								<tr>
+									<th>00</th>
+									<th>01</th>
+									<th>10</th>
+									<th>11</th>
+								</tr>
+								<tr>
+									<td>D</td>
+									<td>U</td>
+									<td>L</td>
+									<td>R</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>Recursive Division</td>
+						<td>
+							<table class="bittable">
+								<tr>
+									<th>00</th>
+									<th>01</th>
+									<th>10</th>
+									<th>11</th>
+								</tr>
+								<tr>
+									<td>D</td>
+									<td>U</td>
+									<td>R</td>
+									<td>L</td>
+								</tr>
+							</table>
 						</td>
 					</tr>
 				</table>

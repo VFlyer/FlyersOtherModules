@@ -230,7 +230,7 @@ public class VennDiagramCore : MonoBehaviour
                 }
         }
     }
-    readonly string TwitchHelpMessage = "\"!{0} o AB BC ABC c\" to select that given region. \"press\" is optional. Possible regions to select are O, A, B, C, AB, AC, BC, ABC";
+    readonly string TwitchHelpMessage = "Select that given region with :\"!{0} o AB BC ABC c\". \"press\" is optional. Possible regions to select are O, A, B, C, AB, AC, BC, ABC. Refer to the manual for where A, B, C are located.";
 
     IEnumerator ProcessTwitchCommand(string command)
     {
