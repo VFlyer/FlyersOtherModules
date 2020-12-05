@@ -97,7 +97,7 @@ public class MazeRecursiveDivision : Maze {
                     CreatePassage(directionRight);
                 if (y + 1 < curWidth)
                     CreatePassage(directionDown);
-                //yield return new WaitForSeconds(delay);
+                yield return new WaitForSeconds(delay);
             }
         yield return SplitMaze(0, 0, curLength, curWidth, delay);
 

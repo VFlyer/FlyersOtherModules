@@ -143,6 +143,7 @@ public class NumberedButtonsScript : MonoBehaviour {
 			pressedCorrect.Add(idx);
 			if (pressedCorrect.ToArray().OrderBy(a => a).SequenceEqual(correctIdxs.OrderBy(a => a)))
 			{
+				isSolving = true;
 				QuickLog(string.Format("All buttons correctly pressed. Module disarmed."));
 				StartCoroutine(HandleSolveAnim());
 			}
@@ -330,7 +331,7 @@ public class NumberedButtonsScript : MonoBehaviour {
 		}
 		if (proCmd.StartsWith("press "))
 		{
-			proCmd = proCmd.Substring(6, proCmd.Length - 6);
+			proCmd = proCmd.Substring(5).Trim();
 		}
 		List<int> cordList = new List<int>();
 		foreach (string cord in proCmd.Split(' '))

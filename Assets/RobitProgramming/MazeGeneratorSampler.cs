@@ -10,7 +10,7 @@ public class MazeGeneratorSampler : MonoBehaviour {
 	public bool generateSpecifiedMaze;
 	// Use this for initialization
 	void Start () {
-		selectedMaze = new MazeEllers(5, 5);
+		selectedMaze = new MazeEllers(5, 5, true, false, true);
 		if (generateSpecifiedMaze)
 			StartCoroutine(GenerateMazeXTimes());
 		else

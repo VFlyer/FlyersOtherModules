@@ -1,0 +1,156 @@
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Misguided Blind Grid — Keep Talking and Nobody Explodes Module</title>
+        <meta name="viewport" content="initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="css/normalize.css">
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+        <link rel="stylesheet" type="text/css" href="css/font.css">
+        <script src="js/ktane-utils.js"></script>
+        <style>
+            table {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            td
+            {
+                text-align: center;
+            }
+            img.topologyref
+            {
+                width: 90%;
+            }
+			p
+			{
+				margin-bottom: 0%;
+				margin-top: 0%;
+			}
+        </style>
+    </head>
+    <body>
+        <div class="section">
+            <div class="page page-bg-01">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Misguided Blind Grid</span>
+                </div>
+                <div class="page-content">
+                    <img src="img/Component/Misguided Blind Grid.svg" class="diagram">
+                    <h2>On the Subject of Misguided Blind Grid</h2>
+                    <p class="flavour-text">A small grid can contain a lot of quirks that may tilt you.</p>
+                    <p>On the module consists of 4 directional buttons and a screen showing a random two digit value in one of many different ways. To disarm the module, navigate through a 5 by 5 grid of distinct values and submit a valid number. The valid number is determined by the starting value and the type of topology that grid is enacting when navigating. More than 1 valid number can occur.</p>
+                    <h3>Step 1: Determining the Topology</h3>
+                    <p>To determine if the grid wraps around, the defuser will need to come in contact with the edge of the grid. Once walking past the edge of the grid, the following can occur:</p>
+                    <ul>
+                        <li>The defuser will immediately be put back to the last position that is within the grid.</li>
+                        <li>The defuser will be wrapped to a different edge of the same grid, with the controls not modified.</li>
+                        <li>The defuser will be wrapped to a different edge of the same grid, with the controls rotated or flipped.</li>
+                    </ul>
+                    <p>This is never easy to determine when a wrap has occurred when navigating. All the defuser can do is to keep walking in one direction until going back to the starting position.</p>
+                    <p>Here is a table for reference of all possible 2D topology representations that are possible on this module. Wraparounds are denoted by their color and referred direction. Note that the possible topologies may be rotated.</p>
+                    <table>
+                        <tr>
+                            <th colspan="4">Possible Topology Representations in 2D</th>
+                        </tr>
+                        <tr>
+                            <th>Plane</th>
+                            <th>Cylinder</th>
+                            <th>Torus</th>
+                            <th>Cone</th>
+                        </tr>
+                        <tr>
+                            <td><img class="topologyref" alt="Plane" src="img/Misguided%20Blind%20Grid/TopologyNone.svg"></td>
+                            <td><img class="topologyref" alt="Cylinder" src="img/Misguided%20Blind%20Grid/TopologyCylinder.svg"></td>
+                            <td><img class="topologyref" alt="Torus" src="img/Misguided%20Blind%20Grid/TopologyTorus.svg"></td>
+                            <td><img class="topologyref" alt="Cone" src="img/Misguided%20Blind%20Grid/TopologyCone.svg"></td>
+                        </tr>
+                        <tr>
+                            <th>Mobius</th>
+                            <th>Sphere</th>
+                            <th>Klein</th>
+                            <th>WAIT KUGELBLITZ</th>
+                        </tr>
+                        <tr>
+                            <td><img class="topologyref" alt="Mobius" src="img/Misguided%20Blind%20Grid/TopologyMobius.svg"></td>
+                            <td><img class="topologyref" alt="Sphere" src="img/Misguided%20Blind%20Grid/TopologySphere.svg"></td>
+                            <td><img class="topologyref" alt="Klein" src="img/Misguided%20Blind%20Grid/TopologyKlein.svg"></td>
+                            <td><img class="topologyref" alt="WHAT" src="img/Misguided%20Blind%20Grid/TopologyWHAT.svg"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="page-footer relative-footer">Page 1 of 1</div>
+            </div>
+            <div class="page page-bg-01">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Misguided Blind Grid</span>
+                </div>
+                <div class="page-content">
+					<h3>Step 2: Determining the Valid Numbers</h3>
+					<p>With the topology determined, use the starting number on the module to determine what set of numbers are valid from the table underneath. Use the determined topology as the row and the starting number as the column. If there are more than half of the numbers on the grid that share that trait on the intersection or none at all, go down a row until you reach a cell that does not. If you reach the end of that row, go to the other column and continue from there, top to bottom. In the case where none of the valid sets satisfy the condition upon reaching back to the intersection, the valid number is the starting value.</p>
+					<table style="font-size: 125%">
+						<tr>
+							<td class="corner"></td>
+							<th>&le; 49</th>
+							<th>&ge; 50</th>
+						</tr>
+						<tr>
+							<th>Plane</th>
+							<td>Prime numbers</td>
+							<td>Highly composite numbers</td>
+						</tr>
+						<tr>
+							<th>Cylinder</th>
+							<td>Numbers divisible by 9</td>
+							<td>Numbers divisible by 4</td>
+						</tr>
+						<tr>
+							<th>Torus</th>
+							<td>Values who share no factors in the starting value</td>
+							<td>Values Containing a "3"</td>
+						</tr>
+						<tr>
+							<th>Cone</th>
+							<td>Values included in this sequence: 5n + 2</td>
+							<td>11, 23, 31, 41, 47, 49, 55, 63, 69, 71</td>
+						</tr>
+						<tr>
+							<th>Mobius</th>
+							<td>Cyan/Brightness percentages, modulo 100 from <a href="Siffron.html">Siffron</a></td>
+							<td>Any of the target values in <a href="Standard Button Masher.html">Standard Button Masher</a></td>
+						</tr>
+						<tr>
+							<th>Sphere</th>
+							<td>Any values that are possible background values in <a href="Earthbound.html">Earthbound</a></td>
+							<td>Any values that can be formed with the hard digits from <a href="Three Cryptic Steps.html">Three Cryptic Steps</a></td>
+						</tr>
+						<tr>
+							<th>Klein</th>
+							<td>Any 2 digit values that can be added or subtracted in <a href="Waste Management.html">Waste Management</a></td>
+							<td>Any edgework based values that can be obtained in <a href="X01.html">X01</a></td>
+						</tr>
+						<tr>
+							<th>WAIT KUGELBLITZ</th>
+							<td>Any value within the first 3 consecutive correct presses from <a href="Higher%20Or%20Lower.html">Higher Or Lower</a></td>
+							<td>Any 2 digit value where the defuser always presses the "unfunny"/"funny" button in <a href="Funny%20Numbers.html">Funny Numbers</a></td>
+						</tr>
+					</table>
+                </div>
+                <div class="page-footer relative-footer">Page 1 of 1</div>
+            </div>
+            <div class="page page-bg-01">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Misguided Blind Grid</span>
+                </div>
+                <div class="page-content">
+                    <img src="img/Component/Misguided Blind Grid.svg" class="diagram">
+                    <h2>Misguided Blind Grid's Expert Sheet</h2>
+                    <p class="flavour-text">You are going to need this. Don't hurt your brain!</p>
+                </div>
+                <div class="page-footer relative-footer">Page 1 of 1</div>
+            </div>
+            
+        </div>
+    </body>
+</html>

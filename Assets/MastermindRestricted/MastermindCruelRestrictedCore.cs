@@ -426,7 +426,7 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 					}
 					if (!successful)
 					{
-						yield return string.Format("sendtochaterror I do not know of a color \"{0}\" on the module. Valid colors are white, magenta, yellow, green, red, blue.", splittedCommands[x]);
+						yield return string.Format("sendtochaterror I do not know of a color \"{0}\" on the module. Valid colors are white, magenta, yellow, green, red, blue, orange, purple.", splittedCommands[x]);
 						yield break;
 					}
 				}

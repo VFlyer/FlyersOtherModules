@@ -113,7 +113,7 @@ public class ForgetItNotHandler : MonoBehaviour {
             }
             else if (correctinputs < totalstages)
             {
-                Debug.LogFormat("[Forget It Not #{0}]: Up to {1} stage(s) were correct before the bomb detonated.", curModID, correctinputs);
+                Debug.LogFormat("[Forget It Not #{0}]: Up to {1} stage(s) were inputted correct before the bomb detonated.", curModID, correctinputs);
             }
         };
         for (int x = 0; x < digitSelectables.Count(); x++)
@@ -281,14 +281,15 @@ public class ForgetItNotHandler : MonoBehaviour {
                 textMeshStage.text = Random.Range(0, 10).ToString();
                 textMeshBig.text = Random.Range(0, 10).ToString();
                 textMeshBig.color = new Color(textMeshBig.color.r, textMeshBig.color.g, textMeshBig.color.b,(float)(50-i)/50);
-                yield return new WaitForSeconds(0);
+                yield return null;
             }
             textMeshBig.text = "";
-            StartCoroutine(ShowInputs());
+            IEnumerator handleRandomizingScreen = ShowInputs();
+            StartCoroutine(handleRandomizingScreen);
             while (isShowingInputs)
             {
                 textMeshStage.text = "-" + Random.Range(0, 10).ToString();
-                yield return new WaitForSeconds(0);
+                yield return null;
             }
             textMeshStage.text = "--";
         }
@@ -299,14 +300,14 @@ public class ForgetItNotHandler : MonoBehaviour {
                 textMeshStage.text = Random.Range(0, 10).ToString()+ Random.Range(0, 10).ToString();
                 textMeshBig.text = Random.Range(0, 10).ToString();
                 textMeshBig.color = new Color(textMeshBig.color.r, textMeshBig.color.g, textMeshBig.color.b, (float)(99 - i) / 99);
-                yield return new WaitForSeconds(0);
+                yield return null;
             }
             textMeshBig.text = "";
             StartCoroutine(ShowInputs());
             for (int i = 0; i < 100; i++)
             {
                 textMeshStage.text = "-" + Random.Range(0, 10).ToString();
-                yield return new WaitForSeconds(0);
+                yield return null;
             }
             textMeshStage.text = "--";
         }
@@ -315,14 +316,14 @@ public class ForgetItNotHandler : MonoBehaviour {
         canStart = true;
     }
 
-    private int cooldown = 0;
+    private float cooldown = 0;
     // Update is called once per frame
     void Update()
     {
         if (canStart)
         {
             if (cooldown > 0)
-                cooldown--;
+                cooldown -= Time.deltaTime;
             else
             {
                 int solvecount = bombInfo.GetSolvedModuleNames().Where(a => !ignoredModules.Contains(a)).ToList().Count;
@@ -344,7 +345,7 @@ public class ForgetItNotHandler : MonoBehaviour {
                     { 
                         AdvanceStage();
                     }
-                    cooldown = 80;
+                    cooldown = 1.4f;
                 }
             }
         }
@@ -353,7 +354,7 @@ public class ForgetItNotHandler : MonoBehaviour {
 
     IEnumerator HandleForceSolve()
     {
-        for(int i=correctinputs;i<combinedDisplayString.Length;i++)
+        for (int i = correctinputs; i < combinedDisplayString.Length; i++)
         {
             int d = int.Parse(combinedDisplayString.Substring(i, 1));
             digitSelectables[d].OnInteract();
@@ -402,11 +403,11 @@ public class ForgetItNotHandler : MonoBehaviour {
             }
         }
 
-        if (digits.Count <= 0)
+        if (!digits.Any()) // Operates the same as (digits.Count <= 0)
         {
             yield break;
         }
-        if (digits.Count+correctinputs > totalstages)
+        if (digits.Count + correctinputs > totalstages)
         {
             yield return "sendtochaterror Your command has too many digits. Please reinput the command with fewer digits.";
             yield break;
