@@ -236,9 +236,9 @@ public class RapidSubtractionHandler : MonoBehaviour {
 	void TwitchHandleForcedSolve()
 	{
 		QuickLog("Forcably disabling the needy viva TP Handler.");
+		needyHandler.SetResetDelayTime(float.PositiveInfinity, float.PositiveInfinity);
 		needyHandler.HandlePass();
 		needyHandler.OnNeedyDeactivation();
-		needyHandler.SetResetDelayTime(bombInfo.GetTime(), bombInfo.GetTime());
 		forceDisable = true;
 	}
 

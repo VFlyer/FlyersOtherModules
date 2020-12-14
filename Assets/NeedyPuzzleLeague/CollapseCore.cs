@@ -38,6 +38,9 @@ public class CollapseCore : MonoBehaviour {
     List<Vector3> startRowCoords = new List<Vector3>();
     float timeLeftManaged = 10f, dynamicRate = .8f;
 
+    List<KMSelectable> allSelectablesDuringAnimation;
+    List<KMSelectable> allSelectablesDefault;
+
     IEnumerator blockLifter, timeManager;
 
     // Use this for initialization
@@ -57,12 +60,14 @@ public class CollapseCore : MonoBehaviour {
             else
                 needySelf.HandlePass();
         };
-        List<KMSelectable> allCellSelectables = new List<KMSelectable>(); // Mainly for compacting lines, required for usage otherwise.
+        allSelectablesDefault = new List<KMSelectable>(); // Mainly for compacting lines, required for usage otherwise.
+        allSelectablesDuringAnimation = new List<KMSelectable>();
         for (int i = 0; i < rowRenderersWithSelectables.Length; i++)
         {
             RowRendererPlus rowRenderer = rowRenderersWithSelectables[i];
-            allCellSelectables.AddRange(rowRenderer.rowSelectables);
-
+            allSelectablesDefault.AddRange(rowRenderer.rowSelectables);
+            if (i != 14)
+                allSelectablesDuringAnimation.AddRange(rowRenderer.rowSelectables);
             startRowCoords.Add(rowRenderer.transform.localPosition);
 
             for (int x = 0; x < rowRenderer.rowSelectables.Length; x++)
@@ -85,7 +90,7 @@ public class CollapseCore : MonoBehaviour {
             }
         };
 
-        modSelfSelectable.Children = allCellSelectables.ToArray();
+        modSelfSelectable.Children = allSelectablesDefault.ToArray();
         modSelfSelectable.UpdateChildren(); // Required for gamepad usage and updating.
         StartCoroutine(delayRotation());
         needySelf.OnNeedyDeactivation += delegate {
@@ -125,9 +130,8 @@ public class CollapseCore : MonoBehaviour {
 
     void HandleDeactivation()
     {
-        needySelf.SetResetDelayTime(float.MaxValue, float.MaxValue); // Makes it so that the needy is disabled forever.
+        needySelf.SetResetDelayTime(float.PositiveInfinity, float.PositiveInfinity); // Makes it so that the needy is disabled forever.
         needySelf.HandlePass();
-        needySelf.HandleStrike();
         isActive = false;
         permDeactivate = true;
         QuickLog("Board upon deactivation: ");
@@ -162,12 +166,12 @@ public class CollapseCore : MonoBehaviour {
             CollapseAllTiles();
             */
             //StopCoroutine(blockLifter);
-            StopCoroutine(timeManager);
+            //StopCoroutine(timeManager);
             pauseLift = true;
             interactable = false;
             
             StartCoroutine(AnimateBreakingAnim());
-            StartCoroutine(timeManager);
+            //StartCoroutine(timeManager);
         }
         UpdateGrid();
     }
@@ -181,14 +185,14 @@ public class CollapseCore : MonoBehaviour {
                 if (isSelected[x, y])
                 {
                     coordSet.Add(new[] { x, y });
-                    
                 }
             }
         foreach (int[] oneCoord in coordSet.Shuffle())
         {
             colorIdxBoard[oneCoord[0], oneCoord[1]] = 0;
             UpdateGrid();
-            yield return new WaitForSeconds(0.01f);
+            mAudio.PlaySoundAtTransform("275897__n-audioman__blip", transform);
+            yield return new WaitForSeconds(0.1f);
         }
 
         DeselectAllTiles();
@@ -293,6 +297,7 @@ public class CollapseCore : MonoBehaviour {
                 //mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.NeedyWarning, transform);
                 if (timeLeftManaged < 0f)
                 {
+                    needySelf.HandleStrike();
                     HandleDeactivation();
                 }
             }
@@ -312,6 +317,8 @@ public class CollapseCore : MonoBehaviour {
             nextRow[x] = uernd.Range(1, maxColorsPossible + 1);
         }
         rowRenderersNextSet.gameObject.SetActive(true);
+        modSelfSelectable.Children = allSelectablesDuringAnimation.ToArray();
+        modSelfSelectable.UpdateChildren(); // Required for gamepad usage and updating.
         for (float x = 0; x < 1f; x += Time.deltaTime * dynamicRate * Mathf.Min(1f, (currentlySolved + 1f) / maxSolvables) * (pauseLift ? 0f : 1f))
         {
             yield return null;
@@ -352,6 +359,8 @@ public class CollapseCore : MonoBehaviour {
         rowRenderersNextSet.transform.localPosition = new Vector3(0, 0, -7.5f);
         rowRenderersNextSet.transform.localScale = new Vector3(1, 1, 0);
         rowRenderersNextSet.gameObject.SetActive(false);
+        modSelfSelectable.Children = allSelectablesDefault.ToArray();
+        modSelfSelectable.UpdateChildren(); // Required for gamepad usage and updating.
         UpdateGrid();
     }
     IEnumerator AnimateNextRowAnim(float speed = 1f)
@@ -364,6 +373,8 @@ public class CollapseCore : MonoBehaviour {
             nextRow[x] = uernd.Range(1, 3);
         }
         rowRenderersNextSet.gameObject.SetActive(true);
+        modSelfSelectable.Children = allSelectablesDuringAnimation.ToArray();
+        modSelfSelectable.UpdateChildren(); // Required for gamepad usage and updating.
         for (float x = 0; x < 1f; x += Time.deltaTime * speed)
         {
             yield return null;
@@ -402,6 +413,8 @@ public class CollapseCore : MonoBehaviour {
         rowRenderersNextSet.transform.localPosition = new Vector3(0, 0, -7.5f);
         rowRenderersNextSet.transform.localScale = new Vector3(1, 1, 0);
         rowRenderersNextSet.gameObject.SetActive(false);
+        modSelfSelectable.Children = allSelectablesDefault.ToArray();
+        modSelfSelectable.UpdateChildren(); // Required for gamepad usage and updating.
         UpdateGrid();
     }
 
@@ -518,4 +531,10 @@ public class CollapseCore : MonoBehaviour {
                 Debug.LogFormat("can't find component");
         }
     }
+    void TwitchHandleForcedSolve()
+    {
+        StopAllCoroutines();
+        HandleDeactivation();
+    }
+
 }

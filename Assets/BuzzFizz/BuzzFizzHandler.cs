@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using KModkit;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -76,7 +77,7 @@ public class BuzzFizzHandler : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         float timeLeft = needyModule.GetNeedyTimeRemaining();
-        if (timeLeft >= 0 && timeLeft < 5&&!iswarning)
+        if (timeLeft >= 0 && timeLeft < 5 && !iswarning)
         {
             StartCoroutine(WarnFlash());
         }
@@ -88,7 +89,7 @@ public class BuzzFizzHandler : MonoBehaviour {
         iswarning = true;
         while (needyModule.GetNeedyTimeRemaining() > 0)
         {
-            textnumber.color = Color.clear;
+            textnumber.color = Color.white;
             yield return new WaitForSeconds(0.25f);
             textnumber.color = Color.red;
             yield return new WaitForSeconds(0.25f);
@@ -102,6 +103,7 @@ public class BuzzFizzHandler : MonoBehaviour {
     {
         Debug.LogFormat("[BuzzFizz #{0}]: Forcably disabling the module viva TP Handler.", cmodID);
         forceDisable = true;
+        needyModule.SetResetDelayTime(float.MaxValue, float.MaxValue);
         needyModule.HandlePass();
     }
 

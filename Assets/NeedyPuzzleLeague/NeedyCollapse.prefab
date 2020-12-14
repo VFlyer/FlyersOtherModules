@@ -29178,11 +29178,12 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   IsPassThrough: 0
-  ChildRowLength: 9
+  ChildRowLength: 10
   Highlight: {fileID: 114398354933681840}
   SelectableColliders: []
-  DefaultSelectableIndex: 58
+  DefaultSelectableIndex: 74
   AllowSelectionWrapX: 1
   AllowSelectionWrapY: 1
   ForceSelectionHighlight: 0

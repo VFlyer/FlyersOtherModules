@@ -89,13 +89,13 @@ public class RobitProgrammingCore : MonoBehaviour {
 		{
 			for (int y = 0; y < Mathf.Min(gridToDisplay.rowRenderers[x].wallRenderers.Length, gridToDisplay.rowRenderers[x].canRender.Length); y++)
 			{
+				/*
 				if (gridToDisplay.rowRenderers[x].wallRenderers[y].enabled != gridToDisplay.rowRenderers[x].canRender[y])
-					if ((x % 2 != 0 || y % 2 != 0))
+					if (x % 2 != 0 || y % 2 != 0)
 						if (gridToDisplay.rowRenderers[x].canRender[y])
 							mAudio.PlaySoundAtTransform("Plop", transform);
 						else
 							mAudio.PlaySoundAtTransform("Plip", transform);
-				/*
 					else if (mazeDetermined)
 						if (gridToDisplay.rowRenderers[x].canRender[y])
 							mAudio.PlaySoundAtTransform("273766__n-audioman__pong", transform);

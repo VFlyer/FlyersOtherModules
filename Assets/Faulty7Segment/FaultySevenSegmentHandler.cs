@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using UnityEngine;
-
+using KModkit;
 public class FaultySevenSegmentHandler : MonoBehaviour {
 
 
@@ -59,7 +59,13 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 			Debug.LogFormat("[Faulty Seven Segment Display #{0}]: The current set of the seven segments when the time ran out for {1} needy activation(s):", curModID, activationCount++);
 			LogSegments(curSegmentPos.ToArray());
 			if (!curSegmentPos.SequenceEqual(segmentIDs.ToList()))
+			{
 				needyModule.HandleStrike();
+			}
+			else
+            {
+				needyModule.SetResetDelayTime(60f, 160f);
+            }
 		};
 		foreach (GameObject objCom in segmentObjects)
 		{
@@ -168,51 +174,52 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 	}
 	// Update is called once per frame
 	readonly Color[] faultyColorList = new Color[] { Color.magenta, Color.red, Color.blue, Color.grey, Color.yellow, Color.cyan, Color.green };
-	int value = 0, cooldown = 20, delayFlicker = 0, checkCooldown = 0;
+	int value = 0;
+	float cooldownTime = 0.33f, timeFlicker = 0.55f, checkCooldown = 0.2f;
 	//readonly string[] faultyDisplayLetters = new string[] { "a", "b", "c", "d", "e", "f", "h", "j", "l", "n", "o", "p", "r", "u", "y", "-" }; // Unused atm.
 	void Update() {
 		if (isActive)
 		{
-			if (cooldown > 0)
-				cooldown--;
+			if (cooldownTime > 0)
+                cooldownTime -= Time.deltaTime;
 			else
 			{
 				value = (value + 1) % 100;
-				cooldown = 25;
+				cooldownTime = .33f;
 			}
 			for (int x = 0; x < segmentDisplays.Length; x++)
 			{
 				segmentDisplays[x].SetCurrentValue(value.ToString("00")[x].ToString());
 			}
-			if (delayFlicker <= 0)// Add the faulty section that can make this module easier to manage.
+			if (timeFlicker <= 0)// Add the faulty section that can make this module easier to manage.
 			{
 				for (int x = 0; x < segmentDisplays.Length; x++)
 				{
 					segmentDisplays[x].SetColors(new Color[] { Color.black, Color.white });
 				}
-				checkCooldown = Mathf.Max(checkCooldown - 1, 0);
+				checkCooldown -= Time.deltaTime;
 				if (checkCooldown <= 0)
 				{
 					if (Random.Range(0, 5) == 0)
 					{
 						int idxFlicker = Random.Range(0, segmentDisplays.Length);
 						segmentDisplays[idxFlicker].SetColors(new Color[] { Color.black, faultyColorList[Random.Range(0, faultyColorList.Length)] });
-						delayFlicker = 35;
+						timeFlicker = 0.55f;
 					}
-					checkCooldown = 20;
+					checkCooldown = .2f;
 				}
 			}
 			else
 			{
-				delayFlicker = Mathf.Max(delayFlicker - 1, 0);
+				timeFlicker -= Time.deltaTime;
 			}
 		}
 		else
 		{
 			value = 0;
-			checkCooldown = 20;
-			delayFlicker = 35;
-			cooldown = 25;
+			checkCooldown = .2f;
+			timeFlicker = 0.55f;
+			cooldownTime = .33f;
 			for (int x = 0; x < segmentDisplays.Length; x++)
 			{
 				segmentDisplays[x].SetCurrentValue("");
@@ -223,6 +230,7 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 	void TwitchHandleForcedSolve()
 	{
 		Debug.LogFormat("[Faulty Seven Segment Display #{0}]: Forcably disabling the needy viva TP handler.", curModID);
+		needyModule.SetResetDelayTime(float.MaxValue, float.MaxValue);
 		needyModule.HandlePass();
 		forceDisable = true;
 		isActive = false;

@@ -21,27 +21,24 @@ public class ThreeXThreeGridHandlerScript : MonoBehaviour {
 
     public KMSelectable[] buttonSelectables = new KMSelectable[9];
     public GameObject[] buttons = new GameObject[9];
-    private bool[] lightstate = new bool[9];
-    private bool[] goallights = new bool[9];
+    private bool[] lightStates = new bool[9];
+    private bool[] goalLights = new bool[9];
     private bool mustInvert = false, hasActivated = false, isWarning = false, forceDisable = false;
-    private bool IsCorrect(bool[] inputs)// Check if all inputs are correct.
-    {
-        bool result = true;
-        for (int x = 0; x < inputs.Count() && result; x++)
-        {
-            result = result && (lightstate[x] == goallights[x]);
-        }
-        return result;
-    }
 
-    void Awake()
+    static int modIDCnt = 1;
+    int modIDLogging;
+    IEnumerator warningHandler;
+
+    void Start()
     {
-        needySelf.OnActivate += delegate ()
+        modIDLogging = modIDCnt++;
+        needySelf.OnActivate += delegate
         {
-            mustInvert = bombInfo.GetSerialNumberNumbers().ToList().Count > 0 ? bombInfo.GetSerialNumberNumbers().Last() % 2 != 0 : false;
+            mustInvert = bombInfo.GetSerialNumberNumbers().LastOrDefault() % 2 != 0;
             // If there is at least 1 number in the serial number, grab the last one and check if it's odd or even. Otherwise set it to false by default.
+            Debug.LogFormat("[3x3 Grid #{0}]: The last digit of the serial number is {1} so the defuser must match {2} what is shown on the display.", modIDLogging, mustInvert ? "odd" : "even", mustInvert ? "the inverse of" : "exactly");
         };
-        needySelf.OnNeedyActivation += delegate ()
+        needySelf.OnNeedyActivation += delegate
         {// Generate board with goal presses and mix up interactable board with lit/unilt tiles
             if (forceDisable)
             {
@@ -50,17 +47,17 @@ public class ThreeXThreeGridHandlerScript : MonoBehaviour {
             }
             hasActivated = true;
             bool[] choices = new bool[] { true, false };
-            for (int pos = 0; pos < lightstate.Count(); pos++)
+            for (int pos = 0; pos < lightStates.Count(); pos++)
             {
-                lightstate[pos] = choices[UnityEngine.Random.Range(0, choices.Count())];
+                lightStates[pos] = choices.PickRandom();
             }
 
-            for (int pos = 0; pos < goallights.Count(); pos++)
+            for (int pos = 0; pos < goalLights.Count(); pos++)
             {
-                goallights[pos] = choices[UnityEngine.Random.Range(0, choices.Count())];
+                goalLights[pos] = choices.PickRandom();
             }
         };
-        needySelf.OnNeedyDeactivation += delegate ()// If the module is force-deactivated
+        needySelf.OnNeedyDeactivation += delegate// If the module is force-deactivated
         {
             hasActivated = false;
             for (int x = 0; x < buttonColors.Count(); x++)
@@ -70,23 +67,30 @@ public class ThreeXThreeGridHandlerScript : MonoBehaviour {
             }
         };
 
-        needySelf.OnTimerExpired += delegate ()
+        needySelf.OnTimerExpired += delegate
         {
-            StopCoroutine(FlashGoalOnWarning());
+            if (warningHandler != null)
+                StopCoroutine(warningHandler);
             isWarning = false;
-            if (IsCorrect(lightstate))
+            if (lightStates.SequenceEqual(goalLights))
             {
                 sound.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, transform);
                 StartCoroutine(PlayCorrectAnim());
             }
             else
             {
+                int[] tempVar = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+                string[] positions = { "TL", "ML", "BL", "TM", "MM", "BM", "TR", "MR", "BR" };
+                Debug.LogFormat("[3x3 Grid #{0}]: Strike! The smaller displayed has these following lights lit: [ {1} ]; but you left these lit on the bigger display instead: [ {2} ]",
+                    modIDLogging,
+                    tempVar.Where(a => !goalLights[a] ^ mustInvert).Select(b => positions[b]).Join(", "),
+                    tempVar.Where(a => !lightStates[a]).Select(b => positions[b]).Join(", "));
                 needySelf.HandleStrike();
                 StartCoroutine(PlayStrikeAnim());
             }
             hasActivated = false;
         };
-        for (int x=0;x<buttons.Count();x++)
+        for (int x = 0; x < buttons.Count(); x++)
         {
             int pos = x;
             buttonSelectables[pos].OnInteract += delegate ()
@@ -94,7 +98,7 @@ public class ThreeXThreeGridHandlerScript : MonoBehaviour {
                 if (!hasActivated) return false;
                 buttonSelectables[pos].AddInteractionPunch(0.5f);
                 sound.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonRelease, transform);
-                lightstate[pos] = !lightstate[pos];
+                lightStates[pos] = !lightStates[pos];
                 return false;
             };
             }
@@ -149,11 +153,10 @@ public class ThreeXThreeGridHandlerScript : MonoBehaviour {
                 goalLeds[x].material = buttonStatus[0];
             }
             yield return new WaitForSeconds(0.25f);
-            for (int pos = 0; pos < goallights.Count(); pos++)
-            for (int x = 0; x < goalLeds.Count(); x++)
-            {
-                goalLeds[x].material = !((mustInvert && goallights[x]) || !(mustInvert || goallights[x])) ? buttonStatus[0] : buttonStatus[1];
-            }
+            for (int pos = 0; pos < goalLights.Count(); pos++)
+                {
+                    goalLeds[pos].material = (mustInvert ^ goalLights[pos]) ? buttonStatus[0] : buttonStatus[1];
+                }
             yield return new WaitForSeconds(0.25f);
         }
         yield return null;
@@ -164,13 +167,13 @@ public class ThreeXThreeGridHandlerScript : MonoBehaviour {
         {
             for (int x = 0; x < buttonColors.Count(); x++)
             {
-                buttonColors[x].material = lightstate[x] ? buttonStatus[0] : buttonColors[x].material = buttonStatus[1];
-                lightKeys[x].enabled = !lightstate[x];
+                buttonColors[x].material = lightStates[x] ? buttonStatus[0] : buttonColors[x].material = buttonStatus[1];
+                lightKeys[x].enabled = !lightStates[x];
             }
-            for (int x = 0; x < goalLeds.Count(); x++)
+            for (int x = 0; x < goalLeds.Count() && !isWarning; x++)
             {
-                goalLeds[x].material = !((mustInvert && goallights[x]) || !(mustInvert || goallights[x])) ? buttonStatus[0] : buttonStatus[1];
-                lightGoal[x].enabled = (mustInvert && goallights[x]) || !(mustInvert || goallights[x]);
+                goalLeds[x].material = (mustInvert ^ goalLights[x]) ? buttonStatus[0] : buttonStatus[1];
+                lightGoal[x].enabled = mustInvert ^ goalLights[x];
             }
         }
         else
@@ -182,10 +185,11 @@ public class ThreeXThreeGridHandlerScript : MonoBehaviour {
             }
         }
         var timeleft = needySelf.GetNeedyTimeRemaining();
-        if (timeleft> 0 && timeleft<5&&!isWarning)
+        if (timeleft > 0 && timeleft < 5 && !isWarning)
         {
             isWarning = true;
-            StartCoroutine(FlashGoalOnWarning());
+            warningHandler = FlashGoalOnWarning();
+            StartCoroutine(warningHandler);
         }
     }
     // TP Handling
@@ -193,6 +197,7 @@ public class ThreeXThreeGridHandlerScript : MonoBehaviour {
     void TwitchHandleForcedSolve()
     {
         forceDisable = true;
+        needySelf.SetResetDelayTime(float.MaxValue, float.MaxValue);
         needySelf.HandlePass();
         hasActivated = false;
     }

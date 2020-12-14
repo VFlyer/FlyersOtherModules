@@ -254,7 +254,7 @@ public class MastermindRestrictedCore : MonoBehaviour {
 		yield return true;
     }
 #pragma warning disable IDE0051 // Remove unused private members
-	readonly string TwitchHelpMessage = "Query the current state with \"!{0} query\", or specific colors with \"!{0} query W W W W\" Available colors are white, magenta, yellow, green, red, blue. Reset the module with \"!{0} reset\". Toggle colorblind mode with \"!{0} colorblind/colourblind\".";
+	readonly string TwitchHelpMessage = "Query the current state with \"!{0} query\", or specific colors with \"!{0} query W W W W\"; Set the colors instead of trying to query it with \"!{0} set W W W W\" Available colors are white, magenta, yellow, green, red, blue. Reset the module with \"!{0} reset\". Toggle colorblind mode with \"!{0} colorblind/colourblind\".";
 #pragma warning restore IDE0051 // Remove unused private members
 	Dictionary<int, string[]> intereptedValues = new Dictionary<int, string[]> {
 		{ 0, new string[] { "white", "w", } },
@@ -279,6 +279,47 @@ public class MastermindRestrictedCore : MonoBehaviour {
 			colorblindDetected = !colorblindDetected;
 			UpdateCurrentDisplay();
         }
+		else if (Regex.IsMatch(cmd, @"^set\s*", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+		{
+			string modifiedCommand = cmd.Substring(3).Trim().ToLower();
+			string[] splittedCommands = modifiedCommand.Split();
+			if (splittedCommands.Length > 0 && !string.IsNullOrEmpty(modifiedCommand))
+			{
+				List<int> cmdInput = new List<int>();
+				for (int x = 0; x < splittedCommands.Length; x++)
+				{
+					bool successful = false;
+					foreach (KeyValuePair<int, string[]> givenValue in intereptedValues)
+					{
+						if (givenValue.Value.Contains(splittedCommands[x]))
+						{
+							cmdInput.Add(givenValue.Key);
+							successful = true;
+							break;
+						}
+					}
+					if (!successful)
+					{
+						yield return string.Format("sendtochaterror I do not know of a color \"{0}\" on the module. Valid colors are white, magenta, yellow, green, red, blue.", splittedCommands[x]);
+						yield break;
+					}
+				}
+				if (cmdInput.Count != 4)
+				{
+					yield return string.Format("sendtochaterror You provided {0} color(s) for this module when I expected exactly 4.", cmdInput.Count);
+					yield break;
+				}
+				for (int x = 0; x < currentInputs.Length; x++)
+				{
+					yield return null;
+					while (currentInputs[x] != cmdInput[x])
+					{
+						possibleSelectables[x].OnInteract();
+						yield return new WaitForSeconds(0.1f);
+					}
+				}
+			}
+		}
 		else if (Regex.IsMatch(cmd, @"^query\s*", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
         {
 			string modifiedCommand = cmd.Substring(5).Trim().ToLower();
