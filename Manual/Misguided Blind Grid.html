@@ -38,7 +38,7 @@
                     <img src="img/Component/Misguided Blind Grid.svg" class="diagram">
                     <h2>On the Subject of Misguided Blind Grid</h2>
                     <p class="flavour-text">A small grid can contain a lot of quirks that may tilt you.</p>
-                    <p>On the module consists of 4 directional buttons and a screen showing a random two digit value in one of many different ways. To disarm the module, navigate through a 5 by 5 grid of distinct values and submit a valid number. The valid number is determined by the starting value and the type of topology that grid is enacting when navigating. More than 1 valid number can occur.</p>
+                    <p>On the module consists of 4 directional buttons and a screen showing a random two digit value in one of many different ways. To disarm the module, navigate through a 4 by 4 grid of distinct values and submit a valid number. The valid number is determined by the starting value and the type of topology that grid is enacting when navigating. More than 1 valid number can occur.</p>
                     <h3>Step 1: Determining the Topology</h3>
                     <p>To determine if the grid wraps around, the defuser will need to come in contact with the edge of the grid. Once walking past the edge of the grid, the following can occur:</p>
                     <ul>
@@ -46,7 +46,7 @@
                         <li>The defuser will be wrapped to a different edge of the same grid, with the controls not modified.</li>
                         <li>The defuser will be wrapped to a different edge of the same grid, with the controls rotated or flipped.</li>
                     </ul>
-                    <p>This is never easy to determine when a wrap has occurred when navigating. All the defuser can do is to keep walking in one direction until going back to the starting position.</p>
+                    <p>This is never easy to determine when a wrap has occurred when navigating. All the defuser can do is to keep walking in one direction until going back to the starting position or until they hit the edge of the grid.</p>
                     <p>Here is a table for reference of all possible 2D topology representations that are possible on this module. Wraparounds are denoted by their color and referred direction. Note that the possible topologies may be rotated.</p>
                     <table>
                         <tr>
@@ -96,43 +96,43 @@
 						</tr>
 						<tr>
 							<th>Plane</th>
-							<td>Prime numbers</td>
-							<td>Highly composite numbers</td>
+							<td>11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97</td>
+							<td>1, 2, 4, 6, 12, 24, 36, 48, 60</td>
 						</tr>
 						<tr>
 							<th>Cylinder</th>
-							<td>Numbers divisible by 9</td>
-							<td>Numbers divisible by 4</td>
+							<td>0, 9, 18, 27, 36, 45, 54, 63, 72, 81, 90, 99</td>
+							<td>0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96</td>
 						</tr>
 						<tr>
 							<th>Torus</th>
-							<td>Values who share no factors in the starting value</td>
-							<td>Values Containing a "3"</td>
+							<td>0, 1, 4, 9, 16, 25, 36, 49, 64, 81</td>
+							<td>0, 1, 2, 3, 4, 5, 6, 7, 8, 9</td>
 						</tr>
 						<tr>
 							<th>Cone</th>
-							<td>Values included in this sequence: 5n + 2</td>
+							<td>2, 9, 16, 23, 30, 37, 44, 51, 58, 65, 72, 79, 86, 93</td>
 							<td>11, 23, 31, 41, 47, 49, 55, 63, 69, 71</td>
 						</tr>
 						<tr>
 							<th>Mobius</th>
-							<td>Cyan/Brightness percentages, modulo 100 from <a href="Siffron.html">Siffron</a></td>
-							<td>Any of the target values in <a href="Standard Button Masher.html">Standard Button Masher</a></td>
+							<td>0, 90, 85, 47, 84, 90, 92, 79, 75, 68, 31, 67, 89, 56, 49, 78, 62</td>
+							<td>0, 83, 73, 43, 64, 98</td>
 						</tr>
 						<tr>
 							<th>Sphere</th>
-							<td>Any values that are possible background values in <a href="Earthbound.html">Earthbound</a></td>
-							<td>Any values that can be formed with the hard digits from <a href="Three Cryptic Steps.html">Three Cryptic Steps</a></td>
+							<td>57, 97, 77, 43, 53, 32, 18, 88, 31, 16, 76, 20, 13, 89, 44, 35, 48, 86, 90, 67</td>
+							<td>0, 1, 4, 7, 10, 11, 14, 17, 40, 41, 44, 47, 70, 71, 74, 77</td>
 						</tr>
 						<tr>
 							<th>Klein</th>
-							<td>Any 2 digit values that can be added or subtracted in <a href="Waste Management.html">Waste Management</a></td>
-							<td>Any edgework based values that can be obtained in <a href="X01.html">X01</a></td>
+							<td>19, 15, 44, 26, 91, 69, 17, 92, 99, 84</td>
+							<td>74, 53, 79, 62, 41, 70, 42, 47, 86, 38, 66, 51, 80, 67, 58</td>
 						</tr>
 						<tr>
 							<th>WAIT KUGELBLITZ</th>
-							<td>Any value within the first 3 consecutive correct presses from <a href="Higher%20Or%20Lower.html">Higher Or Lower</a></td>
-							<td>Any 2 digit value where the defuser always presses the "unfunny"/"funny" button in <a href="Funny%20Numbers.html">Funny Numbers</a></td>
+							<td>2, 60, 19, 51, 11, 41, 14, 94, 45, 5, 94, 84, 40, 42, 31, 34</td>
+							<td>3, 13, 21, 25, 69, 0, 1, 19, 24, 68, 70</td>
 						</tr>
 					</table>
                 </div>

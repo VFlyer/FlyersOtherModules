@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FloatingCubeHandler : MonoBehaviour {
+public class AnimateRotatingMesh : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

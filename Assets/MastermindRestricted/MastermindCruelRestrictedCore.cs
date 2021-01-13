@@ -345,9 +345,9 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 			
 		}
 		Vector3 lastScale = coreRotatable.transform.localScale, lastRotation = coreRotatable.transform.localEulerAngles;
-		for (float x = 0; x < 1f; x += .17f)
+		for (float x = 0; x < 1f; x += Time.deltaTime)
 		{
-			yield return new WaitForSeconds(0.17f);
+			yield return null;
 			backingRenderer.material.color = Color.white * x + Color.red * (1 - x);
 			coreRotatable.transform.localEulerAngles = lastRotation * (1f - x);
 			coreRotatable.transform.localScale = lastScale * (1f - x) + Vector3.one * x;

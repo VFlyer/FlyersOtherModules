@@ -15,9 +15,10 @@ public class HexiomTile : MonoBehaviour {
 	}
 	public void SoftChangeColor(Color newColor)
     {
-		if (lastColor.Equals(newColor)) return;
+		if (lastColor == newColor) return;
 		if (animatorHandler != null)
 			StopCoroutine(animatorHandler);
+		lastColor = newColor;
 		animatorHandler = AnimateBodyRenderer(newColor);
 		StartCoroutine(animatorHandler);
 	}
@@ -25,6 +26,7 @@ public class HexiomTile : MonoBehaviour {
     {
 		if (animatorHandler != null)
 			StopCoroutine(animatorHandler);
+		lastColor = newColor;
 		animatorHandler = AnimateBodyRenderer(newColor);
 		StartCoroutine(animatorHandler);
     }

@@ -15,9 +15,12 @@ public class RobitProgrammingCore : MonoBehaviour {
 	public GridDisplayer gridToDisplay;
 	public KMBombModule modSelf;
 	public KMBombInfo bombInfo;
+	public GameObject delayHandler, movementHandler;
     public KMSelectable genreateSelectable, playPauseSelectable, bit0, bit1, backspaceArrow;
 	public KMSelectable[] deciSecArrows, centSecArrows, terminalArrows;
-	public TextMesh bitText, delayCurText;
+	public TextMesh bitText, delayCurText, bitMarkerText;
+
+	public MeshRenderer[] quadrantRenderers, quadrantCornerMarkers;
 
 	private static int moduleIDCnt = 1;
 
@@ -64,6 +67,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 				return false;
 			};
 		}
+		StartCoroutine(FlipDelayModifier());
 	}
 	void QuickLog(string value)
     {
@@ -83,6 +87,17 @@ public class RobitProgrammingCore : MonoBehaviour {
 			StartCoroutine(GenerateMaze());
         }
     }
+	IEnumerator FlipDelayModifier()
+    {
+		yield return null;
+        for (float x = 1f; x >= 0; x -= Time.deltaTime)
+        {
+			yield return null;
+			delayHandler.transform.localEulerAngles = Vector3.forward * 180 * x;
+        }
+		delayHandler.transform.localEulerAngles = Vector3.zero;
+	}
+
 	void UpdateVisuals()
     {
 		for (int x = 0; x < gridToDisplay.rowRenderers.Length; x++)
@@ -165,6 +180,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 	IEnumerator GenerateMaze()
     {
 		interactable = false;
+		delayCurText.color = Color.gray;
 		yield return null;
 		generatedMaze.FillMaze();
 		generatedMaze.MoveToNewPosition(generatedMaze.GetLength() / 2, generatedMaze.GetWidth() / 2);
@@ -205,19 +221,21 @@ public class RobitProgrammingCore : MonoBehaviour {
 				if (gridToDisplay.rowRenderers[x].wallRenderers[y].enabled != gridToDisplay.rowRenderers[x].canRender[y])
 				{
 					gridToDisplay.rowRenderers[x].wallRenderers[y].enabled = gridToDisplay.rowRenderers[x].canRender[y];
+					/*
 					if (gridToDisplay.rowRenderers[x].canRender[y])
 						mAudio.PlaySoundAtTransform("Plop", transform);
 					else
 						mAudio.PlaySoundAtTransform("Plip", transform);
+					*/
 					yield return new WaitForSeconds(.05f);
 				}
 			}
 		}
 
-
 		StartCoroutine(UpdateCanRendersMaze());
 		yield return generatedMaze.AnimateGeneratedMaze(mazeGenDelay / 100f);
 		yield return UpdateCanRendersMaze();
+		delayCurText.color = Color.white;
 		interactable = true;
 	}
 
@@ -383,9 +401,25 @@ public class RobitProgrammingCore : MonoBehaviour {
 		QuickLog(string.Format("The maze the module has selected to generate uses this algorithm: {0}", mazeGenIdx < mazeAlgorithmNames.Length ? mazeAlgorithmNames[mazeGenIdx] : "unknown"));
 		QuickLog(string.Format("This gives the starting directions: [ {0} ]", directions.Select(a => directionReference.ElementAtOrDefault(a)).Join(", ")));
 	}
-	
+	IEnumerator HandleSolveAnim()
+    {
+		modSelf.HandlePass();
+        for (float x = 0; x < 1f; x += Time.deltaTime)
+        {
+			yield return null;
+            for (int i = 0; i < gridToDisplay.rowRenderers.Length; i++)
+            {
+                RowRenderers renderers = gridToDisplay.rowRenderers[i];
+				renderers.transform.localPosition += Vector3.down * Time.deltaTime;
+            }
+        }
+    }
 	// Update is called once per frame
 	void Update () {
 		
 	}
+	void TwitchHandleForcedSolve()
+    {
+		StartCoroutine(HandleSolveAnim());
+    }
 }

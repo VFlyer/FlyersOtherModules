@@ -110,16 +110,18 @@ public class HexiomCore : MonoBehaviour {
 							SwapPair(idxHovering);
 							mAudio.PlaySoundAtTransform("8_Drop_Trimmed", transform);
 							//mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, allSelectables[y].transform);
+							activeTiles[idxHovering].bodyRenderer.material.color = ancilleryTile.bodyRenderer.material.color;
+							
 						}
 						else
 						{
 							//mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TitleMenuPressed, allSelectables[y].transform);
 							mAudio.PlaySoundAtTransform("10_Babow_Trimmed", transform);
 						}
-						activeTiles[idxHovering].bodyRenderer.material.color = ancilleryTile.bodyRenderer.material.color;
 
 						UpdateSelfAndAdjacentTiles(idxHovering);
 						UpdateSelfAndAdjacentTiles(idxStartHold);
+
 						idxHovering = -1;
 						idxStartHold = -1;
 
@@ -156,7 +158,9 @@ public class HexiomCore : MonoBehaviour {
 			{
 				idxArray = lastIdxArray.ToArray();
 				mAudio.PlaySoundAtTransform("7_TooMany_Trimmed", transform);
+				canForceUpdateTiles = true;
 				UpdateGrid();
+				canForceUpdateTiles = false;
 			}
 			resetSelectable.AddInteractionPunch(0.25f);
 			//mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonRelease, resetSelectable.transform);
@@ -202,7 +206,7 @@ public class HexiomCore : MonoBehaviour {
 			{
 				idxArray[y] = y;
 				var valueFromRandomizer = uernd.value;
-				if (valueFromRandomizer < 0.5f)
+				if (valueFromRandomizer < 0.7f)
 				{
 					isStandardTile[y] = true;
 					isLocked[y] = valueFromRandomizer < 0.1f;
@@ -210,7 +214,7 @@ public class HexiomCore : MonoBehaviour {
 				else
 				{
 					isStandardTile[y] = false;
-					isLocked[y] = valueFromRandomizer > 0.8f;
+					isLocked[y] = valueFromRandomizer > 0.9f;
 				}
 			}
 			for (int y = 0; y < correctAdjacentTiles.Length; y++)
@@ -239,8 +243,10 @@ public class HexiomCore : MonoBehaviour {
 		}
 		while (IsBoardSolved());
 		lastIdxArray = idxArray.ToArray();
+		Debug.LogFormat("[Hexiom #{0}] Possible solve state:", modId);
+		LogPossibleSolution();
 		Debug.LogFormat("[Hexiom #{0}] Initial state:", modId);
-		LogGrid();
+		LogCurrentGrid();
 
 		for (int x = 0; x < insetObjects.Length; x++)
 		{
@@ -253,7 +259,7 @@ public class HexiomCore : MonoBehaviour {
 		}
 	}
 
-	void LogGrid()
+	void LogCurrentGrid()
 	{
 		Debug.LogFormat("[Hexiom #{0}] ----------", modId);
 		int[][] idxLoggings = {
@@ -273,7 +279,26 @@ public class HexiomCore : MonoBehaviour {
 		}
 		Debug.LogFormat("[Hexiom #{0}] ----------", modId);
 	}
-
+	void LogPossibleSolution()
+	{
+		Debug.LogFormat("[Hexiom #{0}] ----------", modId);
+		int[][] idxLoggings = {
+			new[] { -1, -1, 2, -1, -1 },
+			new[] { -1, 1, -1, 3, -1 },
+			new[] { 0, -1, 7, -1, 4 },
+			new[] { -1, 6, -1, 8, -1 },
+			new[] { 5, -1, 12, -1, 9 },
+			new[] { -1, 11, -1, 13, -1 },
+			new[] { 10, -1, 16, -1, 14 },
+			new[] { -1, 15, -1, 17, -1 },
+			new[] { -1, -1, 18, -1, -1 },
+		};
+		for (int x = 0; x < idxLoggings.Length; x++)
+		{
+			Debug.LogFormat("[Hexiom #{0}] {1}", modId, idxLoggings[x].Select(a => (a >= 0 && correctAdjacentTiles[a] != -1 ? correctAdjacentTiles[a].ToString() : " ") + (a >= 0 && isLocked[a] ? "*" : " ")).Join(""));
+		}
+		Debug.LogFormat("[Hexiom #{0}] ----------", modId);
+	}
 	void UpdateAncilleryTile()
     {
 		int idxCorrect = idxArray[idxStartHold];
@@ -309,7 +334,7 @@ public class HexiomCore : MonoBehaviour {
 	static int soundCount = 0;
 	IEnumerator HandleStartSoundPlay()
     {
-		if (soundCount < 3)
+		if (soundCount < 1)
         {
 			mAudio.PlaySoundAtTransform("2_Grow_Trimmed", transform);
 			soundCount++;
@@ -448,7 +473,7 @@ public class HexiomCore : MonoBehaviour {
 		if (IsBoardSolved())
 		{
 			Debug.LogFormat("[Hexiom #{0}] Module disarmed with the following board:", modId);
-			LogGrid();
+			LogCurrentGrid();
 			//mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, transform);
 			mAudio.PlaySoundAtTransform("7_TooMany_Trimmed", transform);
 			modSelf.HandlePass();
@@ -461,8 +486,24 @@ public class HexiomCore : MonoBehaviour {
 	void Update () {
 	}
 
+	IEnumerator TwitchHandleForcedSolve()
+    {
+		yield return null;
+		for (int x = 0; !IsBoardSolved(); x = (x + 1) % idxArray.Length)
+        {
+			var indexArray = idxArray[x];
+			if (isLocked[x] || !isStandardTile[idxArray[x]] || idxArray[x] == x) continue;
+			allSelectables[x].OnInteract();
+			yield return null;
+			allSelectables[idxArray[x]].OnHighlight();
+			yield return new WaitForSeconds(0.1f);
+			allSelectables[x].OnInteractEnded();
+			yield return null;
+		}
+    }
+
 #pragma warning disable IDE0051 // Remove unused private members
-    private readonly string TwitchHelpMessage = "To swap the given pairs, I.E A1 with B1, C1 with D1: \"!{0} swap A1 B1;C1 D1\" Columns are labeled A-E from left to right on the hexagonal grid; rows are labeled 1-5 from the top-most hexagon in that column. Use \";\" to chain swaps. Commands may be voided if the \n Toggle colorblind mode with \"!{0} colorblind\"";
+    private readonly string TwitchHelpMessage = "To swap the given pairs, I.E A1 with B1, C1 with D1: \"!{0} swap A1 B1;C1 D1\" Columns are labeled A-E from left to right on the hexagonal grid; rows are labeled 1-5 from the top-most hexagon in that column. Use \";\" to chain swaps. Commands may be voided if the numbered tiles are attempted to be placed in an invalid position or when the module is solved.\n Toggle colorblind mode with \"!{0} colorblind\"; reset the board with \"!{0} reset\"";
 #pragma warning restore IDE0051 // Remove unused private members
 	IEnumerator ProcessTwitchCommand(string cmd)
 	{
@@ -478,6 +519,12 @@ public class HexiomCore : MonoBehaviour {
 			UpdateGrid();
 			yield break;
         }
+		else if (Regex.IsMatch(cmd, @"^reset$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+		{
+			yield return null;
+			resetSelectable.OnInteract();
+			yield break;
+		}
 		if (Regex.IsMatch(cmd, @"^swap\s", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
 			cmd = cmd.Substring(4).Trim();
 		var coordinatePairs = cmd.Split(';').Select(a => a.Trim()).ToArray();
@@ -530,20 +577,38 @@ public class HexiomCore : MonoBehaviour {
             }
 
         }
-        for (int x = 0; x < Mathf.Min(startPairs.Count, swappingPairs.Count) && interactable; x++)
-        {
-			yield return null;
-			yield return startPairs[x];
-			yield return new WaitForSeconds(0.1f);
-			swappingPairs[x].OnHighlight();
-			yield return new WaitForSeconds(0.1f);
-			yield return startPairs[x];
-			yield return new WaitForSeconds(0.1f);
+		for (int x = 0; x < Mathf.Min(startPairs.Count, swappingPairs.Count) && interactable; x++)
+		{
 			int valueA = System.Array.IndexOf(allSelectables, startPairs[x]);
 			int valueB = System.Array.IndexOf(allSelectables, swappingPairs[x]);
 			if (isLocked[valueA] || isLocked[valueB])
 			{
-				yield return "sendtochat {0}, your swap has failed after " + (x + 1) + " swaps due to a tile within that pair being locked.";
+				yield return "sendtochat {0}, your swap has failed after " + (x + 1) + " swaps due to a tile within that pair being locked, namely \"" + coordinatePairs[x].Select(a => char.IsWhiteSpace(a) ? ',' : a).Join("") + "\"";
+				yield break;
+			}
+			if (isStandardTile[valueA])
+			{
+				yield return null;
+				yield return startPairs[x];
+				yield return new WaitForSeconds(0.1f);
+				swappingPairs[x].OnHighlight();
+				yield return new WaitForSeconds(0.1f);
+				yield return startPairs[x];
+				yield return new WaitForSeconds(0.1f);
+			}
+			else if (isStandardTile[valueB])
+			{
+				yield return null;
+				yield return swappingPairs[x];
+				yield return new WaitForSeconds(0.1f);
+				startPairs[x].OnHighlight();
+				yield return new WaitForSeconds(0.1f);
+				yield return swappingPairs[x];
+				yield return new WaitForSeconds(0.1f);
+			}
+			else
+            {
+				yield return "sendtochat {0}, your swap has been canceled after " + (x + 1) + " swaps due to a pair of tiles not being swappable, namely \"" + coordinatePairs[x].Select(a => char.IsWhiteSpace(a) ? ',' : a).Join("") + "\"";
 				yield break;
 			}
 		}
