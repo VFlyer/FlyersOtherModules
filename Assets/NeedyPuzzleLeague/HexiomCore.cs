@@ -76,7 +76,7 @@ public class HexiomCore : MonoBehaviour {
 	void Start () {
 		modId = modCounter++;
 		GenerateBoard();
-
+		// Assign all selectables onto this module.
         for (int x = 0; x < allSelectables.Length; x++)
         {
 			int y = x;
@@ -243,7 +243,7 @@ public class HexiomCore : MonoBehaviour {
 		}
 		while (IsBoardSolved());
 		lastIdxArray = idxArray.ToArray();
-		Debug.LogFormat("[Hexiom #{0}] Possible solve state:", modId);
+		Debug.LogFormat("[Hexiom #{0}] One possible solution:", modId);
 		LogPossibleSolution();
 		Debug.LogFormat("[Hexiom #{0}] Initial state:", modId);
 		LogCurrentGrid();
@@ -306,10 +306,13 @@ public class HexiomCore : MonoBehaviour {
 		int correctCountAdjacent = correctAdjacentTiles[idxCorrect];
 		if (adjacentNodeMappings.ContainsKey(idxHovering))
 		{
-			foreach (int z in adjacentNodeMappings[idxHovering].Where(a => idxHovering == idxStartHold || idxStartHold != a))
+			var selectedAdjacentTiles = adjacentNodeMappings[idxHovering];
+			foreach (int z in selectedAdjacentTiles.Where(a => idxHovering == idxStartHold || idxStartHold != a))
 			{
 				curCountAdjacent += isStandardTile[idxArray[z]] ? 1 : 0;
 			}
+			if (selectedAdjacentTiles.Contains(idxStartHold) && isStandardTile[idxArray[idxStartHold]] && isStandardTile[idxArray[idxHovering]])
+				curCountAdjacent++;
 		}
 		if (!isLocked[idxHovering])
 		{
@@ -503,7 +506,7 @@ public class HexiomCore : MonoBehaviour {
     }
 
 #pragma warning disable IDE0051 // Remove unused private members
-    private readonly string TwitchHelpMessage = "To swap the given pairs, I.E A1 with B1, C1 with D1: \"!{0} swap A1 B1;C1 D1\" Columns are labeled A-E from left to right on the hexagonal grid; rows are labeled 1-5 from the top-most hexagon in that column. Use \";\" to chain swaps. Commands may be voided if the numbered tiles are attempted to be placed in an invalid position or when the module is solved.\n Toggle colorblind mode with \"!{0} colorblind\"; reset the board with \"!{0} reset\"";
+    private readonly string TwitchHelpMessage = "To swap the given pairs, I.E A1 with B1, C1 with D1: \"!{0} swap A1 B1;C1 D1\" Columns are labeled A-E from left to right on the hexagonal grid; rows are labeled 1-5 from the top-most hexagon in that column. Use \";\" to chain swaps. Commands may be voided if the numbered tiles are attempted to be placed in an invalid position, the command detects a pair of empty tiles, or when the module is solved.\n Toggle colorblind mode with \"!{0} colorblind\"; reset the board with \"!{0} reset\"; focably update tiles with \"!{0} update\"";
 #pragma warning restore IDE0051 // Remove unused private members
 	IEnumerator ProcessTwitchCommand(string cmd)
 	{
@@ -519,6 +522,14 @@ public class HexiomCore : MonoBehaviour {
 			UpdateGrid();
 			yield break;
         }
+		else if (Regex.IsMatch(cmd, @"^(update|refresh)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+		{
+			yield return null;
+			canForceUpdateTiles = true;
+			UpdateGrid();
+			canForceUpdateTiles = false;
+			yield break;
+		}
 		else if (Regex.IsMatch(cmd, @"^reset$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
 		{
 			yield return null;
@@ -581,11 +592,7 @@ public class HexiomCore : MonoBehaviour {
 		{
 			int valueA = System.Array.IndexOf(allSelectables, startPairs[x]);
 			int valueB = System.Array.IndexOf(allSelectables, swappingPairs[x]);
-			if (isLocked[valueA] || isLocked[valueB])
-			{
-				yield return "sendtochat {0}, your swap has failed after " + (x + 1) + " swaps due to a tile within that pair being locked, namely \"" + coordinatePairs[x].Select(a => char.IsWhiteSpace(a) ? ',' : a).Join("") + "\"";
-				yield break;
-			}
+			
 			if (isStandardTile[valueA])
 			{
 				yield return null;
@@ -608,7 +615,12 @@ public class HexiomCore : MonoBehaviour {
 			}
 			else
             {
-				yield return "sendtochat {0}, your swap has been canceled after " + (x + 1) + " swaps due to a pair of tiles not being swappable, namely \"" + coordinatePairs[x].Select(a => char.IsWhiteSpace(a) ? ',' : a).Join("") + "\"";
+				yield return "sendtochat {0}, your swap has been canceled after " + (x + 1) + " swaps due to a pair of tiles being empty, namely \"" + coordinatePairs[x].Select(a => char.IsWhiteSpace(a) ? ',' : a).Join("") + "\"";
+				yield break;
+			}
+			if (isLocked[valueA] || isLocked[valueB])
+			{
+				yield return "sendtochat {0}, your swap has been canceled after " + (x + 1) + " swaps due to a tile within that pair being locked, namely \"" + coordinatePairs[x].Select(a => char.IsWhiteSpace(a) ? ',' : a).Join("") + "\"";
 				yield break;
 			}
 		}

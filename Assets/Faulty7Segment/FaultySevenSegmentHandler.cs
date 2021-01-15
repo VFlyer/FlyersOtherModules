@@ -61,6 +61,7 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 			if (!curSegmentPos.SequenceEqual(segmentIDs.ToList()))
 			{
 				needyModule.HandleStrike();
+				needyModule.SetResetDelayTime(15f, 40f);
 			}
 			else
             {

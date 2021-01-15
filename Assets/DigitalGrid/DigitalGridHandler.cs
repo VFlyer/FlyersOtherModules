@@ -453,7 +453,7 @@ public class DigitalGridHandler : MonoBehaviour {
         {
 			for (int x = 0; x < gridRenderers.Length; x++)
             {
-				gridRenderers[x].material.color = Color.green;
+                gridRenderers[x].material.color = x % 5 % 4 == 0 ^ x / 5 % 4 == 0 ? Color.green : Color.black;
 			}
 			yield return new WaitForSeconds(0.2f);
 			for (int x = 0; x < gridRenderers.Length; x++)
@@ -476,7 +476,7 @@ public class DigitalGridHandler : MonoBehaviour {
 		{
 			for (int x = 0; x < gridRenderers.Length; x++)
 			{
-				gridRenderers[x].material.color = Color.red;
+				gridRenderers[x].material.color = x / 5 == x % 5 || x % 5 + x / 5 == 4 ? Color.red : Color.black;
 			}
 			yield return new WaitForSeconds(0.2f);
 			for (int x = 0; x < gridRenderers.Length; x++)
