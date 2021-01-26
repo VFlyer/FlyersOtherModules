@@ -824,6 +824,7 @@ GameObject:
   - component: {fileID: 114062017209257584}
   - component: {fileID: 114838649029919534}
   - component: {fileID: 114506788086079946}
+  - component: {fileID: 114094468574808356}
   m_Layer: 0
   m_Name: Hexiom
   m_TagString: Untagged
@@ -7754,6 +7755,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShaderNames:
   - Unlit/Color
+--- !u!114 &114094468574808356
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1412474630017172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 2144496390, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114095373694648208
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -8638,6 +8650,7 @@ MonoBehaviour:
   modSelf: {fileID: 114658546866123720}
   mAudio: {fileID: 114816048976866998}
   colorblindHandler: {fileID: 114838649029919534}
+  bombInfo: {fileID: 114094468574808356}
   modifiedMeshes:
   - {fileID: 4300004, guid: ebf5bd2b63cc2404bbda005b9c997a83, type: 3}
   - {fileID: 4300002, guid: ebf5bd2b63cc2404bbda005b9c997a83, type: 3}

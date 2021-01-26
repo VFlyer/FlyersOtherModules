@@ -13,6 +13,7 @@ public class HexiomCore : MonoBehaviour {
 	public KMBombModule modSelf;
 	public KMAudio mAudio;
 	public KMColorblindMode colorblindHandler;
+	public KMBombInfo bombInfo;
 	int idxHovering = -1, idxStartHold = -1;
 	bool isHolding = false, interactable = false, colorblindDetected, canForceUpdateTiles = false;
 	int[] idxArray = new int[0], lastIdxArray = new int[0];
@@ -167,6 +168,12 @@ public class HexiomCore : MonoBehaviour {
 			mAudio.PlaySoundAtTransform("4_ButtonClick_Trimmed", transform);
 			return false;
 		};
+		bombInfo.OnBombExploded += delegate {
+			if (IsBoardSolved()) return;
+			Debug.LogFormat("[Hexiom #{0}] Unsolved board upon detonation:", modId);
+			LogCurrentGrid();
+		};
+
 		StartCoroutine(HandleRevealAnim());
 	}
 	bool IsBoardSolved()
@@ -559,32 +566,37 @@ public class HexiomCore : MonoBehaviour {
 				yield break;
 			}
 			for (int x = 0; x < coordinates.Length; x++)
-            {
+			{
 				var valueChecked = Regex.Match(coordinates[x], @"^[ABCDE][12345]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 				if (!valueChecked.Success)
-                {
+				{
 					yield return string.Format("sendtochaterror \"{0}\" is not a valid coordinate for this module.", coordinates[x]);
 					yield break;
 				}
 				var value = valueChecked.Value.ToUpperInvariant();
 				if (coordinateValues.ContainsKey(value[0]))
-                {
+				{
 					var selectedItem = coordinateValues[value[0]].ElementAtOrDefault(value[1] - '1');
 					if (selectedItem == null)
-                    {
+					{
 						yield return string.Format("sendtochaterror \"{0}\" is not a valid coordinate for this module.", value);
 						yield break;
 					}
 					switch (x)
-                    {
+					{
 						case 0:
 							startPairs.Add(selectedItem);
 							break;
 						default:
 							swappingPairs.Add(selectedItem);
 							break;
-                    }
-                }
+					}
+				}
+				else
+                {
+					yield return string.Format("sendtochaterror \"{0}\" is not a valid coordinate for this module.", value);
+					yield break;
+				}
             }
 
         }
@@ -593,7 +605,7 @@ public class HexiomCore : MonoBehaviour {
 			int valueA = System.Array.IndexOf(allSelectables, startPairs[x]);
 			int valueB = System.Array.IndexOf(allSelectables, swappingPairs[x]);
 			
-			if (isStandardTile[valueA])
+			if (isStandardTile[idxArray[valueA]])
 			{
 				yield return null;
 				yield return startPairs[x];
@@ -603,7 +615,7 @@ public class HexiomCore : MonoBehaviour {
 				yield return startPairs[x];
 				yield return new WaitForSeconds(0.1f);
 			}
-			else if (isStandardTile[valueB])
+			else if (isStandardTile[idxArray[valueB]])
 			{
 				yield return null;
 				yield return swappingPairs[x];
