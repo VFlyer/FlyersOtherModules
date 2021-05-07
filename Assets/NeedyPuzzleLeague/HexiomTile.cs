@@ -46,9 +46,4 @@ public class HexiomTile : MonoBehaviour {
 		}
 		bodyRenderer.material.color = newColor;
 	}
-
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

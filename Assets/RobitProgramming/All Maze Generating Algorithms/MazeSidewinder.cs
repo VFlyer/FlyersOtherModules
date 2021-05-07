@@ -44,7 +44,6 @@ public class MazeSidewinder : Maze {
 	public override IEnumerator AnimateGeneratedMaze(float delay)
     {
         isGenerating = true;
-        bool[,] isRevealed = new bool[curLength, curWidth];
         if (vertStart)
         {
             for (int y = 0; y < curWidth; y++)

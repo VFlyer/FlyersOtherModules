@@ -501,7 +501,6 @@ public class HexiomCore : MonoBehaviour {
 		yield return null;
 		for (int x = 0; !IsBoardSolved(); x = (x + 1) % idxArray.Length)
         {
-			var indexArray = idxArray[x];
 			if (isLocked[x] || !isStandardTile[idxArray[x]] || idxArray[x] == x) continue;
 			allSelectables[x].OnInteract();
 			yield return null;

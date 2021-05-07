@@ -485,52 +485,7 @@ public class CollapseCore : MonoBehaviour {
             }
         }
     }
-
-	// Update is called once per frame
-	void Update () {
-	}
-    void RequestDetonation()
-    {
-        QuickLog("You let the needy run out. The bomb goes along as well.");
-        if (Application.isEditor)
-        {
-            var bombComponent = GetComponentInParent<KMBomb>();
-            if (bombComponent != null)
-            {
-                var timer = bombComponent.gameObject.transform.Find("TimerModule(Clone)");
-                if (timer != null)
-                {
-                    var script = timer.GetComponent("TimerModule");
-                    if (script != null)
-                        script.SetValue("ExplodedToTime", true);
-                }
-                else
-                    Debug.LogFormat("can't find component");
-            }
-            else
-                Debug.LogFormat("can't find component");
-        }
-        else
-        {
-            var bombComponent = GetComponentInParent<KMBomb>();
-            if (bombComponent != null)
-            {
-                var script = bombComponent.GetComponent("Bomb");
-                if (script != null)
-                {
-                    var strikeCnt = script.GetValue<int>("NumStrikesToLose");
-                    script.SetValue("NumStrikes", strikeCnt - 1);
-                    var compSelf = GetComponent("BombComponent");
-                    if (compSelf != null)
-                        script.CallMethod("OnStrike", compSelf);
-                }
-                else
-                    Debug.LogFormat("can't find component");
-            }
-            else
-                Debug.LogFormat("can't find component");
-        }
-    }
+    
     void TwitchHandleForcedSolve()
     {
         StopAllCoroutines();

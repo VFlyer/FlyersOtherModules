@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class SODHiddenMatch : MonoBehaviour {
 
-	public MeshFilter[] quadrantMeshes;
-	public MeshRenderer[] quadrantRenderers;
+	public MeshFilter[] quadrantMeshes = new MeshFilter[4];
+	public MeshRenderer[] quadrantRenderers = new MeshRenderer[4];
 
 	public Mesh[] possibleMeshes;
 	public Color[] possibleColors;
@@ -20,8 +21,8 @@ public class SODHiddenMatch : MonoBehaviour {
 			idxCurrentMeshes[x] = 1;
 			idxCurrentColors[x] = 0;
 
-			idxGoalMeshes[x] = Random.Range(0, 5);
-			idxGoalColors[x] = Random.Range(1, 7);
+			idxGoalMeshes[x] = Random.Range(0, possibleMeshes.Length);
+			idxGoalColors[x] = Random.Range(1, possibleColors.Length);
 
 		}
 	}
@@ -64,15 +65,20 @@ public class SODHiddenMatch : MonoBehaviour {
 		return ((value % divisor) + divisor) % divisor;
     }
 
-
-
-	// Use this for initialization
-	void Start () {
-
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+	void RenderCurrentMesh()
+    {
+		for (var x = 0; x < quadrantMeshes.Length; x++)
+        {
+			quadrantMeshes[x].mesh = possibleMeshes.ElementAtOrDefault(idxCurrentMeshes[x]);
+            quadrantRenderers[x].material.color = possibleColors.ElementAtOrDefault(idxCurrentColors[x]);
+		}
+    }
+	void RenderGoalMesh()
+	{
+		for (var x = 0; x < quadrantMeshes.Length; x++)
+		{
+			quadrantMeshes[x].mesh = possibleMeshes.ElementAtOrDefault(idxGoalMeshes[x]);
+			quadrantRenderers[x].material.color = possibleColors.ElementAtOrDefault(idxGoalColors[x]);
+		}
 	}
 }

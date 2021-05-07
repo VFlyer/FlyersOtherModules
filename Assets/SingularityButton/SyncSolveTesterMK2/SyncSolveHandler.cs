@@ -87,7 +87,7 @@ public class SyncSolveHandler : MonoBehaviour {
 		StartCoroutine(syncSolveTester.StartBootUpSequence());
 		while (!syncSolveTester.canDisarm)
 		{
-			yield return new WaitForSeconds(0);
+			yield return null;
 		}
 		hasDisarmed = true;
 		modSelf.HandlePass();
@@ -107,17 +107,19 @@ public class SyncSolveHandler : MonoBehaviour {
 		disarmButtonObject.transform.localPosition = new Vector3(0, 0.019f * (frameDisarm / 45f), 0);
 	}
 	// Handle Twitch Plays
-	IEnumerator HandleForcedSolve()
-	{
-		disarmButton.OnInteract();
-		yield return new WaitForSeconds(0.2f);
-		disarmButton.OnInteractEnded();
-	}
-
-	void TwitchHandleForcedSolve()
+	IEnumerator TwitchHandleForcedSolve()
 	{
 		Debug.LogFormat("[Sync Solve Tester #{0}]: A force solve has been issued viva TP Handler.", curmodID);
-		StartCoroutine(HandleForcedSolve());
+		while (!hasActivated)
+        {
+			yield return true;
+        }
+		while (!hasDisarmed)
+		{
+			disarmButton.OnInteract();
+			yield return new WaitForSeconds(0.2f);
+			disarmButton.OnInteractEnded();
+		}
 	}
 	#pragma warning disable 0414
 		string TwitchHelpMessage = "To press the disarm button: \"!{0} disarm\" This module is only here to test synchronized solves.";

@@ -39,13 +39,25 @@ public class SimonSemibossHandler : MonoBehaviour {
 	bool isSolved, mashToSolve, hasStarted, isPaniking, alterDefaultHandling, hasStruck;
 	float mashCooldown = 0f;
 	static int modID = 1;
-	int curmodID, solveCountActivation, curPressIdx = 0, curSolveCount, unignoredModuleCount;
+	int curmodID, solveCountActivation, curPressIdx = 0, curSolveCount, unignoredModuleCount, maxFlashesAllowed;
 	IEnumerator[] buttonFlashSet;
 	IEnumerator flashingSequence;
+	private SimonSemibossSettings selfSettings = new SimonSemibossSettings();
 	// Use this for initialization
 	void Awake()
 	{
-
+		try
+		{
+			ModConfig<SimonSemibossSettings> obtainedSettings = new ModConfig<SimonSemibossSettings>("SimonSemibossSettings");
+			selfSettings = obtainedSettings.Settings;
+			obtainedSettings.Settings = selfSettings;
+			maxFlashesAllowed = selfSettings.maxFlashes;
+		}
+		catch
+		{
+			Debug.LogFormat("<SimonSettings> Settings do not work as intended! using default settings.");
+			maxFlashesAllowed = 40;
+		}
 	}
 	IEnumerator FlashButton(int idx)
 	{
@@ -67,7 +79,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 			{
 				int oneIdx = possiblePressIdx[i];
 				yield return FlashButton(oneIdx);
-				yield return new WaitForSeconds(0.4f);
+				yield return new WaitForSeconds(0.5f);
 			}
 		}
 	}
@@ -82,11 +94,11 @@ public class SimonSemibossHandler : MonoBehaviour {
 				buttonLights[idx].enabled = true;
 				buttonRenderers[idx].material = selectionMats[1];
 				buttonRenderers[idx].material.color = colorList[idxColorList[idx]];
-				yield return new WaitForSeconds(0.2f);
+				yield return new WaitForSeconds(0.25f);
 				buttonLights[idx].enabled = false;
 				buttonRenderers[idx].material = selectionMats[0];
 				buttonRenderers[idx].material.color = colorList[idxColorList[idx]] * 0.5f + Color.gray * 0.5f;
-				yield return new WaitForSeconds(0.2f);
+				yield return new WaitForSeconds(0.25f);
 			}
 		}
 	}
@@ -256,7 +268,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 		"The Very Annoying Button",
 		"Whiteout",
 		});
-		Debug.LogFormat("<Simon #{0}> Ignored Modules: {1}", curmodID, ignoredModuleNames.Join(","));
+		Debug.LogFormat("<Simon #{0}> Ignored Modules: {1}", curmodID, ignoredModuleNames.Join(", "));
 
 		if (!Application.isEditor)
 		{
@@ -285,13 +297,8 @@ public class SimonSemibossHandler : MonoBehaviour {
 				Debug.LogFormat("[Simon #{0}]: Detected this many unignored modules on the bomb: {1}", curmodID, unignoredModuleCount);
 			}
 			StartCoroutine(HandleOrganMysteryModuleCore());
-			if (unignoredModuleCount <= 0)
-			{
-				Debug.LogFormat("[Simon #{0}]: Simon has started paniking! But there are no solved modules! You should just mash the buttons until it solves.", curmodID);
-				mashToSolve = true;
-				isPaniking = true;
-				StartCoroutine(PanicAnim());
-			}
+			// Set a random number of solves required to make Simon panic.
+			solveCountActivation = uernd.Range(0, unignoredModuleCount * 3 / 4 + 1);
 			hasStarted = true;
 		};
 		buttonFlashSet = new IEnumerator[possibleButtons.Length];
@@ -318,6 +325,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 
 		if (mashToSolve)
 		{
+			if (mashCooldown == 0f) curPressIdx = 0;
 			curPressIdx++;
 			mashCooldown = 5f;
 			if (curPressIdx >= 20)
@@ -364,16 +372,25 @@ public class SimonSemibossHandler : MonoBehaviour {
 	{
 		int solveCountUponGeneration = bombInfo.GetSolvedModuleIDs().Count();
 		Debug.LogFormat("[Simon #{0}]: Simon has started paniking at {1} solve(s).", curmodID, solveCountUponGeneration);
-		for (int x = 0; x < solveCountUponGeneration * 2 && possiblePressIdx.Count() < 30; x++)
+		if (solveCountUponGeneration > 0)
 		{
-			possiblePressIdx.Add(uernd.Range(0, 8));
-		}
-		Debug.LogFormat("[Simon #{0}]: And is flashing the following colors: {1}", curmodID, possiblePressIdx.Select(a => debugColorString[idxColorList[a]]).Join(", "));
+			for (int x = 0; x < solveCountUponGeneration * 2 && (possiblePressIdx.Count() < maxFlashesAllowed || maxFlashesAllowed < 0); x++)
+			{
+				possiblePressIdx.Add(uernd.Range(0, 8));
+			}
+			Debug.LogFormat("[Simon #{0}]: And is flashing the following colors: {1}", curmodID, possiblePressIdx.Select(a => debugColorString[idxColorList[a]]).Join(", "));
 
-		isPaniking = true;
-		solveCountActivation = bombInfo.GetSolvedModuleNames().Count(a => !ignoredModuleNames.Contains(a));
-		flashingSequence = FlashSequenceQuickly();
-		StartCoroutine(flashingSequence);
+			isPaniking = true;
+			//solveCountActivation = bombInfo.GetSolvedModuleNames().Count(a => !ignoredModuleNames.Contains(a));
+			flashingSequence = FlashSequenceQuickly();
+			StartCoroutine(flashingSequence);
+		}
+		else
+        {
+			mashToSolve = true;
+			isPaniking = true;
+			Debug.LogFormat("[Simon #{0}]: Simon has started paniking! But there are no solved modules! You should just mash the buttons until it solves.", curmodID);
+		}
 		StartCoroutine(PanicAnim());
 	}
 
@@ -393,7 +410,6 @@ public class SimonSemibossHandler : MonoBehaviour {
 		faceRender.gameObject.transform.localPosition = new Vector3(0, 0, lastZPos);
 		yield return null;
 	}
-	float curPanicChance = 0.05f;
 	// Update is called once per frame
 	void Update() {
 		if (mashToSolve)
@@ -421,13 +437,10 @@ public class SimonSemibossHandler : MonoBehaviour {
 					if (curSolveCount != nonIgnoredSolves)
 					{
 						curSolveCount = nonIgnoredSolves;
-						if (nonIgnoredSolves == unignoredModuleCount || uernd.value < curPanicChance)
-						{
-							solveCountActivation = nonIgnoredSolves;
-							GenerateFlashes();
-						}
-						else
-							curPanicChance += 0.05f;
+					}
+					if (curSolveCount * 4 >= unignoredModuleCount * 3 || curSolveCount >= solveCountActivation)
+					{
+						GenerateFlashes();
 					}
 				}
 			}
@@ -449,10 +462,38 @@ public class SimonSemibossHandler : MonoBehaviour {
 		alterDefaultHandling = true;
 		StartCoroutine(MashButtons());
 	}
-	string TwitchHelpMessage = "To press the buttons in reading order use: \"!{0} 12345678\" Numbers may be spaced out in the command.";
 
-	IEnumerator ProcessTwitchCommand(string cmd)
+	public class SimonSemibossSettings
     {
+		public int maxFlashes = 40;
+    }
+
+#pragma warning disable IDE0051 // Remove unused private members
+    readonly string TwitchHelpMessage = "To press the buttons in reading order use: \"!{0} press 12345678\" Numbers may be spaced out in the command and \"press\" is optional. Mash the buttons with \"!{0} mash\".";
+#pragma warning restore IDE0051 // Remove unused private members
+
+    IEnumerator ProcessTwitchCommand(string cmd)
+    {
+		if (cmd.EqualsIgnoreCase("mash"))
+        {
+			if (!mashToSolve)
+            {
+				yield return string.Format("antitroll Mashing seems pretty useless if Simon is not paniking.");
+			}
+			var pressesDone = 0;
+			hasStruck = false;
+			while (pressesDone < 50 && !isSolved && !hasStruck)
+            {
+				yield return null;
+				yield return "trycancel The mashing has been canceled due to a request.";
+				possibleButtons.PickRandom().OnInteract();
+				pressesDone++;
+				yield return new WaitForSeconds(0.1f);
+            }
+        }
+
+		if (cmd.ToLowerInvariant().StartsWith("press "))
+			cmd = cmd.Substring(6);
 		string validSets = "12345678";
 		List<KMSelectable> allPresses = new List<KMSelectable>();
 		foreach (string cmdSet in cmd.Split())

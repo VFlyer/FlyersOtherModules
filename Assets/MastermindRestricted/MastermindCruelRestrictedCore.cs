@@ -18,9 +18,9 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 	private static int modCounter = 1;
 	int startTimeMin;
 	private List<int> modifierColorIdxA = new List<int>(), modifierColorIdxB = new List<int>(), modifierColorIdxC = new List<int>();
-	private Color[] idxLeftColors = { Color.white, Color.yellow, Color.green, Color.magenta, Color.red, Color.cyan },
-		idxCenterColors = { Color.red, Color.cyan, Color.green, Color.yellow, Color.magenta, Color.white, new Color(1, 0.5f, 0f) },
-		idxRightColors = { Color.red, Color.yellow, Color.cyan, Color.white };
+	private Color[] idxLeftColors = { Color.red, Color.yellow, Color.cyan, Color.white, Color.magenta, Color.green },
+		idxCenterColors = { Color.cyan, Color.green, Color.yellow, Color.magenta, Color.white, Color.red },
+		idxRightColors = { Color.cyan, Color.green, Color.yellow, Color.magenta, Color.white, Color.red };
 
 	Vector3 startPosL, startPosM, startPosR;
 	// Use this for initialization
@@ -103,13 +103,13 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 		modifierColorIdxC.Clear();
 		currentInputs = new int[selectableRenderer.Length];
 		correctInputs = new int[selectableRenderer.Length];
-		queriesLeft = 12;
+		queriesLeft = 15;
 		maxPossible = new[] { colorList.Length, colorblindLetters.Length, invertColorblindLetter.Length }.Min();
 		for (int x = 0; x < correctInputs.Length; x++)
 		{
 			correctInputs[x] = uernd.Range(0, maxPossible);
 		}
-		QuickLog(string.Format("The correct answer is now [{0}] Get this within 12 distant queries to disarm the module.", correctInputs.Select(a => colorblindLetters[a]).Join()));
+		QuickLog(string.Format("The correct answer is now [{0}] Get this within {1} distant queries to disarm the module.", correctInputs.Select(a => colorblindLetters[a]).Join(), queriesLeft));
 		UpdateCurrentDisplay();
 		correctBothDisplay.text = "";
 		correctColorDisplay.text = "";
@@ -123,27 +123,6 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 		new[] { 0, 2, 1 },
 		new[] { 2, 1, 0 },
 		new[] { 1, 0, 2 },
-
-		new[] { 3, 1, 2 },
-		new[] { 1, 2, 3 },
-		new[] { 2, 3, 1 },
-		new[] { 3, 2, 1 },
-		new[] { 2, 1, 3 },
-		new[] { 1, 3, 2 },
-
-		new[] { 0, 3, 2 },
-		new[] { 3, 2, 0 },
-		new[] { 2, 0, 3 },
-		new[] { 0, 2, 3 },
-		new[] { 2, 3, 0 },
-		new[] { 3, 0, 2 },
-
-		new[] { 0, 1, 3 },
-		new[] { 1, 3, 0 },
-		new[] { 3, 0, 1 },
-		new[] { 0, 3, 1 },
-		new[] { 3, 1, 0 },
-		new[] { 1, 0, 3 },
 	};
 
 	protected override void QueryModule()
@@ -152,7 +131,6 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 		IEnumerable<int> serialNoDigits = bombInfo.GetSerialNumberNumbers();
 
 		int[,] modiferTable = new int[,] {
-			{ serialNoDigits.FirstOrDefault(), serialNoDigits.ElementAtOrDefault(1), serialNoDigits.LastOrDefault() },
 			{ bombInfo.GetOnIndicators().Count(), bombInfo.GetOffIndicators().Count(), bombInfo.GetIndicators().Count() },
 			{ bombInfo.GetSolvedModuleIDs().Count(), bombInfo.GetSolvableModuleIDs().Count() - bombInfo.GetSolvedModuleIDs().Count(), bombInfo.GetModuleIDs().Count() - bombInfo.GetSolvableModuleIDs().Count() },
 			{ bombInfo.GetBatteryCount(Battery.AA), bombInfo.GetBatteryCount(Battery.D), bombInfo.GetBatteryHolderCount() },
@@ -242,7 +220,7 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 			modifierColorIdxC.Add(selectedIdxR);
 
 			// Display the result of this query
-			int idxSelected = selectedIdxL * 4 + selectedIdxR;
+			int idxSelected = selectedIdxL;
 			var displayLeft = (baseArray[combinationSets[idxSelected][0]] + modiferTable[selectedIdxM, (0 + offsetModifier) % 3]) % 100;
 			var displayCenter = (baseArray[combinationSets[idxSelected][1]] + modiferTable[selectedIdxM, (1 + offsetModifier) % 3]) % 100;
 			var displayRight = (baseArray[combinationSets[idxSelected][2]] + modiferTable[selectedIdxM, (2 + offsetModifier) % 3]) % 100;
@@ -253,9 +231,9 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 			correctBothDisplay.color = idxLeftColors[selectedIdxL];
 			correctColorDisplay.color = idxCenterColors[selectedIdxM];
 			queryLeftDisplay.color = idxRightColors[selectedIdxR];
-			colorblindDisplayTextL.text = new[] { "W", "Y", "G", "M", "R", "C", }[selectedIdxL];
-			colorblindDisplayTextM.text = new[] { "R", "C", "G", "Y", "M", "W", "O" }[selectedIdxM];
-			colorblindDisplayTextR.text = new[] { "R", "Y", "C", "W" }[selectedIdxR];
+			colorblindDisplayTextL.text = new[] { "R", "Y", "C", "W", "M", "G", }[selectedIdxL];
+			colorblindDisplayTextM.text = new[] { "C", "G", "Y", "M", "W", "R",}[selectedIdxM];
+			colorblindDisplayTextR.text = new[] { "C", "G", "Y", "M", "W", "R", }[selectedIdxR];
 
 			QuickLog(string.Format("Query: [{0}]. Result: {1} correct colors in correct position, {2} correct colors not in correct position.",
 				currentInputs.Select(a => colorblindLetters[a]).Join(), correctPosandColors, correctColors));

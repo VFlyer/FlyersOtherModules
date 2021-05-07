@@ -143,7 +143,7 @@ public class EvenOrOddHandler : MonoBehaviour {
 	void StartCountDown()
     {
 		interactable = false;
-		requiredPresses = Random.Range(9, 14);
+		requiredPresses = Random.Range(8, 13);
 		countDownCoroutine = CountdownTimeLeft();
 		mAudio.PlaySoundAtTransform("startUp", transform);
 		StartCoroutine(countDownCoroutine);

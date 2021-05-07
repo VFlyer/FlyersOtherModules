@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FloatingCubeHandler : MonoBehaviour {
+public class SelectObserveDisarmCore : MonoBehaviour {
 
 	public KMSelectable moduleSelectable;
 	public KMBombModule modSelf;
