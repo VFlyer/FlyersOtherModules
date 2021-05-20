@@ -223,16 +223,11 @@ public class MastermindRestrictedCore : MonoBehaviour {
 		{
 			correctButtonsAll.transform.localPosition = startPos * x + endPos * (1 - x);
 			if (x >= 1f) break;
-			yield return new WaitForEndOfFrame();
+			yield return null;
 		}
 		modSelf.HandleStrike();
 		ResetModule();
 		interactable = true;
-	}
-
-	// Update is called once per frame
-	void Update () {
-
 	}
 	// TP Section Begins Here
 

@@ -157,6 +157,11 @@ public class HexiomCore : MonoBehaviour {
 		resetSelectable.OnInteract += delegate {
 			if (interactable)
 			{
+				if (!idxArray.Select(a => isStandardTile[a]).SequenceEqual(lastIdxArray.Select(b => isStandardTile[b])))
+                {
+					Debug.LogFormat("[Hexiom #{0}] Non initial board before reset:", modId);
+					LogCurrentGrid();
+                }
 				idxArray = lastIdxArray.ToArray();
 				mAudio.PlaySoundAtTransform("7_TooMany_Trimmed", transform);
 				canForceUpdateTiles = true;

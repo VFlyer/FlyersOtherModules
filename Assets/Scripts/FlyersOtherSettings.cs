@@ -7,4 +7,12 @@
 	public int SevenMaxPPA = -1;
 	public bool SevenNoTPUncapping = false;
 	public int SimonSemibossMaxFlashes = 40;
+	public bool LPPEnableLabeledPriorities = true;
+	public bool LPPEnableUnlabeledPriorities = true;
+	public bool LPPEnableRelabeledPriorities = true;
+	public bool LPPEnableMislabeledPriorities = true;
+	public int LPPLabeledPrioritiesTPScore = 5;
+	public int LPPUnlabeledPrioritiesTPScore = 5;
+	public int LPPRelabeledPrioritiesTPScore = 9;
+	public int LPPMislabeledPrioritiesTPScore = 9;
 }

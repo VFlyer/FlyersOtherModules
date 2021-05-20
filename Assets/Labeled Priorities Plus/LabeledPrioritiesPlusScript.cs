@@ -654,7 +654,7 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 			case 2:
 			case 3:
 				{
-					QuickLog(string.Format("The defuser pressed screen #{0} from the bottom for stage {1}", idx + 1, curStageCnt));
+					QuickLog(string.Format("The defuser pressed screen #{0} from the top for stage {1}", 3 - idx + 1, curStageCnt));
 					isAllCorrect = correctButtonPressOrder.Contains(idx);
 					break;
 				}
@@ -677,7 +677,7 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 				if (curStageCnt != 0)
 				{
 					rememberedIdxPositions.Add(idx);
-					QuickLog(string.Format("Remembering the following position from the bottom: {0}", 3 - idx + 1));
+					QuickLog(string.Format("Remembering the following position from the top: {0}", 3 - idx + 1));
 				}
 				rememberedIdxPhrases.Add(idxCurrentQuotes[idx]);
 				QuickLog(string.Format("Remembering the following phrase from {1}: \"{0}\"", shuffledQuotes[idxCurrentQuotes[idx]].Replace("\n", " "), curStageCnt == 0 ? "initial" : ("stage " + curStageCnt)));
@@ -795,6 +795,69 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 		public int RelabeledPrioritiesTPScore = 9;
 		public int MislabeledPrioritiesTPScore = 9;
 	}
+	// TP Handler Begins Here
+	IEnumerator TwitchHandleForcedSolve()
+    {
+		switch (idxVariantGenerated)
+        {
+			case 0:
+				currentButtonPressOrder.Clear();
+                for (var x = 0; x < 4; x++)
+                {
+					displayedMeshes[x].text = allPossibleQuotes[idxCurrentQuotes[x]];
+                }
+				for (var x = 0; x < correctButtonPressOrder.Count; x++)
+				{
+					displaySelectables[correctButtonPressOrder[x]].OnInteract();
+					yield return new WaitForSeconds(0.1f);
+				}
+				break;
+			case 1:
+				var curIdx = Array.IndexOf(idxSolutionQuotes, idxSolutionQuotes.Min());
+				while (!idxCurrentQuotes.SequenceEqual(idxSolutionQuotes))
+                {
+					yield return null;
+					for (var x = 0; x < 4 && idxCurrentQuotes[curIdx] != idxSolutionQuotes[curIdx]; x++)
+					{
+						displaySelectables[curIdx].OnInteract();
+						yield return new WaitForSeconds(0.1f);
+					}
+					curIdx = (curIdx + 1) % 4;
+                }
+				break;
+			case 2:
+				while (!modSolved)
+                {
+					if (!interactable) yield return true;
+					if (relabeledStageOrder[curStageCnt] != -1)
+                    {
+						if (!correctButtonPressOrder.Any())
+						{
+							displaySelectables.PickRandom().OnInteract();
+						}
+						else
+							displaySelectables[correctButtonPressOrder.PickRandom()].OnInteract();
+                    }
+					else
+                    {
+						currentButtonPressOrder.Clear();
+						for (var x = 0; x < correctButtonPressOrder.Count; x++)
+                        {
+							displaySelectables[correctButtonPressOrder[x]].OnInteract();
+							yield return new WaitForSeconds(0.1f);
+						}
+                    }
+					yield return null;
+                }
+				break;
+			default:
+				yield return null;
+				modSelf.HandlePass();
+				interactable = false;
+				StartCoroutine(HandleDisarmAnim());
+				break;
+        }
+    }
 
 #pragma warning disable IDE0051 // Remove unused private members
     readonly string TwitchHelpMessage = "Press a given button with \"!{0} press ### # # #\" where 1 is the top-most button in that module. Append \"slow\" or \"veryslow\" onto the command to make the presses go slower or \"instant\" to make the button presses instant.";

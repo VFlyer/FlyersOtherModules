@@ -35,7 +35,7 @@
 						<li>There are 5 LEDs to cycle between 8 different colors rather than 5 LEDs to cycle between 6 different colors.</li>
 						<li>The display has the gray borders on the top and bottom of the screen rather than on the left and right of the screen.</li>
 						<li>When pressing the "Query" button, 3 colored numbers will be shown on the upside-down display. These numbers are referred to by the condition on the next set of pages.</li>
-						<li>The defuser has 15 distant queries to submit the correct sequence of colors to disarm the module. Using all 15 distant queries without a correct sequence of colors will result in a strike and reset the module from the beginning. The reset button can be used to achieve the same effect without a strike.</li>
+						<li>The defuser has 15 distant queries to submit the correct sequence of colors to disarm the module. Using all 15 distant queries without a correct sequence of colors will result in a strike and reset the module from the beginning. The reset button can be used to achieve the same effect without a strike. Correctly querying the correct sequence will cause the module to freak out but the module will solve like normal.</li>
 					</ul>
 					<p>When the module resets, a new correct sequence will be generated alongside resetting the number of distant queries left to 15. All queries relating to the previous correct sequence will also be cleared. The module will always reset when it is loaded in.</p>
 					<p>A distant query is defined as a set of colors that is not yet been checked by the module after the reset. In fact, the defuser may use the same sequence of colors from previous queries to recheck the result.</p>
@@ -92,7 +92,7 @@
 					<table>
 						<tr>
 							<th>Center #'s Color</th>
-							<th>Modifier (L, M, R)</th>
+							<th>Offset Modifier (L, M, R)</th>
 						</tr>
 						<tr>
 							<td>Cyan</td>
@@ -129,15 +129,15 @@
 				</div>
 				<div class="page-content">
 					<h2>Interpreting The Display: The Shifted Replacement</h2>
-					<p>When reading the display right-side up, the right color is used to denote what numbers get replaced or how much the modifier is shifted by. </p>
+					<p>When reading the display right-side up, the right color is used to denote what numbers get replaced or how much the modifier is shifted by. Keep in mind the special modifier is applied before the offset modifiers are applied!</p>
 					<table>
 						<tr>
 							<th>Right #'s Color</th>
-							<th>Modifier</th>
+							<th>Special Modifier</th>
 						</tr>
 						<tr>
 							<td>Cyan</td>
-							<td>Shift modifiers 1 left</td>
+							<td>Shift offset modifiers 1 left</td>
 						</tr>
 						<tr>
 							<td>Green</td>
@@ -153,11 +153,11 @@
 						</tr>
 						<tr>
 							<td>White</td>
-							<td>Keep the modifiers as is</td>
+							<td>Keep the offset modifiers as is</td>
 						</tr>
 						<tr>
 							<td>Red</td>
-							<td>Shift modifiers 1 right</td>
+							<td>Shift offset modifiers 1 right</td>
 						</tr>
 					</table>
 			   </div>

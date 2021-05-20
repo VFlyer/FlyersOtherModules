@@ -39,7 +39,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 	bool isSolved, mashToSolve, hasStarted, isPaniking, alterDefaultHandling, hasStruck;
 	float mashCooldown = 0f;
 	static int modID = 1;
-	int curmodID, solveCountActivation, curPressIdx = 0, curSolveCount, unignoredModuleCount, maxFlashesAllowed;
+	int curmodID, solveCountActivation = 0, curPressIdx = 0, curSolveCount, unignoredModuleCount, maxFlashesAllowed;
 	IEnumerator[] buttonFlashSet;
 	IEnumerator flashingSequence;
 	private SimonSemibossSettings selfSettings = new SimonSemibossSettings();
@@ -136,6 +136,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 					{
 						if (listKeyModules.Contains(moduleSelf))
 						{
+							alterDefaultHandling = true;
 							if (listKeyModules.FirstOrDefault().Equals(moduleSelf))
 							{
 								GenerateFlashes();
@@ -154,6 +155,10 @@ public class SimonSemibossHandler : MonoBehaviour {
 
 	IEnumerator HandleOrganMysteryModuleCore()
 	{
+		/* Summary:
+		 * This entire set of methods is designed to handle Organization and Mystery Module in a case where these modules aren't handled by default.
+		 * 
+		 */
 		if (Application.isEditor)
 			yield break;
 		var mBomb = GetComponentInParent<KMBomb>();
@@ -186,7 +191,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 					if (mysteryModCoreScript != null)
 					{
 						var selectedHiddenModule = mysteryModCoreScript.GetValue<KMBombModule>("mystifiedModule");
-						if (selectedHiddenModule != null && selectedHiddenModule.Equals(moduleSelf))
+						if (selectedHiddenModule != null && selectedHiddenModule.Equals(moduleSelf)) // If the mystified module is this module
 						{
 							alterDefaultHandling = true;
 							aMysteryModule.OnPass += delegate
@@ -209,21 +214,25 @@ public class SimonSemibossHandler : MonoBehaviour {
 
 		curmodID = modID++;
 		ignoredModuleNames = bossModuleHandler.GetIgnoredModules("Simon", new string[] {
+		"+",
 		"14",
 		"42",
 		"501",
+		"Access Codes",
 		"Amnesia",
 		"A>N<D",
 		"Bamboozling Time Keeper",
+		"Black Arrows",
 		"Brainf---",
 		"Busy Beaver",
 		"Button Messer",
 		"Cookie Jars",
-		//"The Digits",
+		"Cube Synchronization",
 		"Divided Squares",
 		"Don't Touch Anything",
 		"Encrypted Hangman",
 		"Encryption Bingo",
+		"Floor Lights",
 		"Forget Any Color",
 		"Forget Enigma",
 		"Forget Everything",
@@ -241,13 +250,14 @@ public class SimonSemibossHandler : MonoBehaviour {
 		"Hogwarts",
 		"Iconic",
 		"Keypad Directionality",
+		"The Klaxon",
 		"Kugelblitz",
 		"Multitask",
 		"Mystery Module",
 		"OmegaForget",
+		"OmegaDestroyer",
 		"Organization",
 		"Purgatory",
-		"Random Access Memory",
 		"RPS Judging",
 		"Security Council",
 		"Shoddy Chess",
@@ -298,7 +308,8 @@ public class SimonSemibossHandler : MonoBehaviour {
 			}
 			StartCoroutine(HandleOrganMysteryModuleCore());
 			// Set a random number of solves required to make Simon panic.
-			solveCountActivation = uernd.Range(0, unignoredModuleCount * 3 / 4 + 1);
+			if (unignoredModuleCount > 0)
+				solveCountActivation = uernd.Range(1, unignoredModuleCount * 3 / 4 + 1);
 			hasStarted = true;
 		};
 		buttonFlashSet = new IEnumerator[possibleButtons.Length];
@@ -325,7 +336,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 
 		if (mashToSolve)
 		{
-			if (mashCooldown == 0f) curPressIdx = 0;
+			if (mashCooldown <= 0f) curPressIdx = 0;
 			curPressIdx++;
 			mashCooldown = 5f;
 			if (curPressIdx >= 20)
@@ -389,7 +400,7 @@ public class SimonSemibossHandler : MonoBehaviour {
         {
 			mashToSolve = true;
 			isPaniking = true;
-			Debug.LogFormat("[Simon #{0}]: Simon has started paniking! But there are no solved modules! You should just mash the buttons until it solves.", curmodID);
+			Debug.LogFormat("[Simon #{0}]: Simon has started paniking! But there are no flashes! You should just mash the buttons until it solves.", curmodID);
 		}
 		StartCoroutine(PanicAnim());
 	}
@@ -412,9 +423,9 @@ public class SimonSemibossHandler : MonoBehaviour {
 	}
 	// Update is called once per frame
 	void Update() {
-		if (mashToSolve)
+		if (mashToSolve && mashCooldown > 0)
 		{
-			mashCooldown = Mathf.Max(0, mashCooldown - Time.deltaTime);
+			mashCooldown -= Time.deltaTime;
 		}
 
 		if (hasStarted && !isSolved)

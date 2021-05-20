@@ -174,9 +174,9 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 			correctBothDisplay.color = idxLeftColors[selectedIdxL];
 			correctColorDisplay.color = idxCenterColors[selectedIdxM];
 			queryLeftDisplay.color = idxRightColors[selectedIdxR];
-			colorblindDisplayTextL.text = new[] { "W", "Y", "G", "M", "R", "C", }[selectedIdxL];
-			colorblindDisplayTextM.text = new[] { "R", "C", "G", "Y", "M", "W", "O" }[selectedIdxM];
-			colorblindDisplayTextR.text = new[] { "R", "Y", "C", "W" }[selectedIdxR];
+			colorblindDisplayTextL.text = new[] { "R", "Y", "C", "W", "M", "G", }[selectedIdxL];
+			colorblindDisplayTextM.text = new[] { "C", "G", "Y", "M", "W", "R", }[selectedIdxM];
+			colorblindDisplayTextR.text = new[] { "C", "G", "Y", "M", "W", "R", }[selectedIdxR];
 		}
 		else
 		{
@@ -232,16 +232,16 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 			correctColorDisplay.color = idxCenterColors[selectedIdxM];
 			queryLeftDisplay.color = idxRightColors[selectedIdxR];
 			colorblindDisplayTextL.text = new[] { "R", "Y", "C", "W", "M", "G", }[selectedIdxL];
-			colorblindDisplayTextM.text = new[] { "C", "G", "Y", "M", "W", "R",}[selectedIdxM];
+			colorblindDisplayTextM.text = new[] { "C", "G", "Y", "M", "W", "R", }[selectedIdxM];
 			colorblindDisplayTextR.text = new[] { "C", "G", "Y", "M", "W", "R", }[selectedIdxR];
 
 			QuickLog(string.Format("Query: [{0}]. Result: {1} correct colors in correct position, {2} correct colors not in correct position.",
 				currentInputs.Select(a => colorblindLetters[a]).Join(), correctPosandColors, correctColors));
 
 			QuickLog(string.Format("This is being displayed as the following: {0} in {1}, {2} in {3}, {4} in {5}",
-				displayLeft, new[] { "White", "Yellow", "Green", "Magenta", "Red", "Cyan", }[selectedIdxL],
-				displayCenter, new[] { "Red", "Cyan", "Green", "Yellow", "Magenta", "White", "Orange" }[selectedIdxM],
-				displayRight,new[] { "Red", "Yellow", "Cyan", "White" }[selectedIdxR]));
+				displayLeft, new[] { "Red", "Yellow", "Cyan", "White", "Magenta", "Green", }[selectedIdxL],
+				displayCenter, new[] { "Cyan", "Green", "Yellow", "Magenta", "White", "Red" }[selectedIdxM],
+				displayRight,new[] { "Cyan", "Green", "Yellow", "Magenta", "White", "Red" }[selectedIdxR]));
 
 			if (currentInputs.SequenceEqual(correctInputs))
 			{
@@ -347,11 +347,6 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 		audioKM.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, transform);
 		modSelf.HandlePass();
 		yield return RevealCorrectAnim();
-	}
-
-	// Update is called once per frame
-	void Update () {
-
 	}
 
 #pragma warning disable IDE0051 // Remove unused private members
