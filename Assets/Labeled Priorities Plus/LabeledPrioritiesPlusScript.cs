@@ -924,18 +924,18 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 					requireDelay = false;
 					break;
             }
+			yield return string.Format("awardpointsonsolve {0}", dynamicScoreToGive);
 			for (var x = 0; x < screenPresses.Count && interactable && !modSolved; x++)
             {
 				yield return null;
 				screenPresses[x].OnInteract();
 				if (modSolved)
 				{
-					yield return string.Format("awardpointsonsolve {0}", dynamicScoreToGive);
 					yield break;
 				}
 				else if (!interactable)
 				{
-					Debug.LogFormat("<Labeled Priorities Plus #{0}> TP Debug: Interrupting TP command due to strike after {1} press(es).", modID, x + 1);
+					//Debug.LogFormat("<Labeled Priorities Plus #{0}> TP Debug: Interrupting TP command due to specific modifier after {1} press(es).", modID, x + 1);
 					yield break;
 				}
 				else if (requireDelay)

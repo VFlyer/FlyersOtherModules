@@ -135,7 +135,7 @@ public class MastermindRestrictedCore : MonoBehaviour {
 			queryCorrectColorAndPos.Add(correctPosandColors);
 			queryCorrectColorNotPos.Add(correctColors);
 
-			QuickLog(string.Format("Query: [{0}]. Result: {1} correct colors in correct position, {2} correct colors not in correct position.",
+			QuickLog(string.Format("Query: [{0}]. Result: {1} correct color(s) in correct position, {2} correct color(s) not in correct position.",
 				currentInputs.Select(a => colorblindLetters[a]).Join(), correctPosandColors, correctColors));
 
 			if (currentInputs.SequenceEqual(correctInputs))

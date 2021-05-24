@@ -16,7 +16,7 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 	public MeshRenderer cbDisplayL, cbDisplayM, cbDisplayR;
 	public GameObject coreRotatable;
 	private static int modCounter = 1;
-	int startTimeMin;
+	long startTimeMin;
 	private List<int> modifierColorIdxA = new List<int>(), modifierColorIdxB = new List<int>(), modifierColorIdxC = new List<int>();
 	private Color[] idxLeftColors = { Color.red, Color.yellow, Color.cyan, Color.white, Color.magenta, Color.green },
 		idxCenterColors = { Color.cyan, Color.green, Color.yellow, Color.magenta, Color.white, Color.red },
@@ -65,13 +65,7 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 			colorblindDisplayTextR.text = "";
 		}
 
-		startTimeMin = (int)bombInfo.GetTime() / 60;
-		int mastermindCount = bombInfo.GetModuleNames().Where(a => a.Contains("Mastermind")).Count(),
-			digitModsCount = bombInfo.GetModuleNames().Where(a => a.Any() && char.IsDigit(a.First())).Count(),
-			hexCodeModCount = bombInfo.GetModuleIDs().Where(a => new[] { "regrettablerelay", "regretbFiltering", "Color Generator" }.Contains(a)).Count();
-
-		int offsetModifier = Mathf.Abs(mastermindCount - digitModsCount + hexCodeModCount) % 3;
-		QuickLog(string.Format("Shift the modifiers to the left by this many: {0}", offsetModifier));
+		startTimeMin = (long)bombInfo.GetTime() / 60;
 
 
 		startPosL = correctBothDisplay.transform.localPosition;
@@ -114,6 +108,9 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 		correctBothDisplay.text = "";
 		correctColorDisplay.text = "";
 		queryLeftDisplay.text = "";
+		colorblindDisplayTextL.text = "";
+		colorblindDisplayTextM.text = "";
+		colorblindDisplayTextR.text = "";
 	}
 
 	readonly int[][] combinationSets = {
@@ -134,15 +131,10 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 			{ bombInfo.GetOnIndicators().Count(), bombInfo.GetOffIndicators().Count(), bombInfo.GetIndicators().Count() },
 			{ bombInfo.GetSolvedModuleIDs().Count(), bombInfo.GetSolvableModuleIDs().Count() - bombInfo.GetSolvedModuleIDs().Count(), bombInfo.GetModuleIDs().Count() - bombInfo.GetSolvableModuleIDs().Count() },
 			{ bombInfo.GetBatteryCount(Battery.AA), bombInfo.GetBatteryCount(Battery.D), bombInfo.GetBatteryHolderCount() },
-			{ bombInfo.GetStrikes(), bombInfo.GetModuleIDs().Count(), startTimeMin % 60 },
+			{ bombInfo.GetStrikes(), bombInfo.GetModuleIDs().Count(), (int)(startTimeMin % 60) },
 			{ bombInfo.CountUniquePorts(), bombInfo.CountDuplicatePorts(), bombInfo.GetPortPlateCount() },
 			{ serialNoDigits.Count(), serialNoDigits.Sum(), bombInfo.GetSerialNumberLetters().Count() },
 		};
-		int mastermindCount = bombInfo.GetModuleNames().Where(a => a.Contains("Mastermind")).Count(),
-			digitModsCount = bombInfo.GetModuleNames().Where(a => a.Any() && char.IsDigit(a.First())).Count(),
-			hexCodeModCount = bombInfo.GetModuleIDs().Where(a => new[] { "regrettablerelay", "regretbFiltering", "Color Generator" }.Contains(a)).Count();
-
-		int offsetModifier = Mathf.Abs(mastermindCount - digitModsCount + hexCodeModCount) % 3;
 
 
 		int idx = -1;
@@ -163,10 +155,13 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 
 			int[] baseArray = new int[] { queryCorrectColorAndPos[idx], queryCorrectColorNotPos[idx], 5 - queryCorrectColorAndPos[idx] - queryCorrectColorNotPos[idx], queriesLeft };
 
-			int idxSelected = selectedIdxL * 4 + selectedIdxR;
-			var displayLeft = (baseArray[combinationSets[idxSelected][0]] + modiferTable[selectedIdxM, (0 + offsetModifier) % 3]) % 100;
-			var displayCenter = (baseArray[combinationSets[idxSelected][1]] + modiferTable[selectedIdxM, (1 + offsetModifier) % 3]) % 100;
-			var displayRight = (baseArray[combinationSets[idxSelected][2]] + modiferTable[selectedIdxM, (2 + offsetModifier) % 3]) % 100;
+			int idxSelected = selectedIdxL;
+
+			int offsetModifier = selectedIdxR == 0 ? 1 : selectedIdxR == 5 ? 2 : 0;
+
+			var displayLeft = ((selectedIdxR == 1 ? queriesLeft : baseArray[combinationSets[idxSelected][0]]) + modiferTable[selectedIdxM, (0 + offsetModifier) % 3]) % 100;
+			var displayCenter = ((selectedIdxR == 2 ? queriesLeft : baseArray[combinationSets[idxSelected][1]]) + modiferTable[selectedIdxM, (1 + offsetModifier) % 3]) % 100;
+			var displayRight = ((selectedIdxR == 3 ? queriesLeft : baseArray[combinationSets[idxSelected][2]]) + modiferTable[selectedIdxM, (2 + offsetModifier) % 3]) % 100;
 
 			correctBothDisplay.text = displayLeft.ToString();
 			correctColorDisplay.text = displayCenter.ToString();
@@ -205,9 +200,9 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 
 			// Modify the result of the query
 			
-			int selectedIdxL = uernd.Range(0, idxLeftColors.Length),
-				selectedIdxM = uernd.Range(0, idxCenterColors.Length),
-				selectedIdxR = uernd.Range(0, idxRightColors.Length);
+			int selectedIdxL = Enumerable.Range(0, idxLeftColors.Length).PickRandom(),
+				selectedIdxM = Enumerable.Range(0, idxCenterColors.Length).PickRandom(),
+				selectedIdxR = Enumerable.Range(0, idxRightColors.Length).PickRandom();
 
 			int[] baseArray = new int[] { correctPosandColors, correctColors, 5 - correctPosandColors - correctColors, queriesLeft };
 			allQueries.Add(currentInputs.ToArray());
@@ -220,10 +215,11 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 			modifierColorIdxC.Add(selectedIdxR);
 
 			// Display the result of this query
+			int offsetModifier = selectedIdxR == 0 ? 1 : selectedIdxR == 5 ? 2 : 0;
 			int idxSelected = selectedIdxL;
-			var displayLeft = (baseArray[combinationSets[idxSelected][0]] + modiferTable[selectedIdxM, (0 + offsetModifier) % 3]) % 100;
-			var displayCenter = (baseArray[combinationSets[idxSelected][1]] + modiferTable[selectedIdxM, (1 + offsetModifier) % 3]) % 100;
-			var displayRight = (baseArray[combinationSets[idxSelected][2]] + modiferTable[selectedIdxM, (2 + offsetModifier) % 3]) % 100;
+			var displayLeft = ((selectedIdxR == 1 ? queriesLeft : baseArray[combinationSets[idxSelected][0]]) + modiferTable[selectedIdxM, (0 + offsetModifier) % 3]) % 100;
+			var displayCenter = ((selectedIdxR == 2 ? queriesLeft : baseArray[combinationSets[idxSelected][1]]) + modiferTable[selectedIdxM, (1 + offsetModifier) % 3]) % 100;
+			var displayRight = ((selectedIdxR == 3 ? queriesLeft : baseArray[combinationSets[idxSelected][2]]) + modiferTable[selectedIdxM, (2 + offsetModifier) % 3]) % 100;
 
 			correctBothDisplay.text = displayLeft.ToString();
 			correctColorDisplay.text = displayCenter.ToString();
@@ -235,8 +231,8 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 			colorblindDisplayTextM.text = new[] { "C", "G", "Y", "M", "W", "R", }[selectedIdxM];
 			colorblindDisplayTextR.text = new[] { "C", "G", "Y", "M", "W", "R", }[selectedIdxR];
 
-			QuickLog(string.Format("Query: [{0}]. Result: {1} correct colors in correct position, {2} correct colors not in correct position.",
-				currentInputs.Select(a => colorblindLetters[a]).Join(), correctPosandColors, correctColors));
+			QuickLog(string.Format("Query: [{0}]. Result: {1} correct color(s) in correct position, {2} correct color(s) not in correct position. ({3} color(s) that are not present at all.)",
+				currentInputs.Select(a => colorblindLetters[a]).Join(), correctPosandColors, correctColors, 5 - correctColors - correctPosandColors));
 
 			QuickLog(string.Format("This is being displayed as the following: {0} in {1}, {2} in {3}, {4} in {5}",
 				displayLeft, new[] { "Red", "Yellow", "Cyan", "White", "Magenta", "Green", }[selectedIdxL],

@@ -8,7 +8,10 @@ public class SODHiddenMatch : MonoBehaviour {
 	public MeshFilter[] quadrantMeshes = new MeshFilter[4];
 	public MeshRenderer[] quadrantRenderers = new MeshRenderer[4];
 
+	public TextMesh displayText;
+
 	public Mesh[] possibleMeshes;
+	public string possibleMeshesCode, possibleColorsCode;
 	public Color[] possibleColors;
 
 	private int[] idxGoalMeshes = new int[4], idxGoalColors = new int[4],
@@ -65,7 +68,7 @@ public class SODHiddenMatch : MonoBehaviour {
 		return ((value % divisor) + divisor) % divisor;
     }
 
-	void RenderCurrentMesh()
+	public void RenderCurrentMesh()
     {
 		for (var x = 0; x < quadrantMeshes.Length; x++)
         {
@@ -73,7 +76,7 @@ public class SODHiddenMatch : MonoBehaviour {
             quadrantRenderers[x].material.color = possibleColors.ElementAtOrDefault(idxCurrentColors[x]);
 		}
     }
-	void RenderGoalMesh()
+	public void RenderGoalMesh()
 	{
 		for (var x = 0; x < quadrantMeshes.Length; x++)
 		{
@@ -81,4 +84,7 @@ public class SODHiddenMatch : MonoBehaviour {
 			quadrantRenderers[x].material.color = possibleColors.ElementAtOrDefault(idxGoalColors[x]);
 		}
 	}
+	public void DisplayTextGoal()
+    {
+    }
 }
