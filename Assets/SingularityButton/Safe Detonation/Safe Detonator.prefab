@@ -128,6 +128,7 @@ GameObject:
   - component: {fileID: 114800174718231924}
   - component: {fileID: 114480375908050122}
   - component: {fileID: 114478402018044676}
+  - component: {fileID: 114018812559178778}
   - component: {fileID: 114186014635101462}
   - component: {fileID: 114333842045265840}
   m_Layer: 0
@@ -584,6 +585,19 @@ TextMesh:
   m_Color:
     serializedVersion: 2
     rgba: 4278190080
+--- !u!114 &114018812559178778
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1520927192234830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7ee7b5f765b3b04c8b143751c2d8cee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  commands: {fileID: 114333842045265840}
+  bombInfo: {fileID: 114478402018044676}
 --- !u!114 &114068138134441582
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -647,8 +661,7 @@ MonoBehaviour:
   disarmSelectable: {fileID: 114991046099466738}
   modSelf: {fileID: 114800174718231924}
   mAudio: {fileID: 114480375908050122}
-  commands: {fileID: 114333842045265840}
-  bombInfo: {fileID: 114478402018044676}
+  detonateHandler: {fileID: 114018812559178778}
 --- !u!114 &114266249974392648
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -745,13 +758,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Parent: {fileID: 0}
   Children:
-  - {fileID: 114991046099466738}
   - {fileID: 114145123175254514}
+  - {fileID: 114991046099466738}
   IsPassThrough: 0
   ChildRowLength: 1
   Highlight: {fileID: 114178788500849748}
   SelectableColliders: []
-  DefaultSelectableIndex: 0
+  DefaultSelectableIndex: 1
   AllowSelectionWrapX: 0
   AllowSelectionWrapY: 0
   ForceSelectionHighlight: 0

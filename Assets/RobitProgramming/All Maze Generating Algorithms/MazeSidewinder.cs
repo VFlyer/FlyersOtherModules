@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using UnityEngine;
 using uernd = UnityEngine.Random;
 
 public class MazeSidewinder : Maze {
 
-    bool leftToRight, topToBottom, vertStart;
+    bool leftToRight, topToBottom, vertGenerate;
 
     public MazeSidewinder(int length, int width)
     {
@@ -18,7 +15,7 @@ public class MazeSidewinder : Maze {
         curWidth = width;
         leftToRight = false;
         topToBottom = false;
-        vertStart = false;
+        vertGenerate = false;
     }
 
     public MazeSidewinder(int length, int width, bool LRBias, bool TBBias, bool VStart)
@@ -29,11 +26,11 @@ public class MazeSidewinder : Maze {
         curWidth = width;
         leftToRight = LRBias;
         topToBottom = TBBias;
-        vertStart = VStart;
+        vertGenerate = VStart;
     }
     public void FlipStart()
     {
-        vertStart = !vertStart;
+        vertGenerate = !vertGenerate;
     }
     public void ChangeBias(bool newLR, bool newTB)
     {
@@ -44,8 +41,8 @@ public class MazeSidewinder : Maze {
 	public override IEnumerator AnimateGeneratedMaze(float delay)
     {
         isGenerating = true;
-        if (vertStart)
-        {
+        if (vertGenerate)
+        { // Generating corridors vertically
             for (int y = 0; y < curWidth; y++)
             {
                 curX = leftToRight ? 0 : curLength - 1;

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using uernd = UnityEngine.Random;
 
@@ -64,9 +63,7 @@ public class NumberedButtonsScript : MonoBehaviour {
 		}
 		else
         {
-			int[] numbersTo100 = new int[100]; // Generate an empty array of 100 numbers.
-			for (int x = 0; x < numbersTo100.Length; x++)
-				numbersTo100[x] = x + 1; // Assign based on 1 + the current index of that value.
+			int[] numbersTo100 = Enumerable.Range(1, 100).ToArray();
 
 			for (int x = 0; x < 16; x++)
 			{
@@ -154,16 +151,14 @@ public class NumberedButtonsScript : MonoBehaviour {
 			QuickLog(string.Format("Strike! Incorrectly pressed the button in {0}{1}.", "ABCD"[idx % 4], "1234"[idx / 4]));
 			oneNumberedKey.ledRenderer.material = oneNumberedKey.ledMats[1];
 			modSelf.HandleStrike();
-			if (mBombInfo.GetSolvableModuleIDs().Contains("SouvenirModule") || true)
-			{
-				reattemptCount++;
-				StartCoroutine(HandleRestartAnim());
-				QuickLog(string.Format("Restart #{0}: ", reattemptCount));
-				GenerateCorrectButtons();
-			}
+			reattemptCount++;
+			StartCoroutine(HandleRestartAnim());
+			QuickLog(string.Format("Restart #{0}: ", reattemptCount));
+			GenerateCorrectButtons();
 		}
 		else
         {
+			isSolving = true;
 			QuickLog("Failsafe triggered! Solving module.");
 			StartCoroutine(HandleSolveAnim());
 		}
@@ -288,15 +283,8 @@ public class NumberedButtonsScript : MonoBehaviour {
 				debugStates.Clear();
 			}
 		}
-		ExpectedButtons = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 }.Where(a => correctPresses[a]).Select(a => buttonNums[a].ToString()).Distinct().ToList();
-		interactable = true;
+        ExpectedButtons = Enumerable.Range(0, 16).Where(a => correctPresses[a]).Select(a => buttonNums[a].ToString()).Distinct().ToList();
 	}
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
 	public readonly string TwitchHelpMessage = "Press a button with “!{0} A1 B2 C3 D4...”. Columns are labeled A-D from left to right, rows are labeled 1-4 from top to bottom. Commands may be voided if the module strikes or enters a solve state. \"press\" is optional.";
 	readonly string RowIDX = "abcd";

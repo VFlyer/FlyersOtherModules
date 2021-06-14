@@ -8,8 +8,7 @@ public class SafeDetonateCore : MonoBehaviour {
     public KMSelectable detonateSelectable, disarmSelectable;
     public KMBombModule modSelf;
     public KMAudio mAudio;
-    public KMGameCommands commands;
-    public KMBombInfo bombInfo;
+    public DetonateScript detonateHandler;
     bool hasDisarmed = false, isPressedDisarm, isPressedDetonator;
 
     Vector3 startPosDisarm, startPosDetonate;
@@ -37,7 +36,7 @@ public class SafeDetonateCore : MonoBehaviour {
             mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonRelease, disarmSelectable.transform);
             isPressedDetonator = false;
             if (!hasDisarmed)
-                RequestDetonation();
+                detonateHandler.RequestSafeDetonation();
         };
         startPosDisarm = disarmSelectable.transform.localPosition;
         startPosDetonate = detonateSelectable.transform.localPosition;
@@ -61,68 +60,5 @@ public class SafeDetonateCore : MonoBehaviour {
         else
             percentDetonate = Mathf.Max(percentDetonate - Time.deltaTime, 0.8f);
         detonateSelectable.transform.localPosition = new Vector3(startPosDetonate.x, startPosDetonate.y * percentDetonate, startPosDetonate.z);
-    }
-    void RequestDetonation()
-    {
-        if (Application.isEditor)
-        {
-            var bombComponent = GetComponentInParent<KMBomb>();
-            if (bombComponent != null)
-            {
-                var timer = bombComponent.gameObject.transform.Find("TimerModule(Clone)");
-                if (timer != null)
-                {
-                    var script = timer.GetComponent("TimerModule");
-                    if (script != null)
-                        script.SetValue("ExplodedToTime", true);
-                }
-                else
-                    Debug.LogFormat("can't find component");
-            }
-            else
-                Debug.LogFormat("can't find component");
-        }
-        else
-        {
-            var bombComponent = GetComponentInParent<KMBomb>();
-            if (bombComponent != null)
-            {
-                var script = bombComponent.GetComponent("Bomb");
-                if (script != null)
-                {
-                    var strikeCnt = script.GetValue<int>("NumStrikesToLose");
-                    script.SetValue("NumStrikes", strikeCnt - 1);
-                    // Disabled temporary for bundling reasons.
-                    /*
-                    StrikeSource strikeSource = new StrikeSource
-                    {
-                        ComponentType = Assets.Scripts.Missions.ComponentTypeEnum.Mod,
-                        InteractionType = InteractionTypeEnum.Other,
-                        Time = bombInfo.GetTime(),
-                        ComponentName = "Instant Detonation"
-                    };
-                    
-                    var recordManager = GetComponent("RecordManager");
-                    if (recordManager == null)
-                    {
-                        Debug.LogFormat("can't find record manager");   
-                        return;
-                    }
-                    recordManager.CallMethod("RecordStrike", strikeSource);
-                    */
-                    // Section to cause the detonation handler.
-                    var compSelf = GetComponent("BombComponent");
-                    if (compSelf != null)
-                    {
-                        modSelf.HandleStrike();
-                        //compSelf.CallMethod("OnStrike", compSelf);
-                    }
-                }
-                else
-                    Debug.LogFormat("can't find script component bomb");
-            }
-            else
-                Debug.LogFormat("can't find bomb component");
-        }
     }
 }

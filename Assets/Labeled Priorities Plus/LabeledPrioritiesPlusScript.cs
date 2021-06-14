@@ -804,7 +804,7 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 				currentButtonPressOrder.Clear();
                 for (var x = 0; x < 4; x++)
                 {
-					displayedMeshes[x].text = allPossibleQuotes[idxCurrentQuotes[x]];
+					displayedMeshes[x].text = shuffledQuotes[possibleEachIdxQuotes[x].Single()];
                 }
 				for (var x = 0; x < correctButtonPressOrder.Count; x++)
 				{
@@ -814,6 +814,9 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 				break;
 			case 1:
 				var curIdx = Array.IndexOf(idxSolutionQuotes, idxSolutionQuotes.Min());
+				for (var x = 0; x < 4; x++)
+					idxCurrentQuotes[x] = -1;
+
 				while (!idxCurrentQuotes.SequenceEqual(idxSolutionQuotes))
                 {
 					yield return null;
