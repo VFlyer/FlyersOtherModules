@@ -48,13 +48,14 @@
                 <span class="page-header-section-title">Robit Programming</span>
             </div>
             <div class="page-content">
-                <img src="img/Component/Robit Programming.svg" class="diagram">
+                <img src="img/Component/ModuleTemplate.svg" class="diagram">
                 <h2>On the Subject of Robit Programming</h2>
                 <p class="flavour-text">This is not simply Maze Identification nor Robot Programming. This module is on a whole other level.</p>
                 <p>On the module is a giant square which is the interface used for viewing the maze. Initially, the module will show a "Generate" button and a numeric display denoting how much delay the module generates its mazes.</p>
                 <p>Pressing the "Generate" button will start creating the maze by carving out the giant square at a specified delay which can be customized for the defuser. The defuser can press the "Generate" button to generate a new maze until the defuser finds one that is sufficient. Generating the maze for the first time on the module also reveals a terminal on the right of the maze.</p>
 				<p>To disarm the module, the defuser must figure out how the maze was generated, and the expert must modify the starting instructions to grab the combination of bits that tells the robit to move in a specific direction. The robit must be guided to the 4 corners of the provided quadrants, noted by the small square on each, and then move towards the middle row/column of the maze to disarm the module. The four quadrants may also modify the robit's behavior when its corner has not been visited yet.</p>
 				<p>The terminal consists of a screen with a highlight denoting the current pair the robit is scanning. On the initial activation or when inputs are cleared, there would be no highlighted instruction. The defuser can input a series of 1's or 0's on the terminal and can scroll the instruction sets with the up or down keys. The backspace button to the right of the 0 and 1 buttons can be used to delete the previous inputs. If that button is held for a few seconds, it will clear ALL inputted bits from the terminal. The play button on the terminal starts the robit and allows the robit to process the provided bits. The defuser will not be able to regenerate a maze or adjust the delay on how the maze is generated, so caution is advised when pressing the play button.</p>
+                <p>Once the expert figures out each quadrant's quirks and starting instructions, determined from steps 2 and 3 from the manual, have the defuser request the directions to all four corners in any order, and then anywhere in the center row/column. Modify these directions based on the quadrant the robit will be on and then use the bit table determined on step 2 to create a string of bits to input. If an odd number of bits were inputted onto the terminal and the robit reaches the lone bit, the lone bit will not be processed instead and the highlight will not mark at the lone bit instead.</p>
             </div>
             <div class="page-footer relative-footer">Page 1 of 6</div>
         </div>
@@ -118,7 +119,7 @@
 					</tr>
 					<tr>
 						<td>Sidewinder</td>
-						<td>Another simple and fast algorithm not fully researched for maximum capabilities. After the first row/column, randomly pick between connecting in that row/column or connecting towards the first row/column. The difference between Binary Tree and this algorithm is the only 1 spanning corridor given at the very edge of this maze generated with this algorithm.</td>
+						<td>Another simple and fast algorithm not fully researched for maximum capabilities. After the first row/column, randomly pick between connecting in that row/column or connecting towards the first row/column. The difference between Binary Tree and this algorithm is the first spanning corridor given at the very edge of this maze generated with this algorithm.</td>
 					</tr>
 					<tr>
 						<td>Eller's</td>
@@ -126,7 +127,7 @@
 					</tr>
 					<tr>
 						<td>Growing Tree</td>
-						<td>A configurable maze generator utilizing generating mazes based on how cells are picked. The main difference from Prim's and Recursive Backtracking algorithms is determined by modifying the odds of picking any cell in particular. This can even mimic other algorithms such as Recursive Backtracking and Prim's if configured.</td>
+						<td>A configurable maze generator utilizing generating mazes based on how cells are picked. The main difference from Prim's and Recursive Backtracking algorithms is determined by modifying the odds of picking any visited cell in particular. This can even mimic other algorithms such as Recursive Backtracking and Prim's if configured.</td>
 					</tr>
 					<tr>
 						<td>Recursive Division</td>
@@ -558,7 +559,7 @@
             </div>
             <div class="page-content">
                 <h2>Step 3: Determine the Quadrant's Quirks</h2>
-                <p>Each quadrant is colored one of 7 different possibilities with each of these modifying the behavior of the robit. When the move is performed on that quadrant, the robit may move in a direction that does not exactly match up with the bit table obtained from the previous step. Once the robit has reached the corner of the given quadrant or leaves the given quadrant, the quadrant's quirk will stop applying. When the robit is at the axis of the maze, no quirk would apply to that command. If the robit crashes while in the quadrant, the number of successful moves will not change unless the instructions are modified before restarting the robit. This also resets the number of moves done to 0 for that robit.</p>
+                <p>Each quadrant is colored one of 7 different possibilities with each of these modifying the behavior of the robit. When the move is performed on that quadrant, the robit may move in a direction that does not exactly match up with the bit table obtained from the previous step. Once the robit has reached the corner of the given quadrant or leaves the given quadrant, the quadrant's quirk will stop applying. When the robit is at the axis of the maze, no quirk would apply to that command. If the robit crashes while in the quadrant, the number of successful moves will not change unless the instructions are modified before restarting the robit. This also resets the number of moves done to 0 for that robit. Performed commands/moves refer to the previous number of moves/commands processed.</p>
 				<p>Common colors are found on this page. These colors on this table may repeat on the module.</p>
 				<table>
 					<tr>
@@ -642,17 +643,6 @@
 				</table>
             </div>
             <div class="page-footer relative-footer">Page 5 of 6</div>
-        </div>
-        <div class="page page-bg-01">
-            <div class="page-header">
-                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
-                <span class="page-header-section-title">Robit Programming</span>
-            </div>
-            <div class="page-content">
-                <h2>Step 4: Converting Directions To Inputs</h2>
-                <p>Once the expert figures out each quadrant's quirks and starting instructions, have the defuser request the directions to all four corners in any order, and then anywhere in the center row/column. Modify these directions based on the quadrant the robit will be on and then use the bit table determined on step 2 to create a string of bits to input. If an odd number of bits were inputted onto the terminal and the robit reaches the lone bit, the lone bit will not be processed instead and the highlight will not mark at the lone bit instead.</p>
-            </div>
-            <div class="page-footer relative-footer">Page 6 of 6</div>
         </div>
     </div>
 </body>

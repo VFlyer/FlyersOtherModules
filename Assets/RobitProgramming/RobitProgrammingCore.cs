@@ -83,6 +83,8 @@ public class RobitProgrammingCore : MonoBehaviour {
 					{
 						StartCoroutine(UnflipDelayModifier());
 						lockMazeGen = true;
+						QuickLog("The maze has now been locked into the following:");
+						LogMaze();
 					}
 					if (!isRobitRunning)
 					{
@@ -219,7 +221,15 @@ public class RobitProgrammingCore : MonoBehaviour {
     {
 		Debug.LogFormat("[Robit Programming #{0}] {1}", moduleID, value);
     }
-
+	void LogMaze()
+    {
+		QuickLog("XXXXXXXXXXX");
+		foreach (var aRenderer in gridToDisplay.rowRenderers)
+        {
+			QuickLog(string.Format("X{0}X", aRenderer.canRender.Select(a => a ? "X" : " ").Join("")));
+        }
+		QuickLog("XXXXXXXXXXX");
+	}
 	void UpdateBitRenderer(int offset = 0)
     {
 		string valueToDisplay = "";
@@ -629,7 +639,8 @@ public class RobitProgrammingCore : MonoBehaviour {
 					break;
             }
         }
-        QuickLog(string.Format("And the robit has decided to process the following string, {0}", readableString));
+		QuickLog(string.Format("The robit has started processing commands at column {0}, row {1} (0-indexed at TL)", currentXPos, currentYPos));
+		QuickLog(string.Format("And the robit has decided to process the following string, {0}", readableString));
 		QuickLog(string.Format("Into these directions before the quadrant quirks: [{0}]", allDirections.Select(a => directionReference.ElementAt(a)).Join(", ")));
 		yield return null;
 		var stopRobitForcefully = false;
@@ -716,7 +727,7 @@ public class RobitProgrammingCore : MonoBehaviour {
             }
 
 			var oldPos = botPosition.transform.localPosition;
-			mAudio.PlaySoundAtTransform("step", botPosition.transform);
+			mAudio.PlaySoundAtTransform("step_quieter", botPosition.transform);
 			switch (wantedDirection)
 			{
 				case dirU:
@@ -831,6 +842,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 			if (collectedCorners.Contains(0) && collectedCorners.Contains(1)
 				&& collectedCorners.Contains(2) && collectedCorners.Contains(3) && (currentXPos == 4 || currentYPos == 4))
 			{
+				QuickLog("The robit has reached the center row/column. You're done.");
 				StartCoroutine(HandleSolveAnim());
 				yield break;
 			}
@@ -841,26 +853,31 @@ public class RobitProgrammingCore : MonoBehaviour {
 			}
 			else if (!collectedCorners.Contains(0) && currentXPos == 0 && currentYPos == 0)
             {
+				QuickLog("Successfully collected the TL cube. The TL quirk will now stop applying.");
 				collectedCorners.Add(0);
 				yield return DisappearQuadrantSection(0);
             }
 			else if (!collectedCorners.Contains(1) && currentXPos == 8 && currentYPos == 0)
             {
+				QuickLog("Successfully collected the TR cube. The TR quirk will now stop applying.");
 				collectedCorners.Add(1);
 				yield return DisappearQuadrantSection(1);
             }
 			else if (!collectedCorners.Contains(2) && currentXPos == 0 && currentYPos == 8)
             {
+				QuickLog("Successfully collected the BL cube. The BL quirk will now stop applying.");
 				collectedCorners.Add(2);
 				yield return DisappearQuadrantSection(2);
             }
 			else if (!collectedCorners.Contains(3) && currentXPos == 8 && currentYPos == 8)
             {
+				QuickLog("Successfully collected the BR cube. The BR quirk will now stop applying.");
 				collectedCorners.Add(3);
 				yield return DisappearQuadrantSection(3);
             }
 			yield return null;
 		}
+		QuickLog(string.Format("The robit is now in column {0}, row {1} (0-indexed at TL)", currentXPos, currentYPos));
 		interactable = true;
 		isRobitRunning = false;
     }
@@ -933,11 +950,38 @@ public class RobitProgrammingCore : MonoBehaviour {
 		}
 		botPosition.transform.localPosition = storedLocalPositions.Last();
 	}
-
+	IEnumerator AnimateClearDisplay()
+    {
+		mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, backspaceArrow.transform);
+		backspaceArrow.AddInteractionPunch(0.1f);
+		yield return null;
+		bitText.text = "";
+		bitMarkerText.text = "";
+		mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TitleMenuPressed, backspaceArrow.transform);
+		var bitReshow = "0110101111001001010101100001010010001001100110000110010011010010100100";
+        for (var x = 0; x < bitReshow.Length && mazeDetermined; x++)
+        {
+			binaryString = bitReshow.Substring(0, x + 1);
+			commandIdxStartDisplay = Mathf.Max((11 + binaryString.Length - 144) / 12, 0);
+			if (bitReshow[x] == '0')
+			{
+				mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, bit0.transform);
+				bit0.AddInteractionPunch(0.1f);
+			}
+			else if (bitReshow[x] == '1')
+			{
+				mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, bit1.transform);
+				bit1.AddInteractionPunch(0.1f);
+			}
+			UpdateBitRenderer();
+			yield return null;
+        }
+	}
 	IEnumerator HandleSolveAnim()
     {
 		modSelf.HandlePass();
-		mAudio.PlaySoundAtTransform("Assets_Sounds_hiss", transform);
+		mAudio.PlaySoundAtTransform("hiss", transform);
+		StartCoroutine(AnimateClearDisplay());
         for (float x = 0; x < 1f; x += Time.deltaTime)
         {
 			yield return null;
@@ -971,6 +1015,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 #pragma warning restore IDE0051 // Remove unused private members
 	void TwitchHandleForcedSolve()
     {
+		interactable = false;
 		StartCoroutine(HandleSolveAnim());
 		if (!collectedCorners.Contains(0)) StartCoroutine(DisappearQuadrantSection(0));
 		if (!collectedCorners.Contains(1)) StartCoroutine(DisappearQuadrantSection(1));
