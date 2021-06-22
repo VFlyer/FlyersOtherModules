@@ -42,21 +42,21 @@ public class SimonSemibossHandler : MonoBehaviour {
 	int curmodID, solveCountActivation = 0, curPressIdx = 0, curSolveCount, unignoredModuleCount, maxFlashesAllowed;
 	IEnumerator[] buttonFlashSet;
 	IEnumerator flashingSequence;
-	private SimonSemibossSettings selfSettings = new SimonSemibossSettings();
+	private FlyersOtherSettings selfSettings = new FlyersOtherSettings();
 	// Use this for initialization
 	void Awake()
 	{
 		try
 		{
-			ModConfig<SimonSemibossSettings> obtainedSettings = new ModConfig<SimonSemibossSettings>("SimonSemibossSettings");
-			selfSettings = obtainedSettings.Settings;
-			obtainedSettings.Settings = selfSettings;
-			maxFlashesAllowed = selfSettings.maxFlashes;
+			ModConfig<FlyersOtherSettings> universalConfig = new ModConfig<FlyersOtherSettings>("FlyersOtherSettings");
+			selfSettings = universalConfig.Settings;
+			universalConfig.Settings = selfSettings;
+			maxFlashesAllowed = selfSettings.SimonSemibossMaxFlashes;
 		}
 		catch
 		{
 			Debug.LogFormat("<SimonSettings> Settings do not work as intended! using default settings.");
-			maxFlashesAllowed = 40;
+			maxFlashesAllowed = 20;
 		}
 	}
 	IEnumerator FlashButton(int idx)
@@ -473,11 +473,6 @@ public class SimonSemibossHandler : MonoBehaviour {
 		alterDefaultHandling = true;
 		StartCoroutine(MashButtons());
 	}
-
-	public class SimonSemibossSettings
-    {
-		public int maxFlashes = 40;
-    }
 
 #pragma warning disable IDE0051 // Remove unused private members
     readonly string TwitchHelpMessage = "To press the buttons in reading order use: \"!{0} press 12345678\" Numbers may be spaced out in the command and \"press\" is optional. Mash the buttons with \"!{0} mash\".";

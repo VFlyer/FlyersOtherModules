@@ -82,6 +82,7 @@ public class ForgetInfinity : MonoBehaviour {
         try
         {
             ModConfig<ForgetInfintySettings> modConfig = new ModConfig<ForgetInfintySettings>("ForgetInfintySettings");
+            ModConfig<FlyersOtherSettings> universalConfig = new ModConfig<FlyersOtherSettings>("FlyersOtherSettings");
             // Read from settings file, or create one if one doesn't exist
             FIConfig = modConfig.Settings;
             // Update settings file incase of error during read

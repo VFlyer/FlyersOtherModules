@@ -62,6 +62,7 @@ public class SevenHandler : MonoBehaviour {
 		stageIndc.text = "";
 		try {
 			ModConfig<SevenSettings> config = new ModConfig<SevenSettings>("SevenSettings");
+			ModConfig<FlyersOtherSettings> universalConfig = new ModConfig<FlyersOtherSettings>("FlyersOtherSettings");
 			sevenSettings = config.Settings;
 			config.Settings = sevenSettings;
 

@@ -95,6 +95,7 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 		try
 		{
 			ModConfig<LabeledPrioritiesPlusSettings> modConfig = new ModConfig<LabeledPrioritiesPlusSettings>("LabeledPrioritiesPlusSettings");
+			ModConfig<FlyersOtherSettings> universalConfig = new ModConfig<FlyersOtherSettings>("FlyersOtherSettings");
 			LPSettings = modConfig.Settings;
 			modConfig.Settings = LPSettings;
 

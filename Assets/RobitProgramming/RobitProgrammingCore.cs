@@ -616,7 +616,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 		interactable = false;
 		var readableString = binaryString.Substring(0, binaryString.Length / 2 * 2);
 		var allDirections = new List<int>();
-		
+		var requireStrike = false;
         for (var x = 0; x < readableString.Length; x += 2)
         {
 			var curSection = readableString.Substring(x, 2);
@@ -639,9 +639,16 @@ public class RobitProgrammingCore : MonoBehaviour {
 					break;
             }
         }
-		QuickLog(string.Format("The robit has started processing commands at column {0}, row {1} (0-indexed at TL)", currentXPos, currentYPos));
-		QuickLog(string.Format("And the robit has decided to process the following string, {0}", readableString));
-		QuickLog(string.Format("Into these directions before the quadrant quirks: [{0}]", allDirections.Select(a => directionReference.ElementAt(a)).Join(", ")));
+		if (commandIdxProcess == 0)
+		{
+			QuickLog(string.Format("The robit has started processing commands at column {0}, row {1} (0-indexed at TL)", currentXPos, currentYPos));
+			QuickLog(string.Format("And the robit has decided to process the following string, {0}", readableString));
+			QuickLog(string.Format("Into these directions before the quadrant quirks: [{0}]", allDirections.Select(a => directionReference.ElementAt(a)).Join(", ")));
+		}
+		else
+        {
+			QuickLog(string.Format("The robit has resumed processing commands at column {0}, row {1} (0-indexed at TL)", currentXPos, currentYPos));
+		}
 		yield return null;
 		var stopRobitForcefully = false;
 		while (commandIdxProcess < allDirections.Count)
@@ -750,7 +757,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 								botPosition.transform.localPosition = oldPos + Vector3.forward * 0.1f * (0.5f - Mathf.Abs(y - 0.5f));
 								yield return null;
 							}
-							modSelf.HandleStrike();
+							requireStrike = true;
 							stopRobitForcefully = true;
 							break;
 						}
@@ -775,7 +782,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 								botPosition.transform.localPosition = oldPos + Vector3.left * 0.1f * (0.5f - Mathf.Abs(y - 0.5f));
 								yield return null;
 							}
-							modSelf.HandleStrike();
+							requireStrike = true;
 							stopRobitForcefully = true;
 							break;
 						}
@@ -800,7 +807,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 								botPosition.transform.localPosition = oldPos + Vector3.right * 0.1f * (0.5f - Mathf.Abs(y - 0.5f));
 								yield return null;
 							}
-							modSelf.HandleStrike();
+							requireStrike = true;
 							stopRobitForcefully = true;
 							break;
 						}
@@ -826,7 +833,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 								botPosition.transform.localPosition = oldPos + Vector3.back * 0.1f * (0.5f - Mathf.Abs(y - 0.5f));
 								yield return null;
 							}
-							modSelf.HandleStrike();
+							requireStrike = true;
 							stopRobitForcefully = true;
 							break;
                         }
@@ -847,8 +854,9 @@ public class RobitProgrammingCore : MonoBehaviour {
 				yield break;
 			}
 			if (stopRobitForcefully) {
-				QuickLog(string.Format("The binary string processed up to this point before the robit was forcably stopped was the following: {0}", binaryString.Substring(0, Mathf.Min(1 + commandIdxProcess, binaryString.Length / 2) * 2)));
-				mAudio.PlaySoundAtTransform("strike", botPosition.transform);
+				QuickLog(string.Format("The robit has stopped on index {0} on the pair of binary bits currently processed.", commandIdxProcess));
+				if (!requireStrike)
+					mAudio.PlaySoundAtTransform("strike", botPosition.transform);
 				break;
 			}
 			else if (!collectedCorners.Contains(0) && currentXPos == 0 && currentYPos == 0)
@@ -878,6 +886,21 @@ public class RobitProgrammingCore : MonoBehaviour {
 			yield return null;
 		}
 		QuickLog(string.Format("The robit is now in column {0}, row {1} (0-indexed at TL)", currentXPos, currentYPos));
+		if (allDirections.Count <= commandIdxProcess && (
+			(currentXPos < 4 && currentYPos < 4 && !collectedCorners.Contains(0)) ||
+			(currentXPos > 4 && currentYPos < 4 && !collectedCorners.Contains(1)) ||
+			(currentXPos < 4 && currentYPos > 4 && !collectedCorners.Contains(2)) ||
+			(currentXPos > 4 && currentYPos > 4 && !collectedCorners.Contains(3))
+			))
+        {
+			QuickLog("The robit has ran out of commands to process while in an active quadrant. The robit does not like that...");
+			requireStrike = true;
+        }
+		if (requireStrike)
+        {
+			modSelf.HandleStrike();
+			mAudio.PlaySoundAtTransform("strike", botPosition.transform);
+		}
 		interactable = true;
 		isRobitRunning = false;
     }
@@ -1010,7 +1033,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 
 #pragma warning disable IDE0051 // Remove unused private members
 	private readonly string TwitchHelpMessage = "Generate at the current rate with \"!{0} generate/create\", or with a specific delay with \"!{0} generate/create at/on X.XX\". (.0 - 1.0 only) " +
-		"Type in 0/1 bits with \"!{0} type/enter/input 0001101010...\". Delete the previous X bits with \"!{0} delete X\", or clear all the bits with \"!{0} clear\" " +
+		"Type in 0/1 bits with \"!{0} type/enter/input 0001101010...\". Delete the previous X bits with \"!{0} delete X\", or clear all the bits with \"!{0} clear\" or \"!{0} delete all\" " +
 		"Play the entire command or continue where it left off with \"!{0} start/play\" Scroll the terminal up or down with \"!{0} scroll up/down\"";
 #pragma warning restore IDE0051 // Remove unused private members
 	void TwitchHandleForcedSolve()
@@ -1027,13 +1050,13 @@ public class RobitProgrammingCore : MonoBehaviour {
     {
 		if (!interactable)
         {
-			yield return "sendtochaterror The module is not allowing commands at this moment. Wait a bit until the module is able to accept commands.";
+			yield return "sendtochaterror The module is not allowing certain commands at this moment. Wait a bit until the module is able to accept these commands.";
 			yield break;
         }
 		Match cmdSetGenerateSpecifiedRate = Regex.Match(cmd, @"^(create|generate)\s((at|on)\s)?\d?\.\d{1,2}$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
 			cmdGenerate = Regex.Match(cmd, @"^(create|generate)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
 			cmdAddBits = Regex.Match(cmd, @"^((type|input|enter)\s)?[01\s]+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
-			cmdDeleteAllBits = Regex.Match(cmd, @"^clear$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
+			cmdDeleteAllBits = Regex.Match(cmd, @"^(clear|delete\sall)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
 			cmdDeleteXBits = Regex.Match(cmd, @"^delete\s\d+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
 			cmdActivateRobit = Regex.Match(cmd, @"^(start|play)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
 			cmdScroll = Regex.Match(cmd, @"^scroll\s(up?|d(own)?)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);

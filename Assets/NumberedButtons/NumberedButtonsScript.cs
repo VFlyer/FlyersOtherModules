@@ -15,7 +15,7 @@ public class NumberedButtonsScript : MonoBehaviour {
 	bool moduleSolved, interactable, hasStruck, isSolving;
 	int[] buttonNums = new int[16];
 	bool[] correctPresses = new bool[16];
-	private List<string> ExpectedButtons;
+	private List<string> ExpectedButtons; // Souvenir Support, for the current handler
 	List<int> pressedCorrect;
 	int[][] selectedRuleseedCorrectNumbers = new int[16][];
 
@@ -97,16 +97,16 @@ public class NumberedButtonsScript : MonoBehaviour {
 	void Start () {
 		modID = modCnt++;
 		HandleRuleSeedGenerator();
-		QuickLog(string.Format("Initial Activation: "));
+		QuickLog("Initial Activation: ");
 		GenerateCorrectButtons();
 		for (int x = 0; x < sampleNumberedKeys.Length; x++)
         {
 			int y = x;
 			sampleNumberedKeys[x].selfSelectable.OnInteract += delegate {
-				sampleNumberedKeys[y].selfSelectable.AddInteractionPunch();
-				audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, sampleNumberedKeys[y].transform);
 				if (!moduleSolved && !sampleNumberedKeys[y].pressed && interactable)
                 {
+					sampleNumberedKeys[y].selfSelectable.AddInteractionPunch();
+					audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, sampleNumberedKeys[y].transform);
 					ProcessButtonInput(y);
                 }
 				return false;
@@ -129,9 +129,8 @@ public class NumberedButtonsScript : MonoBehaviour {
     {
 		if (idx < 0 || idx >= buttonNums.Length) return;
 		var oneNumberedKey = sampleNumberedKeys[idx];
-
 		oneNumberedKey.pressed = true;
-        var correctIdxs = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 }.Where(a => correctPresses[a]);
+		var correctIdxs = Enumerable.Range(0, 16).Where(a => correctPresses[a]);
 		if (correctIdxs.Contains(idx))
 		{
 			QuickLog(string.Format("Correctly pressed the button in {0}{1}.", "ABCD"[idx % 4], "1234"[idx / 4]));
@@ -228,8 +227,8 @@ public class NumberedButtonsScript : MonoBehaviour {
 	}
 	IEnumerator AnimateOpeningAnim()
 	{
-		
-		audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSequenceMechanism, transform);
+		if (reattemptCount != 0)
+			audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSequenceMechanism, transform);
 		for (float x = 0; x <= 1f; x = Mathf.Min(x + 2 * Time.deltaTime, 1f))
 		{
 			yield return null;

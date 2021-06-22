@@ -6,7 +6,7 @@
 	public float SevenPPAScale = 1f;
 	public int SevenMaxPPA = -1;
 	public bool SevenNoTPUncapping = false;
-	public int SimonSemibossMaxFlashes = 40;
+	public int SimonSemibossMaxFlashes = 20;
 	public bool LPPEnableLabeledPriorities = true;
 	public bool LPPEnableUnlabeledPriorities = true;
 	public bool LPPEnableRelabeledPriorities = true;
