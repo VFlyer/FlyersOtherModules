@@ -81,7 +81,8 @@ public class MazeEllers : Maze {
                         else
                             CreatePassage(directionUp);
                     }
-                    yield return new WaitForSeconds(delay);
+                    if (delay > 0)
+                        yield return new WaitForSeconds(delay);
                 }
                 //Debug.Log(curGroupSet.Join());
                 int[] lastGroupSet = curGroupSet.ToArray();
@@ -113,8 +114,8 @@ public class MazeEllers : Maze {
                         {
                             CreatePassage(directionRight);
                         }
-                        
-                        yield return new WaitForSeconds(delay);
+                        if (delay > 0)
+                            yield return new WaitForSeconds(delay);
                     }
                 }
             }
@@ -141,7 +142,8 @@ public class MazeEllers : Maze {
                     else
                         CreatePassage(directionUp);
                 }
-                yield return new WaitForSeconds(delay);
+                if (delay > 0)
+                    yield return new WaitForSeconds(delay);
             }
         }
         else
@@ -178,7 +180,8 @@ public class MazeEllers : Maze {
                             CreatePassage(directionLeft);
                         }
                     }
-                    yield return new WaitForSeconds(delay);
+                    if (delay > 0)
+                        yield return new WaitForSeconds(delay);
                 }
                 //Debug.Log(curGroupSet.Join());
                 int[] lastGroupSet = curGroupSet.ToArray();
@@ -206,7 +209,8 @@ public class MazeEllers : Maze {
                             CreatePassage(directionUp);
                         else
                             CreatePassage(directionDown);
-                        yield return new WaitForSeconds(delay);
+                        if (delay > 0)
+                            yield return new WaitForSeconds(delay);
                     }
                 }
             }
@@ -237,7 +241,8 @@ public class MazeEllers : Maze {
                         CreatePassage(directionLeft);
                     }
                 }
-                yield return new WaitForSeconds(delay);
+                if (delay > 0)
+                    yield return new WaitForSeconds(delay);
             }
         }
         isGenerating = false;

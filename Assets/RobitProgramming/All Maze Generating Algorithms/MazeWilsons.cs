@@ -91,7 +91,8 @@ public class MazeWilsons : Maze {
                             }
                     }
                 }
-                yield return new WaitForSeconds(delay);
+                if (delay > 0)
+                    yield return new WaitForSeconds(delay);
             }
             curX = selectedCoord[0];
             curY = selectedCoord[1];
@@ -127,7 +128,8 @@ public class MazeWilsons : Maze {
                             break;
                         }
                 }
-                yield return new WaitForSeconds(delay);
+                if (delay > 0)
+                    yield return new WaitForSeconds(delay);
             }
         }
         isGenerating = false;

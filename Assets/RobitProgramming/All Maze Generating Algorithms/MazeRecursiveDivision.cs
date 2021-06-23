@@ -33,12 +33,14 @@ public class MazeRecursiveDivision : Maze {
                     curY = y;
                     maze[selectedColumnCut, y] = maze[selectedColumnCut, y].Replace("R", "");
                     maze[selectedColumnCut + 1, y] = maze[selectedColumnCut + 1, y].Replace("L", "");
-                    yield return new WaitForSeconds(curDelay);
+                    if (curDelay > 0)
+                        yield return new WaitForSeconds(curDelay);
                 }
                 int randomCorridorGen = uernd.Range(curYCut, curYCut + curWidthCut);
                 curY = randomCorridorGen;
                 CreatePassage(directionRight);
-                yield return new WaitForSeconds(curDelay);
+                if (curDelay > 0)
+                    yield return new WaitForSeconds(curDelay);
 
                 int leftHalfTLX = curXCut;
                 int rightHalfTLX = selectedColumnCut + 1;
@@ -61,12 +63,14 @@ public class MazeRecursiveDivision : Maze {
                     curX = x;
                     maze[x, selectedRowCut] = maze[x, selectedRowCut].Replace("D", "");
                     maze[x, selectedRowCut + 1] = maze[x, selectedRowCut + 1].Replace("U", "");
-                    yield return new WaitForSeconds(curDelay);
+                    if (curDelay > 0)
+                        yield return new WaitForSeconds(curDelay);
                 }
                 int randomCorridorGen = uernd.Range(curXCut, curXCut + curLengthCut);
                 curX = randomCorridorGen;
                 CreatePassage(directionDown);
-                yield return new WaitForSeconds(curDelay);
+                if (curDelay > 0)
+                    yield return new WaitForSeconds(curDelay);
 
                 int upperHalfTLY = curYCut;
                 int bottomHalfTLY = selectedRowCut + 1;
@@ -97,7 +101,8 @@ public class MazeRecursiveDivision : Maze {
                     CreatePassage(directionRight);
                 if (y + 1 < curWidth)
                     CreatePassage(directionDown);
-                yield return new WaitForSeconds(delay);
+                if (delay > 0)
+                    yield return new WaitForSeconds(delay);
             }
         yield return SplitMaze(0, 0, curLength, curWidth, delay);
 

@@ -54,7 +54,8 @@ public class MazeSidewinder : Maze {
                     else
                         CreatePassage(directionUp);
                 }
-                yield return new WaitForSeconds(delay);
+                if (delay > 0)
+                    yield return new WaitForSeconds(delay);
             }
             for (int x = 1; x < curLength; x++)
             {
@@ -95,8 +96,8 @@ public class MazeSidewinder : Maze {
                             CreatePassage(directionRight);
                         curColIdxs.Clear();
                     }
-
-                    yield return new WaitForSeconds(delay);
+                    if (delay > 0)
+                        yield return new WaitForSeconds(delay);
                 }
             }
         }
@@ -113,7 +114,8 @@ public class MazeSidewinder : Maze {
                     else
                         CreatePassage(directionLeft);
                 }
-                yield return new WaitForSeconds(delay);
+                if (delay > 0)
+                    yield return new WaitForSeconds(delay);
             }
             for (int y = 1; y < curWidth; y++)
             {
@@ -154,7 +156,8 @@ public class MazeSidewinder : Maze {
                             CreatePassage(directionDown);
                         curRowIdxs.Clear();
                     }
-                    yield return new WaitForSeconds(delay);
+                    if (delay > 0)
+                        yield return new WaitForSeconds(delay);
                 }
             }
         }

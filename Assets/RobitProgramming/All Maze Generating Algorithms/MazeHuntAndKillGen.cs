@@ -127,7 +127,8 @@ public class MazeHuntAndKill : Maze {
                             int[] randomCoordinate = coordinatesUnvisited.PickRandom();
                             curX = randomCoordinate[0];
                             curY = randomCoordinate[1];
-                            yield return new WaitForSeconds(delay);
+                            if (delay > 0)
+                                yield return new WaitForSeconds(delay);
                         }
                         while (!((curX - 1 >= 0 && isRevealed[curX - 1, curY]) ||
                                         (curX + 1 < curLength && isRevealed[curX + 1, curY]) ||
@@ -186,7 +187,8 @@ public class MazeHuntAndKill : Maze {
                                 var curScanY = topToBottomScan ? scanY : curWidth - 1 - scanY;
                                 curX = curScanX;
                                 curY = curScanY;
-                                yield return new WaitForSeconds(delay);
+                                if (delay > 0)
+                                    yield return new WaitForSeconds(delay);
                                 if (!isRevealed[curScanX, curScanY])
                                 {
                                     if ((curScanX - 1 >= 0 && isRevealed[curScanX - 1, curScanY]) ||
@@ -213,7 +215,8 @@ public class MazeHuntAndKill : Maze {
                                 var curScanY = topToBottomScan ? scanY : curWidth - 1 - scanY;
                                 curX = curScanX;
                                 curY = curScanY;
-                                yield return new WaitForSeconds(delay);
+                                if (delay > 0)
+                                    yield return new WaitForSeconds(delay);
                                 if (!isRevealed[curScanX, curScanY])
                                 {
                                     if ((curScanX - 1 >= 0 && isRevealed[curScanX - 1, curScanY]) ||
@@ -270,7 +273,8 @@ public class MazeHuntAndKill : Maze {
                     }
                 }
             }
-            yield return new WaitForSeconds(delay);
+            if (delay > 0)
+                yield return new WaitForSeconds(delay);
         }
         isGenerating = false;
 		yield return null;

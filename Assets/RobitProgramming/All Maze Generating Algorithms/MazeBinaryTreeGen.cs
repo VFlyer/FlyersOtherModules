@@ -78,7 +78,8 @@ public class MazeBinaryTree : Maze {
                             }
                     }
                 }
-                yield return new WaitForSeconds(delay);
+                if (delay > 0)
+                    yield return new WaitForSeconds(delay);
             }
         }
         isGenerating = false;

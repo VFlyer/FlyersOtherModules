@@ -135,7 +135,8 @@ public class MazeGrowingTree : Maze {
                 markSpecial[curX, curY] = false;
                 visitedCells.Remove(curPos);
             }
-            yield return new WaitForSeconds(delay);
+            if (delay > 0)
+                yield return new WaitForSeconds(delay);
         }
         isGenerating = false;
 		yield return null;

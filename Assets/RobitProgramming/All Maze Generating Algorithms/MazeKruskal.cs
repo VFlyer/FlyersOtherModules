@@ -105,7 +105,8 @@ public class MazeKruskal : Maze {
             {
                 continue;
             }
-            yield return new WaitForSeconds(delay);
+            if (delay > 0)
+                yield return new WaitForSeconds(delay);
             curX = coordTo[0];
             curY = coordTo[1];
             int[] coordDifference = { coordFrom[0] - coordTo[0], coordFrom[1] - coordTo[1] };
@@ -125,7 +126,8 @@ public class MazeKruskal : Maze {
             {
                 CreatePassageFrom(coordFrom[0], coordFrom[1], directionDown);
             }
-            yield return new WaitForSeconds(delay);
+            if (delay > 0)
+                yield return new WaitForSeconds(delay);
         }
         isGenerating = false;
 		yield return null;

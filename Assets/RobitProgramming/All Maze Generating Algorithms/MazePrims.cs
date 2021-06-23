@@ -115,7 +115,8 @@ public class MazePrims : Maze {
                     remainingCoordinates.Add(curCoordinate);
             }
             coordGeneratable = remainingCoordinates;
-            yield return new WaitForSeconds(delay);
+            if (delay > 0)
+                yield return new WaitForSeconds(delay);
         }
         isGenerating = false;
 		yield return null;
