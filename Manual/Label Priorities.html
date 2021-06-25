@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="css/normalize.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <script src="js/ktane-utils.js"></script>
+	<script src="js/ruleseed.js"></script>
     <style>
         table {
             margin: 1em auto;
@@ -20,6 +21,80 @@
 			width: 100%;
         }
     </style>
+	<script>
+		var allPossiblePhrases = [
+			"Press this button first.",
+			"ALWAYS press this button first.",
+			"You must press this button first.",
+			"You should press this button first.",
+			"Press. This. Button. First.",
+			"Press this button first, please?",
+			"This is the first button.",
+			"Number 1.",
+			"No really, this is the first one.",
+			"THIS, is the first button.",
+			"First, press this button.",
+			"Maybe you should press this button first.",
+			"No no no, press THIS button first.",
+			"Please press this button first.",
+			"Press me first.",
+			"I’m pretty sure this is the first button.",
+			"First one.",
+			"No, press THIS one first.",
+			"The first button is this one.",
+			"I’m certain this is the first button.",
+			"#1.",
+			"First.",
+			"Press this button first, will ya?",
+			"This really is the first button.",
+			"No no, press THIS button first.",
+			"Button numero uno.",
+			"I’m certain you press this button first.",
+			"Press this one first.",
+			"This one is the first button.",
+			"Maybe you should press this one first.",
+			"Press. This. One. First.",
+			"No really, this is the first button.",
+			"Number one.",
+			"THIS, is the first one.",
+			"First button.",
+			"No no no, press THIS one first.",
+			"No, press THIS button first.",
+			"ALWAYS press this one first.",
+			"Press this one first, please?",
+			"I’m pretty sure you press this button first.",
+			"Press this one first, will ya?",
+			"I’m certain you press this one first.",
+			"I’m certain this is the first one.",
+			"No no, press THIS one first.",
+			"I’m pretty sure this is the first one.",
+			"First, press this one.",
+			"Don’t press this one.",
+			"Press this one."
+		];
+		var idxList = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47];
+        function setDefaultRules(rnd)
+        {
+            idxList = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47];
+			UpdateRS();
+        }
+        
+        function setRules(rnd)
+        {
+			idxList = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47];
+            rnd.shuffleFisherYates(idxList);
+            UpdateRS();
+        }
+		function UpdateRS()
+		{
+			var allRSPhrases = document.getElementsByClassName("RSPhrase");
+			for (var x = 0; x < allRSPhrases.length; x++)
+				{
+					allRSPhrases[x].innerHTML = allPossiblePhrases[idxList[x]];
+				}
+		}
+		
+	</script>
 </head>
 <body>
     <div class="section">
@@ -39,58 +114,58 @@
                 <h3><strong>THE LABEL PRIORITY LIST</strong></h3>
                 <table>
                     <tr>
-                        <td>Press this button first.</td>
+                        <td class="RSPhrase">Press this button first.</td>
                     </tr>
                     <tr>
-                        <td>ALWAYS press this button first.</td>
+                        <td class="RSPhrase">ALWAYS press this button first.</td>
                     </tr>
                     <tr>
-                        <td>You must press this button first.</td>
+                        <td class="RSPhrase">You must press this button first.</td>
                     </tr>
                     <tr>
-                        <td>You should press this button first.</td>
+                        <td class="RSPhrase">You should press this button first.</td>
                     </tr>
                     <tr>
-                        <td>Press. This. Button. First.</td>
+                        <td class="RSPhrase">Press. This. Button. First.</td>
                     </tr>
                     <tr>
-                        <td>Press this button first, please?</td>
+                        <td class="RSPhrase">Press this button first, please?</td>
                     </tr>
                     <tr>
-                        <td>This is the first button.</td>
+                        <td class="RSPhrase">This is the first button.</td>
                     </tr>
                     <tr>
-                        <td>Number 1.</td>
+                        <td class="RSPhrase">Number 1.</td>
                     </tr>
                     <tr>
-                        <td>No really, this is the first one.</td>
+                        <td class="RSPhrase">No really, this is the first one.</td>
                     </tr>
                     <tr>
-                        <td>THIS, is the first button.</td>
+                        <td class="RSPhrase">THIS, is the first button.</td>
                     </tr>
                     <tr>
-                        <td>First, press this button.</td>
+                        <td class="RSPhrase">First, press this button.</td>
                     </tr>
                     <tr>
-                        <td>Maybe you should press this button first.</td>
+                        <td class="RSPhrase">Maybe you should press this button first.</td>
                     </tr>
                     <tr>
-                        <td>No no no, press THIS button first.</td>
+                        <td class="RSPhrase">No no no, press THIS button first.</td>
                     </tr>
                     <tr>
-                        <td>Please press this button first.</td>
+                        <td class="RSPhrase">Please press this button first.</td>
                     </tr>
                     <tr>
-                        <td>Press me first.</td>
+                        <td class="RSPhrase">Press me first.</td>
                     </tr>
                     <tr>
-                        <td>I’m pretty sure this is the first button.</td>
+                        <td class="RSPhrase">I’m pretty sure this is the first button.</td>
                     </tr>
                     <tr>
-                        <td>First one.</td>
+                        <td class="RSPhrase">First one.</td>
                     </tr>
                     <tr>
-                        <td>No, press THIS one first.</td>
+                        <td class="RSPhrase">No, press THIS one first.</td>
                     </tr>
                 </table>
             </div>
@@ -105,94 +180,94 @@
                 <h3><strong>THE LABEL PRIORITY LIST (cont.)</strong></h3>
                 <table>
                     <tr>
-                        <td>The first button is this one.</td>
+                        <td class="RSPhrase">The first button is this one.</td>
                     </tr>
                     <tr>
-                        <td>I’m certain this is the first button.</td>
+                        <td class="RSPhrase">I’m certain this is the first button.</td>
                     </tr>
                     <tr>
-                        <td>#1.</td>
+                        <td class="RSPhrase">#1.</td>
                     </tr>
                     <tr>
-                        <td>First.</td>
+                        <td class="RSPhrase">First.</td>
                     </tr>
                     <tr>
-                        <td>Press this button first, will ya?</td>
+                        <td class="RSPhrase">Press this button first, will ya?</td>
                     </tr>
                     <tr>
-                        <td>This really is the first button.</td>
+                        <td class="RSPhrase">This really is the first button.</td>
                     </tr>
                     <tr>
-                        <td>No no, press THIS button first.</td>
+                        <td class="RSPhrase">No no, press THIS button first.</td>
                     </tr>
                     <tr>
-                        <td>Button numero uno.</td>
+                        <td class="RSPhrase">Button numero uno.</td>
                     </tr>
                     <tr>
-                        <td>I’m certain you press this button first.</td>
+                        <td class="RSPhrase">I’m certain you press this button first.</td>
                     </tr>
                     <tr>
-                        <td>Press this one first.</td>
+                        <td class="RSPhrase">Press this one first.</td>
                     </tr>
                     <tr>
-                        <td>This one is the first button.</td>
+                        <td class="RSPhrase">This one is the first button.</td>
                     </tr>
                     <tr>
-                        <td>Maybe you should press this one first.</td>
+                        <td class="RSPhrase">Maybe you should press this one first.</td>
                     </tr>
                     <tr>
-                        <td>Press. This. One. First.</td>
+                        <td class="RSPhrase">Press. This. One. First.</td>
                     </tr>
                     <tr>
-                        <td>No really, this is the first button.</td>
+                        <td class="RSPhrase">No really, this is the first button.</td>
                     </tr>
                     <tr>
-                        <td>Number one.</td>
+                        <td class="RSPhrase">Number one.</td>
                     </tr>
                     <tr>
-                        <td>THIS, is the first one.</td>
+                        <td class="RSPhrase">THIS, is the first one.</td>
                     </tr>
                     <tr>
-                        <td>First button.</td>
+                        <td class="RSPhrase">First button.</td>
                     </tr>
                     <tr>
-                        <td>No no no, press THIS one first.</td>
+                        <td class="RSPhrase">No no no, press THIS one first.</td>
                     </tr>
                     <tr>
-                        <td>No, press THIS button first.</td>
+                        <td class="RSPhrase">No, press THIS button first.</td>
                     </tr>
                     <tr>
-                        <td>ALWAYS press this one first.</td>
+                        <td class="RSPhrase">ALWAYS press this one first.</td>
                     </tr>
                     <tr>
-                        <td>Press this one first, please?</td>
+                        <td class="RSPhrase">Press this one first, please?</td>
                     </tr>
                     <tr>
-                        <td>I’m pretty sure you press this button first.</td>
+                        <td class="RSPhrase">I’m pretty sure you press this button first.</td>
                     </tr>
                     <tr>
-                        <td>Press this one first, will ya?</td>
+                        <td class="RSPhrase">Press this one first, will ya?</td>
                     </tr>
                     <tr>
-                        <td>I’m certain you press this one first.</td>
+                        <td class="RSPhrase">I’m certain you press this one first.</td>
                     </tr>
                     <tr>
-                        <td>I’m certain this is the first one.</td>
+                        <td class="RSPhrase">I’m certain this is the first one.</td>
                     </tr>
                     <tr>
-                        <td>No no, press THIS one first.</td>
+                        <td class="RSPhrase">No no, press THIS one first.</td>
                     </tr>
                     <tr>
-                        <td>I’m pretty sure this is the first one.</td>
+                        <td class="RSPhrase">I’m pretty sure this is the first one.</td>
                     </tr>
                     <tr>
-                        <td>First, press this one.</td>
+                        <td class="RSPhrase">First, press this one.</td>
                     </tr>
                     <tr>
-                        <td>Don’t press this one.</td>
+                        <td class="RSPhrase">Don’t press this one.</td>
                     </tr>
                     <tr>
-                        <td>Press this one.</td>
+                        <td class="RSPhrase">Press this one.</td>
                     </tr>
                 </table>
             </div>

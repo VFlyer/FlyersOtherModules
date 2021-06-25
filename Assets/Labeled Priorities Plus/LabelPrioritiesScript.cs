@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,6 +10,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
 	public KMBombModule modSelf;
 	public KMSelectable[] phrasesSelectable;
 	public KMAudio mAudio;
+	public KMRuleSeedable ruleSeed;
 	public TextMesh[] phraseDisplays;
 
 	string[] possibleQuotes = { "Press this button first.",
@@ -66,6 +68,28 @@ public class LabelPrioritiesScript : MonoBehaviour {
 	static int modIDCnt;
 	int modID;
 	int[] displayPhraseIdxes;
+	int[] ruleSeedIDxBase;
+	void HandleRuleSeed()
+    {
+		var baseList = Enumerable.Range(0, possibleQuotes.Length);
+		if (ruleSeed == null)
+        {
+			ruleSeedIDxBase = baseList.ToArray();
+			Debug.LogFormat("[Label Priorities #{0}] Rule seed handler does not exist. Generating default seed...", modID);
+		}
+		else
+        {
+			var curRandomizer = ruleSeed.GetRNG();
+			ruleSeedIDxBase = curRandomizer.Seed == 1 ? baseList.ToArray() : curRandomizer.ShuffleFisherYates(baseList.ToArray());
+			Debug.LogFormat("[Label Priorities #{0}] Rule seed generated with a seed of {1}", modID, curRandomizer.Seed);
+		}
+		Debug.LogFormat("<Label Priorities #{0}> Arranged phrases from top to bottom:", modID);
+		for (int x = 0; x < ruleSeedIDxBase.Length; x++)
+        {
+			Debug.LogFormat("<Label Priorities #{0}> {1}: {2}", modID, x + 1, possibleQuotes[ruleSeedIDxBase[x]]);
+		}
+    }
+
 	// Use this for initialization
 	void Start () {
 		modID = ++modIDCnt;
@@ -82,7 +106,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
 				return false;
 			};
 		}
-		
+		HandleRuleSeed();
 		modSelf.OnActivate += CalculateSolution;
 		for (var x = 0; x < phraseDisplays.Length; x++)
 		{
@@ -92,6 +116,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
 	void ProcessInput(int curIdx)
     {
 		mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, phrasesSelectable[curIdx].transform);
+		phrasesSelectable[curIdx].AddInteractionPunch(0.2f);
 		if (!currentInputs.Contains(curIdx))
         {
 			phraseDisplays[curIdx].color = Color.yellow;
@@ -145,13 +170,13 @@ public class LabelPrioritiesScript : MonoBehaviour {
     {
         correctInputs.Clear();
         currentInputs.Clear();
-        displayPhraseIdxes = Enumerable.Range(0, possibleQuotes.Length).ToArray().Shuffle().Take(4).ToArray();
+        displayPhraseIdxes = Enumerable.Range(0, ruleSeedIDxBase.Length).ToArray().Shuffle().Take(4).ToArray();
         for (var x = 0; x < phraseDisplays.Length; x++)
         {
-            phraseDisplays[x].text = possibleQuotes[displayPhraseIdxes[x]];
+            phraseDisplays[x].text = possibleQuotes[ruleSeedIDxBase[displayPhraseIdxes[x]]];
             phraseDisplays[x].color = Color.white;
         }
-        correctInputs.AddRange(Enumerable.Range(0, 4).OrderBy(a => displayPhraseIdxes.ElementAtOrDefault(a)).Take(3));
+		correctInputs.AddRange(Enumerable.Range(0, 4).OrderBy(a => Array.IndexOf(ruleSeedIDxBase, displayPhraseIdxes[a])).Take(3));
 
         Debug.LogFormat("[Label Priorities #{0}] The buttons are now showing the following phrases from top to bottom:", modID);
         for (var x = 0; x < displayPhraseIdxes.Length; x++)
@@ -192,8 +217,6 @@ public class LabelPrioritiesScript : MonoBehaviour {
 		if (pressCmd.Success)
 		{
 			string[] pressStr = pressCmd.Value.Split();
-			bool requireDelay = true;
-			float delayAmount = 0.1f;
 			List<KMSelectable> screenPresses = new List<KMSelectable>();
 			for (int x = 1; x < pressStr.Length; x++)
 			{
@@ -227,17 +250,8 @@ public class LabelPrioritiesScript : MonoBehaviour {
 			{
 				yield return null;
 				screenPresses[x].OnInteract();
-				if (moduleSolved)
-				{
-					yield break;
-				}
-				else if (!interactable)
-				{
-					//Debug.LogFormat("<Labeled Priorities Plus #{0}> TP Debug: Interrupting TP command due to specific modifier after {1} press(es).", modID, x + 1);
-					yield break;
-				}
-				else if (requireDelay)
-					yield return string.Format("trywaitcancel {0} Your button press has been canceled after {1} press{2}.", delayAmount, x + 1, x == 0 ? "" : "es");
+				if (moduleSolved || !interactable) yield break;
+				yield return new WaitForSeconds(0.1f);
 			}
 		}
 	}
