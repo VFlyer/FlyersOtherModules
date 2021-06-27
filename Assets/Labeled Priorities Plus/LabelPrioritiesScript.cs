@@ -10,7 +10,6 @@ public class LabelPrioritiesScript : MonoBehaviour {
 	public KMBombModule modSelf;
 	public KMSelectable[] phrasesSelectable;
 	public KMAudio mAudio;
-	public KMRuleSeedable ruleSeed;
 	public TextMesh[] phraseDisplays;
 
 	string[] possibleQuotes = { "Press this button first.",
@@ -68,6 +67,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
 	static int modIDCnt;
 	int modID;
 	int[] displayPhraseIdxes;
+	/*
 	int[] ruleSeedIDxBase;
 	void HandleRuleSeed()
     {
@@ -89,7 +89,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
 			Debug.LogFormat("<Label Priorities #{0}> {1}: {2}", modID, x + 1, possibleQuotes[ruleSeedIDxBase[x]]);
 		}
     }
-
+	*/
 	// Use this for initialization
 	void Start () {
 		modID = ++modIDCnt;
@@ -106,7 +106,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
 				return false;
 			};
 		}
-		HandleRuleSeed();
+		//HandleRuleSeed();
 		modSelf.OnActivate += CalculateSolution;
 		for (var x = 0; x < phraseDisplays.Length; x++)
 		{
@@ -170,13 +170,13 @@ public class LabelPrioritiesScript : MonoBehaviour {
     {
         correctInputs.Clear();
         currentInputs.Clear();
-        displayPhraseIdxes = Enumerable.Range(0, ruleSeedIDxBase.Length).ToArray().Shuffle().Take(4).ToArray();
+        displayPhraseIdxes = Enumerable.Range(0, possibleQuotes.Length).ToArray().Shuffle().Take(4).ToArray();
         for (var x = 0; x < phraseDisplays.Length; x++)
         {
-            phraseDisplays[x].text = possibleQuotes[ruleSeedIDxBase[displayPhraseIdxes[x]]];
+            phraseDisplays[x].text = possibleQuotes[displayPhraseIdxes[x]];
             phraseDisplays[x].color = Color.white;
         }
-		correctInputs.AddRange(Enumerable.Range(0, 4).OrderBy(a => Array.IndexOf(ruleSeedIDxBase, displayPhraseIdxes[a])).Take(3));
+		correctInputs.AddRange(Enumerable.Range(0, 4).OrderBy(a => displayPhraseIdxes[a]).Take(3));
 
         Debug.LogFormat("[Label Priorities #{0}] The buttons are now showing the following phrases from top to bottom:", modID);
         for (var x = 0; x < displayPhraseIdxes.Length; x++)

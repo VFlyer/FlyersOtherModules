@@ -56,8 +56,9 @@ public class SimonSemibossHandler : MonoBehaviour {
 		catch
 		{
 			Debug.LogFormat("<SimonSettings> Settings do not work as intended! using default settings.");
-			maxFlashesAllowed = 20;
+			maxFlashesAllowed = 40;
 		}
+		Debug.LogFormat("<SimonSettings> Max flashes allowed: {0}", maxFlashesAllowed < 10 ? "unlimited" : maxFlashesAllowed.ToString());
 	}
 	IEnumerator FlashButton(int idx)
 	{
@@ -385,7 +386,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 		Debug.LogFormat("[Simon #{0}]: Simon has started paniking at {1} solve(s).", curmodID, solveCountUponGeneration);
 		if (solveCountUponGeneration > 0)
 		{
-			for (int x = 0; x < solveCountUponGeneration * 2 && (possiblePressIdx.Count() < maxFlashesAllowed || maxFlashesAllowed < 0); x++)
+			for (int x = 0; x < solveCountUponGeneration * 2 && (possiblePressIdx.Count() < maxFlashesAllowed || maxFlashesAllowed < 10); x++)
 			{
 				possiblePressIdx.Add(uernd.Range(0, 8));
 			}
@@ -393,7 +394,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 
 			isPaniking = true;
 			//solveCountActivation = bombInfo.GetSolvedModuleNames().Count(a => !ignoredModuleNames.Contains(a));
-			flashingSequence = FlashSequenceQuickly();
+			flashingSequence = FlashSequenceQuickly(3);
 			StartCoroutine(flashingSequence);
 		}
 		else
@@ -484,7 +485,7 @@ public class SimonSemibossHandler : MonoBehaviour {
         {
 			if (!mashToSolve)
             {
-				yield return string.Format("antitroll Mashing seems pretty useless if Simon is not paniking.");
+				yield return string.Format("antitroll Mashing seems pretty useless for this I don't trust it.");
 			}
 			var pressesDone = 0;
 			hasStruck = false;
@@ -499,7 +500,7 @@ public class SimonSemibossHandler : MonoBehaviour {
         }
 
 		if (cmd.ToLowerInvariant().StartsWith("press "))
-			cmd = cmd.Substring(6);
+			cmd = cmd.Substring(5).Trim();
 		string validSets = "12345678";
 		List<KMSelectable> allPresses = new List<KMSelectable>();
 		foreach (string cmdSet in cmd.Split())

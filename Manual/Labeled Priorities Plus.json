@@ -1,11 +1,12 @@
 {
+  "Author": "VFlyer",
   "Compatibility": "Compatible",
   "Contributors": {
     "Developer": [ "VFlyer" ],
-    "Manual": [ "Kusane" ]
+    "Twitch Plays": [ "VFlyer" ]
   },
   "DefuserDifficulty": "Medium",
-  "Description": "Determine what variant Labeled Priorities is by examining either the displays or the status light position. Use the instructions for that given variant to disarm the module.",
+  "Description": "Determine what variant Labeled Priorities is by examining either the displays or the status light position. Use the instructions for that given variant to disarm the module. Tags: labels, four-labels",
   "ExpertDifficulty": "Medium",
   "ModuleID": "labeledPrioritiesPlus",
   "Name": "Labeled Priorities Plus",
@@ -14,5 +15,6 @@
   "SortKey": "LABELEDPRIORITIESPLUS",
   "SourceUrl": "https://github.com/VFlyer/FlyersOtherModules",
   "SteamID": "1940164898",
+  "Symbol": "Lpp",
   "Type": "Regular"
 }

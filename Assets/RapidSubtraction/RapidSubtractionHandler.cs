@@ -8,7 +8,7 @@ public class RapidSubtractionHandler : MonoBehaviour {
 	public KMSelectable clrButtonSelectable;
 	public KMSelectable subButtonSelectable;
 	public KMNeedyModule needyHandler;
-	public ProgressBar3Part progressHandler;
+	public MeshRenderer[] progressRenderers;
 	public KMBombInfo bombInfo;
 	public KMAudio audioHandler;
 
@@ -18,7 +18,7 @@ public class RapidSubtractionHandler : MonoBehaviour {
 	int curModID;
 	int[] streakValues = new int[4];
 
-	int currentValue, valueToSubtract, digitsHidden = 0;
+	int currentValue, valueToSubtract, digitsHidden = 0, curStreak = 0;
 	bool isActivated, forceDisable;
 
 	float[] streakNeedyActivateDelayMin = { 45f, 75f, 105f, 135f };
@@ -26,6 +26,7 @@ public class RapidSubtractionHandler : MonoBehaviour {
 
 	string[] debugPositionalNums = { "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th" };
 	int debugValInput = 0;
+	IEnumerator revealAnim;
 	// Use this for initialization
 	void Start()
 	{
@@ -55,10 +56,11 @@ public class RapidSubtractionHandler : MonoBehaviour {
 				else
 				{
 					float timeLeft = needyHandler.GetNeedyTimeRemaining();
-					if (timeLeft - 5 > 0.5f)
+					if (timeLeft - 5 > 0.5f && digitsHidden > 0)
 					{
 						needyHandler.SetNeedyTimeRemaining(timeLeft - 5f);
-						StartCoroutine(HandleRerevealDelay(digitsHidden * 1));
+						revealAnim = HandleRerevealDelay(digitsHidden * 1);
+						StartCoroutine(revealAnim);
 					}
 				}
 
@@ -116,16 +118,16 @@ public class RapidSubtractionHandler : MonoBehaviour {
 				return;
 			}
 			digitsHidden = 0;
-			valueToSubtract = streakValues[progressHandler.CurrentProgress()];
+			valueToSubtract = curStreak > 3 ? streakValues.Last() : streakValues[curStreak];
 			currentValue = Random.Range(85, 100);
-			QuickLog(string.Format("Starting Value: {0}",currentValue));
+			QuickLog(string.Format("Starting Value: {0}", currentValue));
 			List<int> debugValues = new List<int>();
 			for (int logValue = currentValue - valueToSubtract; logValue > 0; logValue -= valueToSubtract)
 			{
 				debugValues.Add(logValue);
 				if (logValue < 10) break;
 			}
-			QuickLog(string.Format("Answers to submit at {1} streak: [ {0} ]", debugValues.Join(", "), progressHandler.CurrentProgress() >= 3 ? "3+" : progressHandler.CurrentProgress().ToString()));
+			QuickLog(string.Format("Answers to submit at {1} streak: [ {0} ]", debugValues.Join(", "), curStreak >= 3 ? "3+" : curStreak.ToString()));
 			isActivated = true;
 			if (TwitchPlaysActive)
 				needyHandler.SetNeedyTimeRemaining(35f);
@@ -141,6 +143,11 @@ public class RapidSubtractionHandler : MonoBehaviour {
 			StopAllCoroutines();
 		};
 		inputText.text = "";
+		for (var x = 0; x < progressRenderers.Length; x++)
+		{
+			progressRenderers[x].material.color = Color.green;
+			progressRenderers[x].enabled = false;
+		}
 	}
 
 	IEnumerator HandleButtonAnim(GameObject gameObject)
@@ -148,19 +155,19 @@ public class RapidSubtractionHandler : MonoBehaviour {
 		for (int x = 0; x < 5; x++)
 		{
 			gameObject.transform.localPosition -= new Vector3(0, 0, 0.001f);
-			yield return new WaitForFixedUpdate();
+			yield return new WaitForSeconds(0.01f);
 		}
 		for (int x = 0; x < 5; x++)
 		{
 			gameObject.transform.localPosition += new Vector3(0, 0, 0.001f);
-			yield return new WaitForFixedUpdate();
+			yield return new WaitForSeconds(0.01f);
 		}
 		yield return null;
 	}
 
 	void ModifyDelay()
 	{
-		int streakCount = progressHandler.CurrentProgress();
+		int streakCount = Mathf.Min(curStreak, 3);
 		needyHandler.SetResetDelayTime(streakNeedyActivateDelayMin[streakCount], streakNeedyActivateDelayMax[streakCount]);
 	}
 	void PrepValues()
@@ -190,6 +197,14 @@ public class RapidSubtractionHandler : MonoBehaviour {
 		}
 		QuickLog(string.Format("Values to subtract by for [ 0, 1, 2, 3+ ] streak: [ {0} ]", streakValues.Join(", ")));
 	}
+	void UpdateStreak()
+    {
+		for (var x = 0; x < progressRenderers.Length; x++)
+        {
+			progressRenderers[x].enabled = x < curStreak;
+        }
+    }
+
 
 	IEnumerator HandleRerevealDelay(int lastHiddenDigitCount)
 	{
@@ -204,26 +219,59 @@ public class RapidSubtractionHandler : MonoBehaviour {
 	}
 	void IncreaseStreak()
 	{
-		progressHandler.Increment();
+		curStreak++;
 		isActivated = false;
 		debugValInput = 0;
 		ModifyDelay();
+		UpdateStreak();
 		needyHandler.HandlePass();
 	}
 	void ResetStreak()
 	{
 		needyHandler.HandleStrike();
-		progressHandler.ResetProgress();
+		curStreak = 0;
 		isActivated = false;
 		debugValInput = 0;
-		StopAllCoroutines();
+		if (revealAnim != null)
+			StopCoroutine(revealAnim);
 		ModifyDelay();
+		StartCoroutine(FlashStreak());
 	}
+
+	IEnumerator FlashStreak()
+    {
+		for (var y = 0; y < 5; y++)
+		{
+			for (var x = 0; x < progressRenderers.Length; x++)
+			{
+				progressRenderers[x].material.color = Color.red;
+			}
+			yield return new WaitForSeconds(0.1f);
+			for (var x = 0; x < progressRenderers.Length; x++)
+			{
+				progressRenderers[x].material.color = Color.black;
+			}
+			yield return new WaitForSeconds(0.1f);
+		}
+		for (var x = 0; x < progressRenderers.Length; x++)
+		{
+			progressRenderers[x].material.color = Color.green;
+			progressRenderers[x].enabled = false;
+		}
+	}
+
 	// Update is called once per frame
-	void FixedUpdate () {
-		displayText.text = isActivated ?
-				(digitsHidden > 1 ? Random.Range(0, 10).ToString() : (currentValue/10).ToString()) + (digitsHidden > 0 ? Random.Range(0, 10).ToString()
-				: (currentValue % 10).ToString()) : "";
+	float curDelay = 0f;
+	void Update () {
+		if (curDelay > 0.03f)
+		{
+			displayText.text = isActivated ?
+					(digitsHidden > 1 ? Random.Range(0, 10).ToString() : (currentValue / 10).ToString()) + (digitsHidden > 0 ? Random.Range(0, 10).ToString()
+					: (currentValue % 10).ToString()) : "";
+			curDelay = 0f;
+		}
+		else
+			curDelay += Time.deltaTime;
 	}
 	// TP Handling
 #pragma warning disable IDE0051 // Remove unused private members
@@ -236,7 +284,7 @@ public class RapidSubtractionHandler : MonoBehaviour {
 	void TwitchHandleForcedSolve()
 	{
 		QuickLog("Forcably disabling the needy viva TP Handler.");
-		needyHandler.SetResetDelayTime(float.PositiveInfinity, float.PositiveInfinity);
+		needyHandler.SetResetDelayTime(float.MaxValue, float.MaxValue);
 		needyHandler.HandlePass();
 		needyHandler.OnNeedyDeactivation();
 		forceDisable = true;
@@ -282,8 +330,8 @@ public class RapidSubtractionHandler : MonoBehaviour {
 					yield return new WaitForSeconds(0.05f);
 				}
 				yield return "multiple strikes";
-				if (int.Parse(inputText.text) != currentValue - valueToSubtract)
-					yield return string.Format("strikemessage incorrectly inputting {0} for the {1} input!", inputText.text, debugPositionalNums[debugValInput]);
+				if (int.Parse(cmdParts[x]) != currentValue - valueToSubtract && cmdParts.Length > 2)
+					yield return string.Format("strikemessage incorrectly inputting {0} after {1} input(s) in the TP command provided!", cmdParts[x], x);
 				subButtonSelectable.OnInteract();
 				yield return "end multiple strikes";
 				yield return new WaitForSeconds(0.05f);
