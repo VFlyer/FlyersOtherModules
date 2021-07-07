@@ -134,6 +134,17 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 			{ serialNoDigits.Count(), serialNoDigits.Sum(), bombInfo.GetSerialNumberLetters().Count() },
 		};
 
+		var loggingOffsets = new[] { "C", "G", "Y", "M", "W", "R", };
+		Debug.LogFormat("<Mastermind Restricted Cruel #{0}> Query at {1} results:", loggingID, bombInfo.GetFormattedTime());
+		for (var x = 0; x < modiferTable.GetLength(0); x++)
+        {
+			var toLog = "";
+			for (var y = 0; y < modiferTable.GetLength(1); y++)
+			{
+				toLog += modiferTable[x, y] + " ";
+			}
+			Debug.LogFormat("<Mastermind Restricted Cruel #{0}> {1}: {2}", loggingID, loggingOffsets[x], toLog.Trim());
+		}
 
 		int idx = -1;
 		for (int x = 0; x < allQueries.Count; x++)
@@ -176,9 +187,11 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 			queriesLeft--;
 			// Process correct inputs.
 			int correctColors = 0, correctPosandColors = 0;
+			var debugColorSets = new List<string>();
 			for (int x = 0; x < maxPossible; x++) // Start by filtering out each color separately to determine the states of each
 			{
-				int[] filteredCorrectInputs = correctInputs.Select(a => a == x ? a : -1).ToArray(), filteredCurrentInputs = currentInputs.Select(a => a == x ? a : -1).ToArray();
+				int[] filteredCorrectInputs = correctInputs.Select(a => a == x ? a : -1).ToArray(),
+					filteredCurrentInputs = currentInputs.Select(a => a == x ? a : -1).ToArray();
 				int correctInOnePos = 0;
 				int correctColorOnly = 0;
 				for (int y = 0; y < filteredCorrectInputs.Length; y++) // Check if there the current color in the list matches the position exactly.
@@ -186,16 +199,13 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 					if (filteredCorrectInputs[y] != -1 && filteredCorrectInputs[y] == filteredCurrentInputs[y])
 						correctInOnePos++;
 				}
-				if (filteredCurrentInputs.Count(a => a == x) >= filteredCorrectInputs.Count(a => a == x)) // Then check if there are more of 1 color than another color.
-				{
-					correctColorOnly = filteredCorrectInputs.Count(a => a == x) - correctInOnePos;
-
-				}
+				correctColorOnly = Mathf.Max(filteredCorrectInputs.Count(a => a == x) - correctInOnePos, 0);
+				
 				correctColors += correctColorOnly;
 				correctPosandColors += correctInOnePos;
-				//Debug.LogFormat("{0},{1}", correctInOnePos, correctColorOnly);
+				debugColorSets.Add(string.Format("{2} only: J = {0}, O = {1}", correctInOnePos, correctColorOnly, colorblindLetters[x]));
 			}
-
+			Debug.LogFormat("<Mastermind Restricted Cruel #{0}> ({1})", loggingID, debugColorSets.Join("),("));
 			// Modify the result of the query
 			
 			int selectedIdxL = Enumerable.Range(0, idxLeftColors.Length).PickRandom(),

@@ -3134,7 +3134,7 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1869556394298594}
-  m_Text: Variant of an Original
+  m_Text: A Twist of Label Priorities
   m_OffsetZ: 0
   m_CharacterSize: 0.001
   m_LineSpacing: 1

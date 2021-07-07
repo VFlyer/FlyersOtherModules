@@ -11,8 +11,9 @@ public class RobitProgrammingCore : MonoBehaviour {
     readonly string[] directionReference = { "Up", "Down", "Right", "Left" };
 
 	public Color[] highlightColors, quadrantColors;
-	public string[] quadrantColorNames;
+	public string[] quadrantColorNames, abbreviatedColorNames;
 	public KMAudio mAudio;
+	public KMColorblindMode colorblindMode;
 	public GridDisplayer gridToDisplay;
 	public KMBombModule modSelf;
 	public KMBombInfo bombInfo;
@@ -22,6 +23,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 	public TextMesh bitText, delayCurText, bitMarkerText;
 
 	public MeshRenderer[] quadrantRenderers, quadrantCornerMarkers;
+	public TextMesh[] colorblindTextQuadrants;
 
 	private static int moduleIDCnt = 1;
 
@@ -32,10 +34,21 @@ public class RobitProgrammingCore : MonoBehaviour {
 	private Maze generatedMaze;
 	private bool mazeDetermined = false, lockMazeGen = false, isRobitRunning = false,
 		interactable = false, isHoldingBackspace = false,
-		isHoldingWhileInteractable = false;
+		isHoldingWhileInteractable = false, colorblindActive = false;
 	string binaryString = "";
 	float backspaceTimeHeld = 0f;
 	List<int> collectedCorners = new List<int>();
+	void Awake()
+    {
+        try
+        {
+			colorblindActive = colorblindMode.ColorblindModeActive;
+        }
+		catch
+        {
+			colorblindActive = false;
+        }
+    }
 	// Use this for initialization
 	void Start () {
 		moduleID = moduleIDCnt++;
@@ -211,11 +224,19 @@ public class RobitProgrammingCore : MonoBehaviour {
         for (var x = 0; x < quadrantCornerMarkers.Length; x++)
         {
 			quadrantCornerMarkers[x].material.color = quadrantColors[quadrantQuirks[x]];
-        }		
+        }
         for (var x = 0; x < quadrantRenderers.Length; x++)
         {
 			quadrantRenderers[x].material.color = quadrantColors[quadrantQuirks[x]] * 0.5f;
-        }			
+        }
+		UpdateColorblind();
+	}
+	void UpdateColorblind()
+    {
+		for (var x = 0; x < colorblindTextQuadrants.Length; x++)
+		{
+			colorblindTextQuadrants[x].text = colorblindActive ? abbreviatedColorNames[quadrantQuirks[x]] : "";
+		}
 	}
 	void QuickLog(string value)
     {
@@ -912,10 +933,13 @@ public class RobitProgrammingCore : MonoBehaviour {
 		{
 			quadrantCornerMarkers[idx].transform.localScale = Vector3.one * 0.5f * x;
 			quadrantRenderers[idx].material.color = lastColor * x;
+			colorblindTextQuadrants[idx].color = Color.white * x;
 			yield return null;
 		}
 		quadrantCornerMarkers[idx].transform.localScale = Vector3.zero;
 		quadrantRenderers[idx].enabled = false;
+		colorblindTextQuadrants[idx].color = Color.clear;
+		colorblindTextQuadrants[idx].text = "";
 	}
 	IEnumerator HandleSecondarySection()
     {
@@ -1004,25 +1028,22 @@ public class RobitProgrammingCore : MonoBehaviour {
     {
 		modSelf.HandlePass();
 		mAudio.PlaySoundAtTransform("hiss", transform);
+		yield return null;
 		StartCoroutine(AnimateClearDisplay());
-        for (float x = 0; x < 1f; x += Time.deltaTime)
+        foreach (RowRenderers renderers in gridToDisplay.rowRenderers) 
         {
-			yield return null;
-            foreach (RowRenderers renderers in gridToDisplay.rowRenderers)
+            for (float x = 0; x < 1f; x += Time.deltaTime * 9)
             {
                 renderers.transform.localPosition += Vector3.down * Time.deltaTime;
-            }
-        }
-		foreach (RowRenderers renderers in gridToDisplay.rowRenderers)
-		{
-            renderers.transform.localPosition = Vector3.down;
+				yield return null;
+			}
+			renderers.transform.localPosition = Vector3.down;
 			for (var x = 0; x < renderers.canRender.Length; x++)
 			{
 				renderers.canRender[x] = false;
 				renderers.wallRenderers[x].enabled = false;
 			}
 		}
-
 	}
 	void Update()
     {
@@ -1040,6 +1061,7 @@ public class RobitProgrammingCore : MonoBehaviour {
     {
 		interactable = false;
 		StartCoroutine(HandleSolveAnim());
+		if (!lockMazeGen) StartCoroutine(UnflipDelayModifier());
 		if (!collectedCorners.Contains(0)) StartCoroutine(DisappearQuadrantSection(0));
 		if (!collectedCorners.Contains(1)) StartCoroutine(DisappearQuadrantSection(1));
 		if (!collectedCorners.Contains(2)) StartCoroutine(DisappearQuadrantSection(2));
@@ -1048,6 +1070,13 @@ public class RobitProgrammingCore : MonoBehaviour {
 
 	IEnumerator ProcessTwitchCommand(string cmd)
     {
+		Match cmdColorblind = Regex.Match(cmd, @"^colou?rblind$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		if (cmdColorblind.Success)
+        {
+			yield return null;
+			colorblindActive = !colorblindActive;
+			UpdateColorblind();
+        }
 		if (!interactable)
         {
 			yield return "sendtochaterror The module is not allowing certain commands at this moment. Wait a bit until the module is able to accept these commands.";

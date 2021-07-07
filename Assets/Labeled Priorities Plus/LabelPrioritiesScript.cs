@@ -126,7 +126,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
 				Debug.LogFormat("[Label Priorities #{0}] The following button presses from top to bottom were made, where 1 is the top button: {1}", modID, currentInputs.Select(a => a + 1).Join());
 				if (currentInputs.SequenceEqual(correctInputs) || correctInputs.Count <= 0)
                 {
-					Debug.LogFormat("[Label Priorities #{0}] That is correct. Module disarmed.", modID);
+					Debug.LogFormat("[Label Priorities #{0}] That sequence is correct. Module disarmed.", modID);
 					moduleSolved = true;
 					mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, phrasesSelectable[curIdx].transform);
 					modSelf.HandlePass();
@@ -134,7 +134,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
 				}
 				else
                 {
-					Debug.LogFormat("[Label Priorities #{0}] That is incorrect. Starting over...", modID);
+					Debug.LogFormat("[Label Priorities #{0}] That sequence is incorrect. Starting over...", modID);
 					interactable = false;
 					modSelf.HandleStrike();
 					StartCoroutine(AnimateRestartAnim());
@@ -145,27 +145,66 @@ public class LabelPrioritiesScript : MonoBehaviour {
 	IEnumerator AnimateSolveAnim()
 	{
 		yield return null;
-		var textsToDisplay = new[] { "THAT IS", "CORRECT", "MODULE", "DISARMED" };
+		var textsToDisplay = new[] { "SEQUENCE", "CORRECT", "MODULE", "DISARMED" };
 		for (var x = 0; x < phraseDisplays.Length; x++)
         {
 			yield return new WaitForSeconds(0.2f);
 			phraseDisplays[x].color = Color.green;
 			phraseDisplays[x].text = textsToDisplay[x];
         }
+		for (float y = 1f; y > 0; y -= Time.deltaTime)
+		{
+			for (var x = 0; x < phraseDisplays.Length; x++)
+			{
+				phraseDisplays[x].color = Color.green * y;
+			}
+			yield return null;
+		}
+		for (var x = 0; x < phraseDisplays.Length; x++)
+		{
+			phraseDisplays[x].color = Color.clear;
+		}
 	}
 	IEnumerator AnimateRestartAnim()
     {
 		yield return null;
-		var textsToDisplay = new[] { "THAT IS", "INCORRECT", "STRIKE", "START OVER" };
+		var textsToDisplay = new[] { "SEQUENCE", "INCORRECT", "STRIKE", "START OVER" };
 		for (var x = 0; x < phraseDisplays.Length; x++)
 		{
 			yield return new WaitForSeconds(0.2f);
 			phraseDisplays[x].color = Color.red;
 			phraseDisplays[x].text = textsToDisplay[x];
 		}
-		yield return new WaitForSeconds(0.5f);
+        for (float y = 1f; y > 0; y -= Time.deltaTime)
+		{
+			for (var x = 0; x < phraseDisplays.Length; x++)
+			{
+				phraseDisplays[x].color = Color.red * y;
+			}
+			yield return null;
+		}
 		CalculateSolution();
 	}
+	IEnumerator HandleRevealAnim()
+    {
+		for (var x = 0; x < phraseDisplays.Length; x++)
+		{
+			phraseDisplays[x].color = Color.clear;
+		}
+		for (var x = 0; x < phraseDisplays.Length; x++)
+        {
+			for (float y = 0; y < 1f; y += Time.deltaTime * 4)
+			{
+				phraseDisplays[x].color = Color.white * y;
+				yield return null;
+			}
+        }
+		for (var x = 0; x < phraseDisplays.Length; x++)
+		{
+			phraseDisplays[x].color = Color.white;
+		}
+	}
+
     void CalculateSolution()
     {
         correctInputs.Clear();
@@ -174,7 +213,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
         for (var x = 0; x < phraseDisplays.Length; x++)
         {
             phraseDisplays[x].text = possibleQuotes[displayPhraseIdxes[x]];
-            phraseDisplays[x].color = Color.white;
+            //phraseDisplays[x].color = Color.white;
         }
 		correctInputs.AddRange(Enumerable.Range(0, 4).OrderBy(a => displayPhraseIdxes[a]).Take(3));
 
@@ -185,6 +224,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
         }
         Debug.LogFormat("[Label Priorities #{0}] Have the following button presses from top to bottom where 1 is the top button: {1}", modID, correctInputs.Select(a => a + 1).Join());
         interactable = true;
+		StartCoroutine(HandleRevealAnim());
     }
 
 	IEnumerator TwitchHandleForcedSolve()

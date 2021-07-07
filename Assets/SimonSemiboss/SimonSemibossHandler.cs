@@ -476,7 +476,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 	}
 
 #pragma warning disable IDE0051 // Remove unused private members
-    readonly string TwitchHelpMessage = "To press the buttons in reading order use: \"!{0} press 12345678\" Numbers may be spaced out in the command and \"press\" is optional. Mash the buttons with \"!{0} mash\".";
+    readonly string TwitchHelpMessage = "To press the buttons in reading order use: \"!{0} press 12345678\" Numbers may be spaced out in the command; \"press\" is optional. Mash the buttons with \"!{0} mash\".";
 #pragma warning restore IDE0051 // Remove unused private members
 
     IEnumerator ProcessTwitchCommand(string cmd)

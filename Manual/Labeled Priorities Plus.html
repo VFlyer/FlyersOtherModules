@@ -100,8 +100,8 @@
 		"Press this button first, will you?"
         ];
         var idxList = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59];
-        var lowToHighPriority = false;
-        var reverseReMisLabeledParts = false;
+        var lowToHighPriorityLabeled = false;
+        var lowToHighPriorityUnLabeled = false;
         function UpdateRS()
         {
             var allRSPhrases = document.getElementsByClassName("rsPhrases");
@@ -110,19 +110,17 @@
                     allRSPhrases[x].innerHTML = allPossiblePhrases[idxList[x]];
                 }
 			
-			if (lowToHighPriority)
+			if (lowToHighPriorityLabeled)
 				{
 					var allRSPriorities = document.getElementsByClassName("rsPriorities");
 					for (var x = 0; x < allRSPriorities.length;x++)
                 	{
-                    	allRSPriorities[x].innerText = "lowest";
-						allRSPriorities[x].style.fontWeight = "bold";
+                    	allRSPriorities[x].innerText = allRSPriorities[x].innerText.replace("highest","lowest");
                 	}
 					var allRSPrioritiesINV = document.getElementsByClassName("rsPrioritiesINV");
 					for (var x = 0; x < allRSPrioritiesINV.length;x++)
                 	{
                     	allRSPrioritiesINV[x].innerText = "highest";
-						allRSPrioritiesINV[x].style.fontWeight = "bold";
                 	}
 				}
 			else
@@ -130,12 +128,12 @@
 					var allRSPriorities = document.getElementsByClassName("rsPriorities");
 					for (var x = 0; x < allRSPriorities.length;x++)
                 	{
-                    	allRSPriorities[x].style.fontWeight = "bold";
+						allRSPriorities[x].innerText.replace("lowest","highest");
                 	}
 					var allRSPrioritiesINV = document.getElementsByClassName("rsPrioritiesINV");
 					for (var x = 0; x < allRSPrioritiesINV.length;x++)
                 	{
-                    	allRSPrioritiesINV[x].style.fontWeight = "bold";
+						allRSPrioritiesINV[x].innerText.replace("highest","lowest");
                 	}
 				}
         }
@@ -149,8 +147,8 @@
         {
 			idxList = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59];
             rnd.shuffleFisherYates(idxList);
-            lowToHighPriority = rnd.next(0, 2) != 1;
-            reverseReMisLabeledParts = rnd.next(0, 2) != 1;
+            lowToHighPriorityLabeled = rnd.next(0, 2) != 1;
+            lowToHighPriorityUnLabeled = rnd.next(0, 2) != 1;
             UpdateRS();
         }
         
@@ -197,7 +195,7 @@
                 <h2>On the Subject of Labeled Priorities</h2>
                 <p class="appendix-reference">Refer to Appendix: Label Priority List for the list of phrases that show up on this module and its variants.</p>
                 <p>If the module is not showing unique phrases on each screen, nor the status light is in the top-right, you may be looking at the wrong module.</p>
-                <p>To disarm the module, examine phrase each screen is displaying with the <strong>The Label Priority List</strong> to determine the order of the screens to press to disarm the module. Press the screen whose phrase is the <span class="rsPriorities">highest</span> priority, then the 2nd <span class="rsPriorities">highest</span>, and then the 2nd <span class="rsPrioritiesINV">lowest</span>. Avoid the remaining screen. The number shown after pressing that screen determines when the defuser selected the screen corresponding to the phrase was previously shown.</p>
+                <p>To disarm the module, examine phrase each screen is displaying with the <strong>The Label Priority List</strong> to determine the order of the screens to press to disarm the module. Press the screen whose phrase is the <span class="seedable rsPriorities">highest</span> priority, then the 2nd <span class="seedable rsPriorities">highest</span>, and then the 2nd <span class="seedable rsPrioritiesINV">lowest</span>. Avoid the remaining screen. The number shown after pressing that screen determines when the defuser selected the screen corresponding to the phrase was previously shown.</p>
 				<p>If you press an incorrect screen in order, the module will strike after 3 numbers have been displayed. This may also cause the module to reset with new phrases on the screens.</p>
             </div>
             <div class="page-footer relative-footer">Page 2 of 7</div>

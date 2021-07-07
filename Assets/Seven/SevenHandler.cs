@@ -943,25 +943,25 @@ public class SevenHandler : MonoBehaviour {
 		}
 		else if (commandLower.RegexMatch(@"^sub(mit)?$"))
 		{
-			yield return "multiple strikes";
 			if (isSubmitting && uncapAll && displayedValues.Count > 8)
 			{
+				yield return "multiple strikes";
+				yield return "sendtochat Was it worth it?";
 				if (segmentsColored.SequenceEqual(segmentsSolution))
                 {
-					yield return "sendtochat Was it worth it?";
 					int pointsToGive = Mathf.FloorToInt((idxOperations.Count - 8) * PPAScaling);
 					if (pointsToGive > 0)
 						yield return "awardpointsonsolve " + (maxPPA >= 0 ? Mathf.Min(maxPPA, pointsToGive).ToString() : pointsToGive.ToString());
 				}
-				else
-				{
-					yield return "sendtochat Uncapped 7's are always the bane. Always.";
-				}
+				yield return null;
+				stageDisplay.OnInteract();
+				yield return segmentsColored.SequenceEqual(segmentsSolution) ? "sendtochat It sure is." : "sendtochat It wasn't. Of course.";
+				yield return "end multiple strikes";
+				yield break;
 			}
 			yield return null;
 			stageDisplay.OnInteract();
 			yield return "solve";
-			yield return "end multiple strikes";
 		}
 		else
 		{
