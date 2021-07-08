@@ -13,23 +13,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: flyerModulesMisc
   title: Flyer's Other Modules
-  description: "A collection of 24 (and possibly growing) modules made by VFlyer with
+  description: "A collection of 25 (and possibly growing) modules made by VFlyer with
     some modules from other ideas.\r\n\r\nMod contains 3x3 Grid, \u2756, Time Accumulation,
     BuzzFizz, Forget It Not, 15 Mystic Lights, Simon Stages, Forget Infinity, Faulty
-    7 Segment Displays, 7\r\n, Rapid Subtraction, Logical Operators, Mastermind Restricted,
-    Even Or Odd, Digital Grid, Venn Diagrams, Numbered Buttons, Hexiom, Collapse\r\n,
+    7 Segment Displays, 7\r, Rapid Subtraction, Logical Operators, Mastermind Restricted,
+    Even Or Odd, Digital Grid, Venn Diagrams, Numbered Buttons, Hexiom, Collapse\r,
     Coprime Checker, Label Priorities, Labeled Priorities Plus, Mastermind Restricted
-    Cruel\r, Robit Programming\nThe following original ideas are by the following
+    Cruel\r, Robit Programming, Simon\nThe following original ideas are by the following
     users in this pack:\r\n3x3 Grid: Lumbud84\r\n\u2756: Mirage Xel\r\nTime Accumulation:
     Kusane\r\nBuzzFizz: Blananas2\r\nForget It Not: RubyBfdi\r\nForget Infinity: Oshisure,
     Ry0001 (Revived by VFlyer to be more suitable)\r\nSimon Stages: Madela\r\nDigital
     Grid: ???\r\nEven Or Odd: BigCrunch\r\nVenn Diagrams: Danny7007\r\nNumbered Buttons:
     Kusane (originally developed by a departed author)\r\nLabel Priorities: Kusane
-    (originally developed by a departed author)\r\n\r\nNon-example assets used: Asset
-    pack from Royal_Flu$h's tutorials, Simon's Stages assets, Divided Squares backing
-    by Timwi, Old FMN model by Hexicube, Mastermind Simple prefab by Eotall, custom
-    dial and chip self-made\r\n, inspired by Bashly's Tangrams chip model\r\n\r\nThe
-    19 Manuals can be found built-in or from these repository links:\r\n[url=https://ktane.timwi.de/HTML/BuzzFizz.html]BuzzFizz[/url]\r\n[url=https://ktane.timwi.de/HTML/3x3%20Grid.html]3x3
+    (originally developed by a departed author)\r\n\rSimon: BigCrunch\n\nNon-example
+    assets used: Asset pack from Royal_Flu$h's tutorials, Simon's Stages assets, Divided
+    Squares backing by Timwi, Old FMN model by Hexicube, Mastermind Simple prefab
+    by Eotall, custom dial and chip self-made\r\n, inspired by Bashly's Tangrams chip
+    model\r\n\r\nThe 25 Manuals can be found built-in or from these repository links:\r\n[url=https://ktane.timwi.de/HTML/BuzzFizz.html]BuzzFizz[/url]\r\n[url=https://ktane.timwi.de/HTML/3x3%20Grid.html]3x3
     Grid[/url]\r\n[url=https://ktane.timwi.de/HTML/Forget%20It%20Not.html]Forget It
     Not[/url]\r\n[url=https://ktane.timwi.de/HTML/%E2%9D%96.html]\u2756[/url]\r\n[url=https://ktane.timwi.de/HTML/Time%20Accumulation.html]Time
     Accumulation[/url]\r\n[url=https://ktane.timwi.de/HTML/15%20Mystic%20Lights.html]15
@@ -44,7 +44,9 @@ MonoBehaviour:
     Buttons[/url]\r\n[url=https://ktane.timwi.de/HTML/Hexiom.html]Hexiom[/url]\r\n[url=https://ktane.timwi.de/HTML/Collapse.html]Collapse[/url]\r\n[url=https://ktane.timwi.de/HTML/Labeled%20Priorities%20Plus.html]Labeled
     Priorities Plus[/url]\r\n[url=https://ktane.timwi.de/HTML/Coprime%20Checker.html]Coprime
     Checker[/url]\r\n[url=https://ktane.timwi.de/HTML/Mastermind%20Restricted%20Cruel.html]Mastermind
-    Restricted Cruel[/url]\r\n"
-  version: 2.0
+    Restricted Cruel[/url]\r\n[url=https://ktane.timwi.de/HTML/Simon.html]Simon[/url]\r\n[url=https://ktane.timwi.de/HTML/Robit%20Programming.html]Robit
+    Programming[/url]\r\n[url=https://ktane.timwi.de/HTML/Label%20Priorities.html]Label
+    Priorities[/url]\r"
+  version: 2.1
   outputFolder: build
-  previewImage: {fileID: 2800000, guid: 9fbe1c81102fc1c47b620efae0555f5f, type: 3}
+  previewImage: {fileID: 2800000, guid: 1ef85429cc456814abc9b3a88838dab4, type: 3}
