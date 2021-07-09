@@ -12,7 +12,8 @@ public class LabelPrioritiesScript : MonoBehaviour {
 	public KMAudio mAudio;
 	public TextMesh[] phraseDisplays;
 
-	string[] possibleQuotes = { "Press this button first.",
+	string[] possibleQuotes = {
+		"Press this button first.",
 		"ALWAYS press this button first.",
 		"You must press this button first.",
 		"You should press this button first.",

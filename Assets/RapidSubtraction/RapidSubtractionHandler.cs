@@ -148,6 +148,7 @@ public class RapidSubtractionHandler : MonoBehaviour {
 			progressRenderers[x].material.color = Color.green;
 			progressRenderers[x].enabled = false;
 		}
+		displayText.text = "";
 	}
 
 	IEnumerator HandleButtonAnim(GameObject gameObject)

@@ -235,11 +235,6 @@ public class LogicalOperatorsHandler : MonoBehaviour {
 		isAnimating = false;
 		yield return null;
     }
-
-	// Update is called once per frame
-	void Update () {
-
-	}
 	// TP Section Begins Here
 	IEnumerator TwitchHandleForcedSolve()
     {

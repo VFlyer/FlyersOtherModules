@@ -196,10 +196,15 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 				int correctColorOnly = 0;
 				for (int y = 0; y < filteredCorrectInputs.Length; y++) // Check if there the current color in the list matches the position exactly.
 				{
-					if (filteredCorrectInputs[y] != -1 && filteredCorrectInputs[y] == filteredCurrentInputs[y])
+					if (filteredCurrentInputs[y] != -1 && filteredCorrectInputs[y] != -1 && filteredCorrectInputs[y] == filteredCurrentInputs[y])
 						correctInOnePos++;
 				}
-				correctColorOnly = Mathf.Max(filteredCorrectInputs.Count(a => a == x) - correctInOnePos, 0);
+				if (filteredCurrentInputs.Count(a => a == x) >= filteredCorrectInputs.Count(a => a == x)) // Then check if there are more of 1 color than another color.
+				{
+					correctColorOnly = filteredCorrectInputs.Count(a => a == x) - correctInOnePos;
+
+				}
+				//correctColorOnly = Mathf.Max(filteredCorrectInputs.Count(a => a == x) - correctInOnePos, 0);
 				
 				correctColors += correctColorOnly;
 				correctPosandColors += correctInOnePos;
