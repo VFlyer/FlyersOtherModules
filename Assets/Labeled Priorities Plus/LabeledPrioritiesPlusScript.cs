@@ -115,12 +115,13 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 		}
 		catch
 		{
-			Debug.LogFormat("<Labeled Priorities Plus> Settings do not work as intended! Using default settings instead.", modID);
+			Debug.LogFormat("<Labeled Priorities Plus> Settings do not work as intended! Using default settings instead.");
 			selectedVariantIdxes.AddRange(new[] { 0, 1, 2 });
 			selectedDynamicScores = new[] { 5, 5, 9, 9 };
 			
 		}
-    }
+		Debug.LogFormat("<Labeled Priorities Plus> Rollable Variants: {0}", selectedVariantIdxes.Select(a => new[] { "Labeled", "Unlabeled", "Relabeled", "Mislabeled" }.ElementAtOrDefault(a).Join(",")));
+	}
 	void HandleRuleSeed()
 	{
 		string[] currentQuotes = allPossibleQuotes.ToArray();

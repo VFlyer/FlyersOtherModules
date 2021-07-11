@@ -190,22 +190,21 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 			var debugColorSets = new List<string>();
 			for (int x = 0; x < maxPossible; x++) // Start by filtering out each color separately to determine the states of each
 			{
-				int[] filteredCorrectInputs = correctInputs.Select(a => a == x ? a : -1).ToArray(),
-					filteredCurrentInputs = currentInputs.Select(a => a == x ? a : -1).ToArray();
+				var filteredCorrectInputs = correctInputs.Select(a => a == x ? a : -1);
+				var filteredCurrentInputs = currentInputs.Select(a => a == x ? a : -1);
+				var filteredWrongIdxes = Enumerable.Range(0, selectableRenderer.Length).Where(a => filteredCorrectInputs.ElementAt(a) == -1);
 				int correctInOnePos = 0;
 				int correctColorOnly = 0;
-				for (int y = 0; y < filteredCorrectInputs.Length; y++) // Check if there the current color in the list matches the position exactly.
-				{
-					if (filteredCurrentInputs[y] != -1 && filteredCorrectInputs[y] != -1 && filteredCorrectInputs[y] == filteredCurrentInputs[y])
-						correctInOnePos++;
-				}
-				if (filteredCurrentInputs.Count(a => a == x) >= filteredCorrectInputs.Count(a => a == x)) // Then check if there are more of 1 color than another color.
-				{
-					correctColorOnly = filteredCorrectInputs.Count(a => a == x) - correctInOnePos;
-
-				}
-				//correctColorOnly = Mathf.Max(filteredCorrectInputs.Count(a => a == x) - correctInOnePos, 0);
-				
+				correctInOnePos = Enumerable.Range(0, selectableRenderer.Length)
+					.Count(y => filteredCurrentInputs.ElementAt(y) != -1 && filteredCorrectInputs.ElementAt(y) != -1
+						&& filteredCorrectInputs.ElementAt(y) == filteredCurrentInputs.ElementAt(y));
+				// Count the number of correct positions for that correct color.
+				// If both are not -1 and they are equal in value, add 1 for that occurance.
+				// Compacted from a for loop
+				correctColorOnly = Mathf.Min(filteredWrongIdxes.Count(a => filteredCurrentInputs.ElementAt(a) == x),
+					filteredCorrectInputs.Count(a => a != -1) - correctInOnePos);
+				// Count the number of correct colors in the wrong positions.
+				// This is done by counting the number of colors in their wrong positions, and then capping it based on how many correct colors there should be, minus how many that are actually in the correct positions.
 				correctColors += correctColorOnly;
 				correctPosandColors += correctInOnePos;
 				debugColorSets.Add(string.Format("{2} only: J = {0}, O = {1}", correctInOnePos, correctColorOnly, colorblindLetters[x]));
