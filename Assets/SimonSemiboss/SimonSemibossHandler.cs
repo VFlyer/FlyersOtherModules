@@ -66,6 +66,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 		buttonLights[idx].enabled = true;
 		buttonRenderers[idx].material = selectionMats[1];
 		buttonRenderers[idx].material.color = colorList[idxColorList[idx]];
+		mAudio.PlaySoundAtTransform("beep", buttonRenderers[idx].transform);
 		yield return new WaitForSeconds(0.4f);
 		buttonLights[idx].enabled = false;
 		buttonRenderers[idx].material = selectionMats[0];
@@ -95,6 +96,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 				buttonLights[idx].enabled = true;
 				buttonRenderers[idx].material = selectionMats[1];
 				buttonRenderers[idx].material.color = colorList[idxColorList[idx]];
+				mAudio.PlaySoundAtTransform("beep", buttonRenderers[idx].transform);
 				yield return new WaitForSeconds(0.25f);
 				buttonLights[idx].enabled = false;
 				buttonRenderers[idx].material = selectionMats[0];
@@ -403,6 +405,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 			isPaniking = true;
 			Debug.LogFormat("[Simon #{0}]: Simon has started paniking! But there are no flashes! You should just mash the buttons until it solves.", curmodID);
 		}
+		mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.NeedyWarning, transform);
 		StartCoroutine(PanicAnim());
 	}
 

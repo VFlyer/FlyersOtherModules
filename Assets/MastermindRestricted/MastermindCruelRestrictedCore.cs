@@ -101,7 +101,7 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 		{
 			correctInputs[x] = uernd.Range(0, maxPossible);
 		}
-		QuickLog(string.Format("The correct answer is now [{0}] Get this within {1} distant queries to disarm the module.", correctInputs.Select(a => colorblindLetters[a]).Join(), queriesLeft));
+		QuickLog(string.Format("The correct answer is now [{0}] Get this within {1} distinct queries to disarm the module.", correctInputs.Select(a => colorblindLetters[a]).Join(), queriesLeft));
 		UpdateCurrentDisplay();
 		correctBothDisplay.text = "";
 		correctColorDisplay.text = "";

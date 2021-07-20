@@ -35,7 +35,7 @@ public class ForgetInfinity : MonoBehaviour {
     private int curModID, earliestSolveCountOrgan = -1;
 
     private float PPAScaling;
-    private ForgetInfintySettings FIConfig = new ForgetInfintySettings();
+    private FlyersOtherSettings FIConfig = new FlyersOtherSettings();
     public KMModSettings modSettings;
 	// Use this for initialization
 	void Awake() {
@@ -81,15 +81,14 @@ public class ForgetInfinity : MonoBehaviour {
         curModID = modID++;
         try
         {
-            ModConfig<ForgetInfintySettings> modConfig = new ModConfig<ForgetInfintySettings>("ForgetInfintySettings");
             ModConfig<FlyersOtherSettings> universalConfig = new ModConfig<FlyersOtherSettings>("FlyersOtherSettings");
             // Read from settings file, or create one if one doesn't exist
-            FIConfig = modConfig.Settings;
+            FIConfig = universalConfig.Settings;
             // Update settings file incase of error during read
-            modConfig.Settings = FIConfig;
+            universalConfig.Settings = FIConfig;
             modSettings.RefreshSettings();
 
-            PPAScaling = FIConfig.PPAScaleFactor;
+            PPAScaling = FIConfig.FIPPAScaleFactor;
         }
         catch
         {
@@ -659,11 +658,6 @@ public class ForgetInfinity : MonoBehaviour {
                 ScreenStatus.color = curAnimDelay < 25 ? Color.green : Color.white;
             }
         }
-    }
-    // Mod Settings
-    public class ForgetInfintySettings
-    {
-        public float PPAScaleFactor = 0.5f;
     }
     /*
     static readonly Dictionary<string, object>[] TweaksEditorSettings = new Dictionary<string, object>[]

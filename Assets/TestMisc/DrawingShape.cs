@@ -14,12 +14,12 @@ public class DrawingShape : MonoBehaviour {
 
 		selfSelectable.OnInteract += delegate {
 			idx = (idx + 1) % sideCounts.Length;
-			UpdateRenderer(sideCounts.ElementAtOrDefault(idx));
+			DrawRegularPolygon(sideCounts.ElementAtOrDefault(idx));
 			return false;
 		};
 	}
 
-	void UpdateRenderer(int vertices = 0)
+	void DrawRegularPolygon(int vertices = 0)
     {
 		lineRenderer.positionCount = vertices;
 		lineRenderer.loop = vertices > 2;

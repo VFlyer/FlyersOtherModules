@@ -89,24 +89,23 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 		"Press this one\nfirst, will you?",
 		"Press this button\nfirst, will you?",
 	};
-	LabeledPrioritiesPlusSettings LPSettings = new LabeledPrioritiesPlusSettings();
+	FlyersOtherSettings universalSettings = new FlyersOtherSettings();
 	void Awake()
     {
 		try
 		{
-			ModConfig<LabeledPrioritiesPlusSettings> modConfig = new ModConfig<LabeledPrioritiesPlusSettings>("LabeledPrioritiesPlusSettings");
 			ModConfig<FlyersOtherSettings> universalConfig = new ModConfig<FlyersOtherSettings>("FlyersOtherSettings");
-			LPSettings = modConfig.Settings;
-			modConfig.Settings = LPSettings;
+			universalSettings = universalConfig.Settings;
+			universalConfig.Settings = universalSettings;
 
 			selectedDynamicScores = new[]
-			{ LPSettings.LabeledPrioritiesTPScore, LPSettings.UnlabeledPrioritiesTPScore,
-				LPSettings.RelabeledPrioritiesTPScore, LPSettings.MislabeledPrioritiesTPScore };
-			if (LPSettings.enableLabeledPriorities)
+			{ universalSettings.LPPLabeledPrioritiesTPScore, universalSettings.LPPUnlabeledPrioritiesTPScore,
+				universalSettings.LPPRelabeledPrioritiesTPScore, universalSettings.LPPMislabeledPrioritiesTPScore };
+			if (universalSettings.LPPEnableLabeledPriorities)
 				selectedVariantIdxes.Add(0);
-			if (LPSettings.enableUnlabeledPriorities)
+			if (universalSettings.LPPEnableUnlabeledPriorities)
 				selectedVariantIdxes.Add(1);
-			if (LPSettings.enableRelabeledPriorities)
+			if (universalSettings.LPPEnableRelabeledPriorities)
 				selectedVariantIdxes.Add(2);
 			/*
 			if (LPSettings.enableMislabeledPriorities)
@@ -785,17 +784,6 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 			curStageCnt = 0;
 		GenerateSoultionMislabeled();
 		yield return HandleRevealAnim(!hasStruck);
-	}
-	public class LabeledPrioritiesPlusSettings
-    {
-		public bool enableLabeledPriorities = true;
-		public bool enableUnlabeledPriorities = true;
-		public bool enableRelabeledPriorities = true;
-		public bool enableMislabeledPriorities = true;
-		public int LabeledPrioritiesTPScore = 5;
-		public int UnlabeledPrioritiesTPScore = 5;
-		public int RelabeledPrioritiesTPScore = 9;
-		public int MislabeledPrioritiesTPScore = 9;
 	}
 	// TP Handler Begins Here
 	IEnumerator TwitchHandleForcedSolve()

@@ -41,7 +41,7 @@ public class SevenHandler : MonoBehaviour {
 	float PPAScaling;
 
 	IEnumerator currentHandler;
-	SevenSettings sevenSettings = new SevenSettings();
+	FlyersOtherSettings universalSettings = new FlyersOtherSettings();
 
 	// Use this for initialization
 	void Awake()
@@ -61,16 +61,15 @@ public class SevenHandler : MonoBehaviour {
 		LEDMesh.material = matSwitch[0];
 		stageIndc.text = "";
 		try {
-			ModConfig<SevenSettings> config = new ModConfig<SevenSettings>("SevenSettings");
 			ModConfig<FlyersOtherSettings> universalConfig = new ModConfig<FlyersOtherSettings>("FlyersOtherSettings");
-			sevenSettings = config.Settings;
-			config.Settings = sevenSettings;
+			universalSettings = universalConfig.Settings;
+			universalConfig.Settings = universalSettings;
 
-			uncapAll = !sevenSettings.hardCapStageGeneration;
-			fastReads = sevenSettings.forceFastReads;
-			PPAScaling = sevenSettings.PPAScale;
-			maxPPA = sevenSettings.maxPPA;
-			disableUncapTP = sevenSettings.noTPUncapping;
+			uncapAll = !universalSettings.SevenHardCapStageGeneration;
+			fastReads = universalSettings.SevenForceFastReads;
+			PPAScaling = universalSettings.SevenPPAScale;
+			maxPPA = universalSettings.SevenMaxPPA;
+			disableUncapTP = universalSettings.SevenNoTPUncapping;
 		}
 		catch {
 			Debug.LogWarningFormat("<7 #{0}>: Settings for 7 do not work as intended! Using default settings instead!", curModID);
@@ -591,15 +590,6 @@ public class SevenHandler : MonoBehaviour {
 		hasStarted = true;
 		interactable = true;
 		yield return true;
-	}
-
-	public class SevenSettings
-	{
-		public bool hardCapStageGeneration = true;
-		public bool forceFastReads = false;
-		public float PPAScale = 1f;
-		public int maxPPA = -1;
-		public bool noTPUncapping = false;
 	}
 
 	// TP Handler Begins here
