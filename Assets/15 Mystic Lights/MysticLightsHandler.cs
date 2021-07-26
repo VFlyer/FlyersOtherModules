@@ -88,7 +88,7 @@ public class MysticLightsHandler : MonoBehaviour {
         };
 
         moduleSelf.OnActivate += delegate {
-            if (TwitchPlaysActive)
+            if (TwitchPlaysActive && Application.isEditor)
             {
                 StatusLight.SetActive(true);
             }
@@ -121,17 +121,9 @@ public class MysticLightsHandler : MonoBehaviour {
                 }
             }
         }
-        if (colorblindEnabled)
-        {
-            for (int idx = 0; idx < textMeshes.Length; idx++)
-            {
-                textMeshes[idx].gameObject.SetActive(true);
-            }
-        }
-        else
         for (int idx = 0; idx < textMeshes.Length; idx++)
         {
-            textMeshes[idx].gameObject.SetActive(false);
+            textMeshes[idx].gameObject.SetActive(colorblindEnabled);
         }
     }
     void UpdateSpecificLight(int xIndex,int yIndex)
@@ -381,35 +373,33 @@ public class MysticLightsHandler : MonoBehaviour {
         }
         kMAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSequenceMechanism, transform);
         Vector3 pointD = AnimPointD.transform.localPosition;
-        for (int x = 0; x <= animDelay; x++)
+        for (float x = 0; x <= 1; x+=Time.deltaTime * 2)
         {
-            float zAnim = 0;
-            for (int p = 0; p < x; p++)
-            {
-                zAnim += pointD.z;
-            }
-            zAnim /= animDelay;
+            float zAnim = pointD.z * x;
             for (int idx = 0; idx < tiles.Length; idx++)
             {
                 tiles[idx].transform.localPosition = new Vector3(tiles[idx].transform.localPosition.x, tiles[idx].transform.localPosition.y, zAnim);
             }
-            yield return new WaitForSeconds(0);
+            yield return null;
+        }
+        for (int idx = 0; idx < tiles.Length; idx++)
+        {
+            tiles[idx].transform.localPosition = new Vector3(tiles[idx].transform.localPosition.x, tiles[idx].transform.localPosition.y, 1);
         }
         Generate4x4WithHolePuzzle();
         isGenerating = true;
-        for (int x = animDelay; x >= 0; x--)
+        for (float x = 0; x <= 1; x += Time.deltaTime * 2)
         {
-            float zAnim = 0;
-            for (int p = 0; p < x; p++)
-            {
-                zAnim += pointD.z;
-            }
-            zAnim /= animDelay;
+            float zAnim = pointD.z * (1f - x);
             for (int idx = 0; idx < tiles.Length; idx++)
             {
                 tiles[idx].transform.localPosition = new Vector3(tiles[idx].transform.localPosition.x, tiles[idx].transform.localPosition.y, zAnim);
             }
-            yield return new WaitForSeconds(0);
+            yield return null;
+        }
+        for (int idx = 0; idx < tiles.Length; idx++)
+        {
+            tiles[idx].transform.localPosition = new Vector3(tiles[idx].transform.localPosition.x, tiles[idx].transform.localPosition.y, 0);
         }
         playingAnim = false;
         isGenerating = false;
@@ -426,22 +416,20 @@ public class MysticLightsHandler : MonoBehaviour {
         }
         kMAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSequenceMechanism, transform);
         Vector3 pointD = AnimPointD.transform.localPosition;
-        for (int x = 0; x <= animDelay; x++)
+        for (float x = 0; x <= 1; x += Time.deltaTime * 2)
         {
-            float zAnim = 0;
-            for (int p = 0; p < x; p++)
-            {
-                zAnim += pointD.z;
-            }
-            zAnim /= animDelay;
+            float zAnim = pointD.z * x;
             for (int idx = 0; idx < tiles.Length; idx++)
             {
                 tiles[idx].transform.localPosition = new Vector3(tiles[idx].transform.localPosition.x, tiles[idx].transform.localPosition.y, zAnim);
             }
-            yield return new WaitForSeconds(0);
+            yield return null;
         }
-
-        for (int posx = 0;posx<4;posx++)
+        for (int idx = 0; idx < tiles.Length; idx++)
+        {
+            tiles[idx].transform.localPosition = new Vector3(tiles[idx].transform.localPosition.x, tiles[idx].transform.localPosition.y, 1);
+        }
+        for (int posx = 0; posx < 4; posx++)
         {
             for (int posy = 0; posy < 4; posy++)
             {
@@ -458,19 +446,18 @@ public class MysticLightsHandler : MonoBehaviour {
             Generate4x4Puzzle();
         }
         isGenerating = true;
-        for (int x = animDelay; x >= 0; x--)
+        for (float x = 0; x <= 1; x += Time.deltaTime * 2)
         {
-            float zAnim = 0;
-            for (int p = 0; p < x; p++)
-            {
-                zAnim += pointD.z;
-            }
-            zAnim /= animDelay;
+            float zAnim = pointD.z * (1f - x);
             for (int idx = 0; idx < tiles.Length; idx++)
             {
                 tiles[idx].transform.localPosition = new Vector3(tiles[idx].transform.localPosition.x, tiles[idx].transform.localPosition.y, zAnim);
             }
-            yield return new WaitForSeconds(0);
+            yield return null;
+        }
+        for (int idx = 0; idx < tiles.Length; idx++)
+        {
+            tiles[idx].transform.localPosition = new Vector3(tiles[idx].transform.localPosition.x, tiles[idx].transform.localPosition.y, 0);
         }
         playingAnim = false;
         isGenerating = false;
@@ -569,10 +556,11 @@ public class MysticLightsHandler : MonoBehaviour {
             {
                 UpdateSpecificLight(xIdx - 1, yIdx);
             }
-            for (int i = 0; i < animDelay/2; i++)
+            for (float i = 0; i < 1f; i += Time.deltaTime * 4)
             {
-                float finalposX = 0;
-                float finalposY = 0;
+                float finalposX = coordStart[0] * i + coordEnd[0] * (1f - i);
+                float finalposY = coordStart[1] * i + coordEnd[1] * (1f - i);
+                /*
                 for (int x = 0; x < animDelay/2; x++)
                 {
                     if (x < i)
@@ -589,13 +577,14 @@ public class MysticLightsHandler : MonoBehaviour {
                 }
                 finalposX /= animDelay/2;
                 finalposY /= animDelay/2;
-                TileAnim.transform.localPosition = new Vector3(finalposY,finalposX,0.0f);
+                */
+                TileAnim.transform.localPosition = new Vector3(finalposY, finalposX, 0.0f);
                 bool lgtSteSgl = (bool)lightStates[xIntIdx, yIntIdx];
                 AnimRenderer.material = lgtSteSgl ? materials[0] : materials[1];
                 animLight.color = lgtSteSgl ? Color.yellow : Color.blue;
                 animLight.enabled = true;
                 UpdateSpecificLight(xIdx, yIdx);
-                yield return new WaitForSeconds(0f);
+                yield return null;
             }
             kMAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);   
         }
@@ -635,30 +624,11 @@ public class MysticLightsHandler : MonoBehaviour {
         {
             textMeshes[idx].gameObject.SetActive(false);
         }
-        for (int x = animDelay*2; x >= 0; x--)
+        float localX = pointBR.x * xcor / 3f + pointTL.x * (3 - xcor) / 3f;
+        float localY = pointBR.y * ycor / 3f + pointTL.y * (3 - ycor) / 3f;
+        for (float x = 1; x >= 0; x -= Time.deltaTime)
         {
-            float localX = 0;
-            float localY = 0;
-            float localZ = 0;
-            for (int p = 0; p < 3; p++)
-            {
-                // Grab end points of the animation
-                if (xcor > p)
-                    localX += pointBR.x;
-                else
-                    localX += pointTL.x;
-                if (ycor > p)
-                    localY += pointBR.y;
-                else
-                    localY += pointTL.y;
-            }
-            for (int y = 0; y < x; y++)
-            {
-                localZ += pointD.z;
-            }
-            localZ /= animDelay*2;
-            localX /= 3;
-            localY /= 3;
+            float localZ = pointD.z * x;
             TileAnim.SetActive(true);
             StatusLight.SetActive(true);
             TileAnim.transform.localPosition = new Vector3(localX, localY, localZ);
@@ -667,8 +637,9 @@ public class MysticLightsHandler : MonoBehaviour {
             AnimRenderer.material = lgtSteSgl ? materials[0] : materials[1];
             animLight.color = lgtSteSgl ? Color.yellow : Color.blue;
             animLight.enabled = true;
-            yield return new WaitForSeconds(0);
+            yield return null;
         }
+        StatusLight.transform.localPosition = new Vector3(localX, localY, .005f);
         TileAnim.SetActive(false);
         int tileIndex = xcor + 4 * ycor;
         tiles[tileIndex].SetActive(true);

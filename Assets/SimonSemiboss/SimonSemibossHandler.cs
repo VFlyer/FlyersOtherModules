@@ -405,7 +405,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 			isPaniking = true;
 			Debug.LogFormat("[Simon #{0}]: Simon has started paniking! But there are no flashes! You should just mash the buttons until it solves.", curmodID);
 		}
-		mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.NeedyWarning, transform);
+		mAudio.PlaySoundAtTransform("found", transform);
 		StartCoroutine(PanicAnim());
 	}
 

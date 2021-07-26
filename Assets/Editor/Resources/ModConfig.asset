@@ -25,11 +25,13 @@ MonoBehaviour:
     Ry0001 (Revived by VFlyer to be more suitable)\r\nSimon Stages: Madela\r\nDigital
     Grid: ???\r\nEven Or Odd: BigCrunch\r\nVenn Diagrams: Danny7007\r\nNumbered Buttons:
     Kusane (originally developed by a departed author)\r\nLabel Priorities: Kusane
-    (originally developed by a departed author)\r\n\rSimon: BigCrunch\n\nNon-example
-    assets used: Asset pack from Royal_Flu$h's tutorials, Simon's Stages assets, Divided
-    Squares backing by Timwi, Old FMN model by Hexicube, Mastermind Simple prefab
-    by Eotall, custom dial and chip self-made\r\n, inspired by Bashly's Tangrams chip
-    model\r\n\r\nThe 25 Manuals can be found built-in or from these repository links:\r\n[url=https://ktane.timwi.de/HTML/BuzzFizz.html]BuzzFizz[/url]\r\n[url=https://ktane.timwi.de/HTML/3x3%20Grid.html]3x3
+    (originally developed by a departed author)\r\n\rSimon: BigCrunch\nCruel Modulo:
+    ktane1\nExtended Boolean Venn Diagram: Deaf\nGame Changer: Obvious\n\nNon-example
+    assets used: Asset pack from Royal_Flu$h's tutorials, Simon's Stages assets, Modulo
+    assets, Divided Squares backing by Timwi, Old FMN model by Hexicube, Mastermind
+    Simple prefab by Eotall, custom dial and chip self-made\r\n, inspired by Bashly's
+    Tangrams chip model\r\n\r\nThe 25 Manuals can be found built-in or from these
+    repository links:\r\n[url=https://ktane.timwi.de/HTML/BuzzFizz.html]BuzzFizz[/url]\r\n[url=https://ktane.timwi.de/HTML/3x3%20Grid.html]3x3
     Grid[/url]\r\n[url=https://ktane.timwi.de/HTML/Forget%20It%20Not.html]Forget It
     Not[/url]\r\n[url=https://ktane.timwi.de/HTML/%E2%9D%96.html]\u2756[/url]\r\n[url=https://ktane.timwi.de/HTML/Time%20Accumulation.html]Time
     Accumulation[/url]\r\n[url=https://ktane.timwi.de/HTML/15%20Mystic%20Lights.html]15
@@ -47,6 +49,6 @@ MonoBehaviour:
     Restricted Cruel[/url]\r\n[url=https://ktane.timwi.de/HTML/Simon.html]Simon[/url]\r\n[url=https://ktane.timwi.de/HTML/Robit%20Programming.html]Robit
     Programming[/url]\r\n[url=https://ktane.timwi.de/HTML/Label%20Priorities.html]Label
     Priorities[/url]\r"
-  version: 2.1.02
+  version: 2.2
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 1ef85429cc456814abc9b3a88838dab4, type: 3}
