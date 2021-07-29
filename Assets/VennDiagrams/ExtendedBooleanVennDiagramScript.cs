@@ -24,7 +24,7 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
         {
             var y = x;
             buttonSelectables[x].OnInteract += delegate {
-                buttonSelectables[y].AddInteractionPunch();
+                buttonSelectables[y].AddInteractionPunch(0.5f);
                 mAudio.PlaySoundAtTransform("tick", buttonSelectables[y].transform);
                 ProcessInput(y);
                 return false;
@@ -72,7 +72,8 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
         }
         else
         {
-            Debug.LogFormat("[Extended Boolean Venn Diagram #{0}] Strike! {1} is not one of the correct buttons.", curModID, idx == 0 ? "O" : new[] {
+            Debug.LogFormat("[Extended Boolean Venn Diagram #{0}] Strike! {1} is not one of the correct buttons.",
+                curModID, idx == 0 ? "O" : new[] {
                 idx % 2 == 1 ? "A" : "",
                 idx / 2 % 2 == 1 ? "B" : "",
                 idx / 4 % 2 == 1 ? "C" : "",

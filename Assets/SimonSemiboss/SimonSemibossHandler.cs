@@ -36,7 +36,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 
 	List<int> possiblePressIdx = new List<int>();
 
-	bool isSolved, mashToSolve, hasStarted, isPaniking, alterDefaultHandling, hasStruck;
+	bool isSolved, mashToSolve, hasStarted, isPanicking, alterDefaultHandling, hasStruck;
 	float mashCooldown = 0f;
 	static int modID = 1;
 	int curmodID, solveCountActivation = 0, curPressIdx = 0, curSolveCount, unignoredModuleCount, maxFlashesAllowed;
@@ -349,7 +349,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 		}
 		else
 		{
-			if (isPaniking)
+			if (isPanicking)
 			{
 				if (possiblePressIdx[curPressIdx] == idx)
 				{
@@ -394,7 +394,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 			}
 			Debug.LogFormat("[Simon #{0}]: And is flashing the following colors: {1}", curmodID, possiblePressIdx.Select(a => debugColorString[idxColorList[a]]).Join(", "));
 
-			isPaniking = true;
+			isPanicking = true;
 			//solveCountActivation = bombInfo.GetSolvedModuleNames().Count(a => !ignoredModuleNames.Contains(a));
 			flashingSequence = FlashSequenceQuickly(3);
 			StartCoroutine(flashingSequence);
@@ -402,7 +402,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 		else
         {
 			mashToSolve = true;
-			isPaniking = true;
+			isPanicking = true;
 			Debug.LogFormat("[Simon #{0}]: Simon has started paniking! But there are no flashes! You should just mash the buttons until it solves.", curmodID);
 		}
 		mAudio.PlaySoundAtTransform("found", transform);
@@ -438,7 +438,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 			if (!alterDefaultHandling)
 			{
 
-				if (isPaniking)
+				if (isPanicking)
 				{
 					if (nonIgnoredSolves > solveCountActivation)
 					{
