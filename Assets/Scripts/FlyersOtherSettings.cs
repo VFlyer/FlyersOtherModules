@@ -1,5 +1,6 @@
 ﻿public class FlyersOtherSettings {
 
+	public bool InstantMysticLights = false;
     public float FIPPAScaleFactor = 0.5f;
 	public bool SevenHardCapStageGeneration = true;
 	public bool SevenForceFastReads = false;

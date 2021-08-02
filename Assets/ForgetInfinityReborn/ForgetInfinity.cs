@@ -36,7 +36,6 @@ public class ForgetInfinity : MonoBehaviour {
 
     private float PPAScaling;
     private FlyersOtherSettings FIConfig = new FlyersOtherSettings();
-    public KMModSettings modSettings;
 	// Use this for initialization
 	void Awake() {
 		if (ignoredModuleNames == null)
@@ -86,7 +85,6 @@ public class ForgetInfinity : MonoBehaviour {
             FIConfig = universalConfig.Settings;
             // Update settings file incase of error during read
             universalConfig.Settings = FIConfig;
-            modSettings.RefreshSettings();
 
             PPAScaling = FIConfig.FIPPAScaleFactor;
         }

@@ -24,7 +24,7 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
         {
             var y = x;
             buttonSelectables[x].OnInteract += delegate {
-                buttonSelectables[y].AddInteractionPunch(0.5f);
+                buttonSelectables[y].AddInteractionPunch(0.25f);
                 mAudio.PlaySoundAtTransform("tick", buttonSelectables[y].transform);
                 ProcessInput(y);
                 return false;
@@ -37,9 +37,9 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
         StartCoroutine(GlitchText());
         modSolved = true;
         modSelf.HandlePass();
-        foreach (int incorrectIdx in Enumerable.Range(0, 32).Except(goalPressIdxes))
+        foreach (int incorrectIdx in Enumerable.Range(0, 32).Except(goalPressIdxes).Except(currentPressIdxes))
         {
-            buttonRenderers[incorrectIdx].material.color = Color.red;
+            buttonRenderers[incorrectIdx].material.color = Color.red * 0.5f + Color.white * 0.5f;
         }
     }
 
@@ -62,7 +62,7 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
                 SolveModule();
 
             }
-            buttonRenderers[idx].material.color = Color.green;
+            buttonRenderers[idx].material.color = Color.green * 0.5f + Color.white * 0.5f;
         }
         else if (!goalPressIdxes.Any())
         {
@@ -80,7 +80,7 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
                 idx / 8 % 2 == 1 ? "D" : "",
                 idx / 16 % 2 == 1 ? "E" : ""
                 }.Join(""));
-            buttonRenderers[idx].material.color = Color.red;
+            buttonRenderers[idx].material.color = Color.red * 0.5f + Color.white * 0.5f;
             modSelf.HandleStrike();
         }
     }

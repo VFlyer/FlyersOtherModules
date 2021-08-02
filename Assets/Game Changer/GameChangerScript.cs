@@ -240,10 +240,9 @@ public class GameChangerScript : MonoBehaviour {
 				{
 					y *= 2;
 				}
-				LEDRenderers[x].material.color = displayedIterCount / y % 2 == 0 ? Color.black : Color.white;
+				LEDRenderers[x].material.color = displayedIterCount / y % 2 == 1 ? Color.white : Color.black;
 			}
 			yield return new WaitForSeconds(0.1f);
-			displayedIterCount = iteractionCount - 1;
 			for (var x = 0; x < LEDRenderers.Length; x++)
 			{
 				var y = 1;
@@ -251,7 +250,7 @@ public class GameChangerScript : MonoBehaviour {
 				{
 					y *= 2;
 				}
-				LEDRenderers[x].material.color = displayedIterCount / y % 2 == 0 ? Color.red : Color.white;
+				LEDRenderers[x].material.color = Color.red;
 			}
 			yield return new WaitForSeconds(0.1f);
         }

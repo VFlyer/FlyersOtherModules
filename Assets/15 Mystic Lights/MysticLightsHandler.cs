@@ -26,7 +26,7 @@ public class MysticLightsHandler : MonoBehaviour {
     private bool solved = false;
     private bool playingAnim = false;
     private bool isGenerating = false;
-    private bool colorblindEnabled = false;
+    private bool colorblindEnabled = false, instantMysticLights;
 
     private readonly List<int> inputsOverall = new List<int>();
     private int index = 0;
@@ -36,6 +36,8 @@ public class MysticLightsHandler : MonoBehaviour {
 
     private readonly string[] debugCoordCol = new string[] { "A", "B", "C", "D" };
     private readonly string[] debugCoordRow = new string[] { "1", "2", "3", "4" };
+
+    private FlyersOtherSettings miscSettings = new FlyersOtherSettings();
 
     void Awake()
     {
@@ -47,6 +49,24 @@ public class MysticLightsHandler : MonoBehaviour {
         catch
         {
             colorblindEnabled = false;
+        }
+        finally
+        {
+            try
+            {
+                ModConfig<FlyersOtherSettings> universalConfig = new ModConfig<FlyersOtherSettings>("FlyersOtherSettings");
+                // Read from settings file, or create one if one doesn't exist
+                miscSettings = universalConfig.Settings;
+                // Update settings file incase of error during read
+                universalConfig.Settings = miscSettings;
+
+                instantMysticLights = miscSettings.InstantMysticLights;
+            }
+            catch
+            {
+                Debug.LogErrorFormat("<15 Mystic Lights>: The settings for Forget Infinty do not work as intended! The module will use default settings instead.");
+                instantMysticLights = false;
+            }
         }
     }
     // Use this for initialization
@@ -88,14 +108,7 @@ public class MysticLightsHandler : MonoBehaviour {
         };
 
         moduleSelf.OnActivate += delegate {
-            if (TwitchPlaysActive && Application.isEditor)
-            {
-                StatusLight.SetActive(true);
-            }
-            else
-            {
-                StatusLight.SetActive(false);
-            }
+            StatusLight.SetActive(TwitchPlaysActive && Application.isEditor);
         };
         //StatusLight.SetActive(false);
     }
@@ -472,119 +485,122 @@ public class MysticLightsHandler : MonoBehaviour {
         int yIdx = emptyTile[1];
         if (xIdx < lightStates.GetLength(0) && xIdx >= 0 && yIdx < lightStates.GetLength(1) && yIdx >= 0 && direction >= 0 && direction < 4)
         {
-            float[] coordStart = new float[2] { 0, 0 };
-            float[] coordEnd = new float[2] { 0, 0 };
-            Vector3 pointTL = AnimPointTL.transform.localPosition;
-            Vector3 pointBR = AnimPointBR.transform.localPosition;
-            // The idea for this is to grab the specified point by using local coordinates to manipulate the position.
-            for (int p = 0; p < 3; p++)
+            if (!instantMysticLights)
             {
-                // Grab end points of the animation
-                if (xIdx > p)
-                    coordEnd[0] += pointBR.x;
-                else
-                    coordEnd[0] += pointTL.x;
-                if (yIdx > p)
-                    coordEnd[1] += pointBR.y;
-                else
-                    coordEnd[1] += pointTL.y;
-                // Grab start points of the animation
-                if (direction % 2 == 0)// If the direction involves the x-axis
+                float[] coordStart = new float[2] { 0, 0 };
+                float[] coordEnd = new float[2] { 0, 0 };
+                Vector3 pointTL = AnimPointTL.transform.localPosition;
+                Vector3 pointBR = AnimPointBR.transform.localPosition;
+                // The idea for this is to grab the specified point by using local coordinates to manipulate the position.
+                for (int p = 0; p < 3; p++)
                 {
-                    if (direction / 2 <= 0)// If the direction is negative
-                    {
-                        if (p < xIdx - 1)
-                            coordStart[0] += pointBR.x;
-                        else
-                            coordStart[0] += pointTL.x;
-                    }
-                    else// If the direction is positive
-                    {
-                        if (p < xIdx + 1)
-                            coordStart[0] += pointBR.x;
-                        else
-                            coordStart[0] += pointTL.x;
-                    }
-                    if (p < yIdx)
-                        coordStart[1] += pointBR.y;
+                    // Grab end points of the animation
+                    if (xIdx > p)
+                        coordEnd[0] += pointBR.x;
                     else
-                        coordStart[1] += pointTL.y;
-                }
-                else// if the direction involves the y-axis
-                {
-                    if (direction / 2 > 0)// If the direction is negative
+                        coordEnd[0] += pointTL.x;
+                    if (yIdx > p)
+                        coordEnd[1] += pointBR.y;
+                    else
+                        coordEnd[1] += pointTL.y;
+                    // Grab start points of the animation
+                    if (direction % 2 == 0)// If the direction involves the x-axis
                     {
-                        if (p < yIdx + 1)
+                        if (direction / 2 <= 0)// If the direction is negative
+                        {
+                            if (p < xIdx - 1)
+                                coordStart[0] += pointBR.x;
+                            else
+                                coordStart[0] += pointTL.x;
+                        }
+                        else// If the direction is positive
+                        {
+                            if (p < xIdx + 1)
+                                coordStart[0] += pointBR.x;
+                            else
+                                coordStart[0] += pointTL.x;
+                        }
+                        if (p < yIdx)
                             coordStart[1] += pointBR.y;
                         else
                             coordStart[1] += pointTL.y;
                     }
-                    else// If the direction is positive
+                    else// if the direction involves the y-axis
                     {
-                        if (p < yIdx - 1)
-                            coordStart[1] += pointBR.y;
+                        if (direction / 2 > 0)// If the direction is negative
+                        {
+                            if (p < yIdx + 1)
+                                coordStart[1] += pointBR.y;
+                            else
+                                coordStart[1] += pointTL.y;
+                        }
+                        else// If the direction is positive
+                        {
+                            if (p < yIdx - 1)
+                                coordStart[1] += pointBR.y;
+                            else
+                                coordStart[1] += pointTL.y;
+                        }
+                        if (p < xIdx)
+                            coordStart[0] += pointBR.x;
                         else
-                            coordStart[1] += pointTL.y;
+                            coordStart[0] += pointTL.x;
                     }
-                    if (p < xIdx)
-                        coordStart[0] += pointBR.x;
-                    else
-                        coordStart[0] += pointTL.x;
                 }
-            }
-            coordEnd[0] /= 3f;
-            coordEnd[1] /= 3f;
-            coordStart[0] /= 3f;
-            coordStart[1] /= 3f;
-            int xIntIdx = direction == 0 ? xIdx - 1 : direction == 2 ? xIdx + 1 : xIdx; // X coordinate of where the module was interacted
-            int yIntIdx = direction == 1 ? yIdx - 1 : direction == 3 ? yIdx + 1 : yIdx; // Y coordinate of where the module was interacted
-            //print("Suggest last interaction was at (" + xIntIdx + "," + yIntIdx + ")");
-            // Update the light around the tile that was moved.
-            if (yIdx + 1 < 4 && direction != 3)
-            {
-                UpdateSpecificLight(xIdx, yIdx + 1);
-            }
-            if (yIdx - 1 >= 0 && direction != 1)
-            {
-                UpdateSpecificLight(xIdx, yIdx - 1);
-            }
-            if (xIdx + 1 < 4 && direction != 2)
-            {
-                UpdateSpecificLight(xIdx + 1, yIdx);
-            }
-            if (xIdx - 1 >= 0 && direction != 0)
-            {
-                UpdateSpecificLight(xIdx - 1, yIdx);
-            }
-            for (float i = 0; i < 1f; i += Time.deltaTime * 4)
-            {
-                float finalposX = coordStart[0] * i + coordEnd[0] * (1f - i);
-                float finalposY = coordStart[1] * i + coordEnd[1] * (1f - i);
-                /*
-                for (int x = 0; x < animDelay/2; x++)
+                coordEnd[0] /= 3f;
+                coordEnd[1] /= 3f;
+                coordStart[0] /= 3f;
+                coordStart[1] /= 3f;
+                int xIntIdx = direction == 0 ? xIdx - 1 : direction == 2 ? xIdx + 1 : xIdx; // X coordinate of where the module was interacted
+                int yIntIdx = direction == 1 ? yIdx - 1 : direction == 3 ? yIdx + 1 : yIdx; // Y coordinate of where the module was interacted
+                                                                                            //print("Suggest last interaction was at (" + xIntIdx + "," + yIntIdx + ")");
+                                                                                            // Update the light around the tile that was moved.
+                if (yIdx + 1 < 4 && direction != 3)
                 {
-                    if (x < i)
-                    {
-                        finalposX += coordStart[0];
-                        finalposY += coordStart[1];
-                    }
-                    else
-                    {
-                        finalposX += coordEnd[0];
-                        finalposY += coordEnd[1];
-                    }
-                    
+                    UpdateSpecificLight(xIdx, yIdx + 1);
                 }
-                finalposX /= animDelay/2;
-                finalposY /= animDelay/2;
-                */
-                TileAnim.transform.localPosition = new Vector3(finalposY, finalposX, 0.0f);
-                bool lgtSteSgl = (bool)lightStates[xIntIdx, yIntIdx];
-                AnimRenderer.material = lgtSteSgl ? materials[0] : materials[1];
-                animLight.color = lgtSteSgl ? Color.yellow : Color.blue;
-                animLight.enabled = true;
-                UpdateSpecificLight(xIdx, yIdx);
-                yield return null;
+                if (yIdx - 1 >= 0 && direction != 1)
+                {
+                    UpdateSpecificLight(xIdx, yIdx - 1);
+                }
+                if (xIdx + 1 < 4 && direction != 2)
+                {
+                    UpdateSpecificLight(xIdx + 1, yIdx);
+                }
+                if (xIdx - 1 >= 0 && direction != 0)
+                {
+                    UpdateSpecificLight(xIdx - 1, yIdx);
+                }
+                for (float i = 0; i < 1f; i += Time.deltaTime * 4)
+                {
+                    float finalposX = coordStart[0] * i + coordEnd[0] * (1f - i);
+                    float finalposY = coordStart[1] * i + coordEnd[1] * (1f - i);
+                    /*
+                    for (int x = 0; x < animDelay/2; x++)
+                    {
+                        if (x < i)
+                        {
+                            finalposX += coordStart[0];
+                            finalposY += coordStart[1];
+                        }
+                        else
+                        {
+                            finalposX += coordEnd[0];
+                            finalposY += coordEnd[1];
+                        }
+
+                    }
+                    finalposX /= animDelay/2;
+                    finalposY /= animDelay/2;
+                    */
+                    TileAnim.transform.localPosition = new Vector3(finalposY, finalposX, 0.0f);
+                    bool lgtSteSgl = (bool)lightStates[xIntIdx, yIntIdx];
+                    AnimRenderer.material = lgtSteSgl ? materials[0] : materials[1];
+                    animLight.color = lgtSteSgl ? Color.yellow : Color.blue;
+                    animLight.enabled = true;
+                    UpdateSpecificLight(xIdx, yIdx);
+                    yield return null;
+                }
             }
             kMAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);   
         }

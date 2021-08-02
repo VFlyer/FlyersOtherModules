@@ -82,7 +82,7 @@
     src: url('../font/Agency FB Bold.ttf');
 }
 
-/* Round symbols; used by Symbolic Coordinates, The Cube, Lightspeed and Reverse Morse */
+/* Round symbols; used by Symbolic Coordinates, The Cube, Lightspeed, Reverse Morse, and Letter Grid*/
 @font-face {
     font-family: 'KRA';
     src: url(../font/KR_A_Round.ttf);
@@ -124,11 +124,11 @@
     src: url('../font/Rlyehian.ttf');
 }
 
-/* Audio Keypad */
+/* Complexity */
 @font-face {
-    font-family: 'AudioKeypadFont';
+    font-family: 'complexbase';
     font-style: normal;
-    src: url(../font/AudioKeypadFont.ttf);
+    src: url(../font/complexbase.ttf);
 }
 
 /*** LOGFILE ANALYZER ***/
@@ -203,4 +203,154 @@
     font-style: normal;
     font-weight: 400;
     src: url(../font/stupid.ttf);
+}
+
+/* Wingdings */
+
+@font-face {
+    font-family:"Wingdings";
+    font-style: normal;
+    font-weight:normal;
+    src: url(../font/Wingding.otf);
+}
+
+/* Used by Sysadmin, SUSadmin */
+
+@font-face {
+    font-family: "Consolas";
+    font-style: normal;
+    font-weight:normal;
+    src: url(../font/Consolas.ttf);
+}
+
+/* Used by Anagraphy */
+
+@font-face {
+    font-family: "alien-anagraphs";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/alien-anagraphs.ttf);
+}
+
+/* Used by Emoticon Math */
+@font-face {
+    font-family: "Emoticons";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Emoticons.ttf);
+}
+
+/* Additional fonts in Letter Grid */
+
+@font-face {
+    font-family: "Afrika";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Animals.ttf);
+}
+
+@font-face {
+    font-family: "Boozle";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Boozle1.ttf);
+}
+
+@font-face {
+    font-family: "Braille";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Braille.ttf);
+}
+
+@font-face {
+    font-family: "Bioblanner";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Bioblanner.ttf);
+}
+
+@font-face {
+    font-family: "Decoborders";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/DecoBordersNF.otf);
+}
+
+@font-face {
+    font-family: "DancingMen";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Dancing.ttf);
+}
+
+@font-face {
+    font-family: "Lombax";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Lombax.ttf);
+}
+
+@font-face {
+    font-family: "Moon";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Moon.otf);
+}
+
+@font-face {
+    font-family: "Pigpen";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Pigpen.ttf);
+}
+
+@font-face {
+    font-family: "ElderFuthark";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/ElderFuthark.ttf);
+}
+
+@font-face {
+    font-family: "Semaphore";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Semaphore.ttf);
+}
+
+@font-face {
+    font-family: "SemaphoreTelegraph";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/SemaphoreTelegraph.otf);
+}
+
+@font-face {
+    font-family: "Zoni";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Zoni.otf);
+}
+
+@font-face {
+    font-family: "English";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/English.ttf);
+}
+
+/* Used by Shogi Ideintification and JA manuals */
+@font-face { 
+    font-family: "Noto Serif JP"; 
+    font-weight: 400; 
+    font-style: normal; 
+    src: local("Noto Serif JP Regular"), url(../font/NotoSerifJP-Regular.woff) format("woff"); 
+}
+
+@font-face { 
+    font-family: "Noto Serif JP"; 
+    font-weight: bold; 
+    font-style: normal; 
+    src: local("Noto Serif JP Bold"), url(../font/NotoSerifJP-Bold.woff) format("woff"); 
 }
