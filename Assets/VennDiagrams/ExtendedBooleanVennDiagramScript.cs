@@ -134,7 +134,7 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
             if (boolStatements.FirstOrDefault())
                 goalPressIdxes.Add(x);
         }
-        Debug.LogFormat("[Extended Boolean Venn Diagram #{0}] Final buttons to press: {1}", curModID,
+        Debug.LogFormat("[Extended Boolean Venn Diagram #{0}] Final buttons to press ({2} total button{3}): {1}", curModID,
             goalPressIdxes.Select(a => a == 0 ? "O" : new[]
         {
             a % 2 == 1 ? "A" : "",
@@ -142,7 +142,7 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
             a / 4 % 2 == 1 ? "C" : "",
             a / 8 % 2 == 1 ? "D" : "",
             a / 16 % 2 == 1 ? "E" : ""
-        }.Join("")).Join(", "));
+        }.Join("")).Join(", "), goalPressIdxes.Count, goalPressIdxes.Count == 1 ? "" : "s");
         calculatedSolution = true;
         StartCoroutine(GlitchTextToStabalize());
     }
