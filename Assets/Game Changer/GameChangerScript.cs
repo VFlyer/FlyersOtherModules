@@ -309,10 +309,10 @@ public class GameChangerScript : MonoBehaviour {
         }
     }
 #pragma warning disable IDE0051 // Remove unused private members
-	readonly string TwitchHelpMessage = "Toggle the following cell with \"!{0} [A-D][1-4]\" where columns are labeled A-D from left to right, rows are numbered 1-4 from top to bottom." +
-		"Multiple cells can be toggled in one command." +
-		"Submit the current board with \"!{0} submit\" or \"!{0} s\", reset the current board with \"!{0} reset\" or \"!{0} r\", or clear the current board with \"!{0} clear\" or \"!{0} c\"." +
-		"All of the mentioned possible commands can be chained into one command using spaces, E.G: \"!{0} c A1 B4 r C3 D2 s\". Commands may be interrupted upon trying to chain past the submit command if the submitted grid is incorrect at any point.";
+	readonly string TwitchHelpMessage = "Toggle the following cell with \"!{0} [A-D][1-4]\" where columns are labeled A-D from left to right, rows are numbered 1-4 from top to bottom. " +
+		"Multiple cells can be toggled in one command. " +
+		"Submit the current board with \"!{0} submit\" or \"!{0} s\", reset the current board with \"!{0} reset\" or \"!{0} r\", or clear the current board with \"!{0} clear\" or \"!{0} c\". " +
+		"All of the mentioned possible commands can be chained into one command using spaces, E.G: \"!{0} c A1 B4 r C3 D2 s\". Commands may be interrupted upon trying to chain past the submit command if the submitted grid is incorrect at any point. ";
 #pragma warning restore IDE0051 // Remove unused private members
 	IEnumerator ProcessTwitchCommand(string cmd)
 	{

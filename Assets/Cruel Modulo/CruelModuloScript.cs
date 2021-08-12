@@ -84,10 +84,10 @@ public class CruelModuloScript : MonoBehaviour {
 	void GenerateExpression()
     {
 		var startingValue = Random.Range(50, 1000);
-		var divisorValue = Random.Range(3, 15);
+		var divisorValue = Random.Range(3, 51);
 		if (!lockExponent)
 		{
-			fixedExponent = Random.Range(2, 10);
+			fixedExponent = Random.Range(10, 31);
 			lockExponent = true;
 		}
 
@@ -98,12 +98,18 @@ public class CruelModuloScript : MonoBehaviour {
 		startingDisplay.text = startingValue.ToString();
 		exponentDisplay.text = fixedExponent.ToString();
 
-		correctValue = startingValue % divisorValue;
-		for (var x = 1; x < fixedExponent && correctValue != 0; x++)
-        {
-			correctValue = correctValue * startingValue % divisorValue;
-        }
-
+		var listModValues = new List<int>();
+		var factoredValue = startingValue % divisorValue;
+		listModValues.Add(factoredValue);
+		for (var y = 1; y <= Mathf.Min(divisorValue, fixedExponent); y++)
+		{
+			var lastModuloValue = listModValues.Last();
+			var calculatedNextModuloValue = lastModuloValue * factoredValue % divisorValue;
+			if (listModValues.Contains(calculatedNextModuloValue)) break;
+			listModValues.Add(calculatedNextModuloValue);
+		}
+		QuickLog(string.Format("Using the alternative method, the pattern of values before repetition and before the exponent, starting at {1}%{2} are {0}", listModValues.Join(), startingValue, divisorValue));
+		correctValue = listModValues.Min() == 0 ? 0 : listModValues.ElementAt((fixedExponent + listModValues.Count - 1) % listModValues.Count);
 
 		QuickLog(string.Format("The value you should submit is {0}. (From the expression: {1} ^ {2} % {3})", correctValue, startingValue, fixedExponent, divisorValue));
 		interactable = true;

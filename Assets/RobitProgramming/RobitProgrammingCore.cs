@@ -36,8 +36,9 @@ public class RobitProgrammingCore : MonoBehaviour {
 		interactable = false, isHoldingBackspace = false,
 		isHoldingWhileInteractable = false, colorblindActive = false;
 	string binaryString = "";
-	float backspaceTimeHeld = 0f;
+	float backspaceTimeHeld = 0f, animPercentage = 0f;
 	List<int> collectedCorners = new List<int>();
+	Vector3[] storedLocalPositions;
 	void Awake()
     {
         try
@@ -52,6 +53,9 @@ public class RobitProgrammingCore : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		moduleID = moduleIDCnt++;
+		storedLocalPositions = quadrantCornerMarkers.Select(a => a.transform.localPosition).Concat(
+		quadrantRenderers.Select(a => a.transform.localPosition).Concat(
+		new[] { botPosition.transform.localPosition })).ToArray();
 		generateSelectable.OnInteract += delegate {
 			HandleGenerateButtonPress();
 			return false;
@@ -208,7 +212,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 			QuickLog(string.Format("Given Quadrant Colors in reading order: {0}",
 				quadrantQuirks.Select(a => quadrantColorNames.ElementAtOrDefault(a)).Join(", ")));
 		};
-		StartCoroutine(HandleSecondarySection());
+		//StartCoroutine(HandleSecondarySection());
 		// Generate the quadrant quirks
 		var rolledRareQuirk = false;
 		for (var x = 0; x < quadrantQuirks.Length; x++)
@@ -278,7 +282,7 @@ public class RobitProgrammingCore : MonoBehaviour {
         }
 		else
         {
-			StartCoroutine(HandleSecondarySection());
+			//StartCoroutine(HandleSecondarySection());
 		}
 		if (!generatedMaze.GetState())
         {
@@ -941,11 +945,11 @@ public class RobitProgrammingCore : MonoBehaviour {
 		colorblindTextQuadrants[idx].color = Color.clear;
 		colorblindTextQuadrants[idx].text = "";
 	}
+
+
+
 	IEnumerator HandleSecondarySection()
     {
-		Vector3[] storedLocalPositions = quadrantCornerMarkers.Select(a => a.transform.localPosition).Concat(
-			quadrantRenderers.Select(a => a.transform.localPosition).Concat(
-				new[] { botPosition.transform.localPosition })).ToArray();
 
         for (float x = 0; x < 1f; x += 5 * Time.deltaTime)
         {
@@ -1049,11 +1053,34 @@ public class RobitProgrammingCore : MonoBehaviour {
     {
 		if (isHoldingBackspace && backspaceTimeHeld < 6f)
 			backspaceTimeHeld += Time.deltaTime;
-    }
+
+        if (mazeDetermined && interactable)
+        {
+            animPercentage = Mathf.Max(0, animPercentage - Time.deltaTime * 5);
+        }
+        else
+        {
+            animPercentage = Mathf.Min(1, animPercentage + Time.deltaTime * 5);
+        }
+
+        if (storedLocalPositions != null)
+		{
+			for (var u = 0; u < quadrantCornerMarkers.Length; u++)
+			{
+				quadrantCornerMarkers[u].transform.localPosition = storedLocalPositions[u] + (Vector3.down * animPercentage);
+			}
+			for (var u = 0; u < quadrantRenderers.Length; u++)
+			{
+				quadrantRenderers[u].transform.localPosition = storedLocalPositions[u + 4] + (Vector3.down * animPercentage);
+			}
+			botPosition.transform.localPosition = storedLocalPositions.Last() + (Vector3.down * animPercentage);
+		}
+	}
 
 
 #pragma warning disable IDE0051 // Remove unused private members
 	private readonly string TwitchHelpMessage = "Generate at the current rate with \"!{0} generate/create\", or with a specific delay with \"!{0} generate/create at/on X.XX\". (.0 - 1.0 only) " +
+		"Generate at the current rate and focus the module with \"!{0} generate/create focus #\" where # is optional on how many times the user wants to generate the maze." +
 		"Type in 0/1 bits with \"!{0} type/enter/input 0001101010...\". Delete the previous X bits with \"!{0} delete X\", or clear all the bits with \"!{0} clear\" or \"!{0} delete all\" " +
 		"Play the entire command or continue where it left off with \"!{0} start/play\" Scroll the terminal up or down with \"!{0} scroll up/down\"";
 #pragma warning restore IDE0051 // Remove unused private members
@@ -1084,6 +1111,7 @@ public class RobitProgrammingCore : MonoBehaviour {
         }
 		Match cmdSetGenerateSpecifiedRate = Regex.Match(cmd, @"^(create|generate)\s((at|on)\s)?\d?\.\d{1,2}$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
 			cmdGenerate = Regex.Match(cmd, @"^(create|generate)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
+			cmdGenerateFocus = Regex.Match(cmd, @"^(create|generate)\s?focus(\s\d+)?$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
 			cmdAddBits = Regex.Match(cmd, @"^((type|input|enter)\s)?[01\s]+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
 			cmdDeleteAllBits = Regex.Match(cmd, @"^(clear|delete\sall)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
 			cmdDeleteXBits = Regex.Match(cmd, @"^delete\s\d+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
@@ -1141,6 +1169,31 @@ public class RobitProgrammingCore : MonoBehaviour {
 			}
 			yield return null;
 			generateSelectable.OnInteract();
+		}
+		else if (cmdGenerateFocus.Success)
+        {
+			if (lockMazeGen)
+			{
+				yield return "sendtochaterror The maze has been locked in place. You can no longer generate a maze and focus on the module.";
+				yield break;
+			}
+			var lastNum = cmdGenerateFocus.Value.Split().Last();
+			int repeatCount;
+			if (!int.TryParse(lastNum, out repeatCount) || repeatCount <= 0)
+            {
+				yield return string.Format("sendtochaterror I am not generating the maze this many times: {0}. It's too much/little or the number is not a number at all.", lastNum);
+				yield break;
+			}
+			for (var x = 0; x < repeatCount; x++)
+			{
+				yield return null;
+				generateSelectable.OnInteract();
+				do
+				{
+					yield return "trycancel Focusing on the module has been canceled viva commands!";
+				}
+				while (generatedMaze.GetState() || !interactable);
+			}
 		}
 		else if (cmdAddBits.Success)
         {

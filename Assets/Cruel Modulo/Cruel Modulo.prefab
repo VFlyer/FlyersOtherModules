@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 23679350996088712}
   - component: {fileID: 114974530422134588}
   m_Layer: 0
-  m_Name: modScreen
+  m_Name: exponentScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -398,7 +398,7 @@ GameObject:
   - component: {fileID: 23615384494236786}
   - component: {fileID: 114050574106250454}
   m_Layer: 0
-  m_Name: modBorder (1)
+  m_Name: exponentBorder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -789,7 +789,7 @@ GameObject:
   - component: {fileID: 102593684058842944}
   - component: {fileID: 114819567938842472}
   m_Layer: 0
-  m_Name: modDigit
+  m_Name: exponentDigit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
