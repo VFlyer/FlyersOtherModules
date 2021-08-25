@@ -13,20 +13,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: flyerModulesMisc
   title: Flyer's Other Modules
-  description: "A collection of 25 (and possibly growing) modules made by VFlyer with
+  description: "A collection of 27 (and possibly growing) modules made by VFlyer with
     some modules from other ideas.\r\n\r\nMod contains 3x3 Grid, \u2756, Time Accumulation,
     BuzzFizz, Forget It Not, 15 Mystic Lights, Simon Stages, Forget Infinity, Faulty
     7 Segment Displays, 7\r, Rapid Subtraction, Logical Operators, Mastermind Restricted,
     Even Or Odd, Digital Grid, Venn Diagrams, Numbered Buttons, Hexiom, Collapse\r,
     Coprime Checker, Label Priorities, Labeled Priorities Plus, Mastermind Restricted
-    Cruel\r, Robit Programming, Simon\nThe following original ideas are by the following
-    users in this pack:\r\n3x3 Grid: Lumbud84\r\n\u2756: Mirage Xel\r\nTime Accumulation:
-    Kusane\r\nBuzzFizz: Blananas2\r\nForget It Not: RubyBfdi\r\nForget Infinity: Oshisure,
-    Ry0001 (Revived by VFlyer to be more suitable)\r\nSimon Stages: Madela\r\nDigital
-    Grid: ???\r\nEven Or Odd: BigCrunch\r\nVenn Diagrams: Danny7007\r\nNumbered Buttons:
-    Kusane (originally developed by a departed author)\r\nLabel Priorities: Kusane
-    (originally developed by a departed author)\r\n\rSimon: BigCrunch\nCruel Modulo:
-    ktane1\nExtended Boolean Venn Diagram: Deaf\nGame Changer: Obvious\n\nNon-example
+    Cruel\r, Robit Programming, Simon, Extended Boolean Venn Diagram, Cruel Modulo\nThe
+    following original ideas are by the following users in this pack:\r\n3x3 Grid:
+    Lumbud84\r\n\u2756: Mirage Xel\r\nTime Accumulation: Kusane\r\nBuzzFizz: Blananas2\r\nForget
+    It Not: RubyBfdi\r\nForget Infinity: Oshisure, Ry0001 (Revived by VFlyer to be
+    more suitable)\r\nSimon Stages: Madela\r\nDigital Grid: ???\r\nEven Or Odd: BigCrunch\r\nVenn
+    Diagrams: Danny7007\r\nNumbered Buttons: Kusane (originally developed by a departed
+    author)\r\nLabel Priorities: Kusane (originally developed by a departed author)\r\n\rSimon:
+    BigCrunch\nCruel Modulo: ktane1\nExtended Boolean Venn Diagram: Deaf\n\nNon-example
     assets used: Asset pack from Royal_Flu$h's tutorials, Simon's Stages assets, Modulo
     assets, Divided Squares backing by Timwi, Old FMN model by Hexicube, Mastermind
     Simple prefab by Eotall, custom dial and chip self-made\r\n, inspired by Bashly's
