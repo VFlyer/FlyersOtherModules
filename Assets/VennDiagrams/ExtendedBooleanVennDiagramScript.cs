@@ -15,6 +15,7 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
     List<int> goalPressIdxes, currentPressIdxes;
     bool calculatedSolution, modSolved;
     static int modIDCnt = 1;
+    string expressionToDisplay;
     int curModID;
 	// Use this for initialization
 	void Start () {
@@ -114,7 +115,8 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
             //Debug.Log(separateStrings.Join());
         }
         var finalEquation = separateStrings.FirstOrDefault().Trim();
-        equationDisplay.text = finalEquation;
+        expressionToDisplay = finalEquation;
+        equationDisplay.text = expressionToDisplay;
         Debug.LogFormat("[Extended Boolean Venn Diagram #{0}] Generated Expression: {1}", curModID, finalEquation);
         Debug.LogFormat("[Extended Boolean Venn Diagram #{0}] Visualization of buttons to press:", curModID);
         for (var x = 0; x < 32; x++)
@@ -165,6 +167,7 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
             yield return null;
             matToModify.mainTextureOffset = Random.insideUnitCircle * x;
             equationDisplay.color = lastColor * (1f - x);
+            equationDisplay.text = expressionToDisplay.Select(a => Random.value <= x ? '*' : a).Join("");
         }
         matToModify.mainTextureOffset = Vector2.zero;
         equationDisplay.text = "";
