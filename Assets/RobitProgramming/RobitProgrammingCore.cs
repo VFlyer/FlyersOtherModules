@@ -1054,7 +1054,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 		if (isHoldingBackspace && backspaceTimeHeld < 6f)
 			backspaceTimeHeld += Time.deltaTime;
 
-        if (mazeDetermined && interactable)
+        if (mazeDetermined && interactable || lockMazeGen)
         {
             animPercentage = Mathf.Max(0, animPercentage - Time.deltaTime * 5);
         }
@@ -1062,18 +1062,20 @@ public class RobitProgrammingCore : MonoBehaviour {
         {
             animPercentage = Mathf.Min(1, animPercentage + Time.deltaTime * 5);
         }
-
-        if (storedLocalPositions != null)
+		if (!lockMazeGen)
 		{
-			for (var u = 0; u < quadrantCornerMarkers.Length; u++)
+			if (storedLocalPositions != null)
 			{
-				quadrantCornerMarkers[u].transform.localPosition = storedLocalPositions[u] + (Vector3.down * animPercentage);
+				for (var u = 0; u < quadrantCornerMarkers.Length; u++)
+				{
+					quadrantCornerMarkers[u].transform.localPosition = storedLocalPositions[u] + (Vector3.down * animPercentage);
+				}
+				for (var u = 0; u < quadrantRenderers.Length; u++)
+				{
+					quadrantRenderers[u].transform.localPosition = storedLocalPositions[u + 4] + (Vector3.down * animPercentage);
+				}
+				botPosition.transform.localPosition = storedLocalPositions.Last() + (Vector3.down * animPercentage);
 			}
-			for (var u = 0; u < quadrantRenderers.Length; u++)
-			{
-				quadrantRenderers[u].transform.localPosition = storedLocalPositions[u + 4] + (Vector3.down * animPercentage);
-			}
-			botPosition.transform.localPosition = storedLocalPositions.Last() + (Vector3.down * animPercentage);
 		}
 	}
 
