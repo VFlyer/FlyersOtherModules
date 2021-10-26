@@ -485,7 +485,59 @@ public class CollapseCore : MonoBehaviour {
             }
         }
     }
-    
+
+    //twitch plays
+    #pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"!{0} <1-10> <1-15> [Selects the block in the specified column from left to right and row from top to bottom ignoring darkened blocks twice]";
+    #pragma warning restore 414
+
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+        string[] parameters = command.Split(' ');
+        if (parameters.Length == 2)
+        {
+            int temp1 = -1, temp2 = -1;
+            if (!int.TryParse(parameters[0], out temp1))
+            {
+                yield return "sendtochaterror The specified column '" + parameters[0] + "' is invalid!";
+                yield break;
+            }
+            if (!int.TryParse(parameters[1], out temp2))
+            {
+                yield return "sendtochaterror The specified row '" + parameters[1] + "' is invalid!";
+                yield break;
+            }
+            if (temp1 < 1 || temp1 > 10)
+            {
+                yield return "sendtochaterror The specified column '" + parameters[0] + "' is out of range 1-10!";
+                yield break;
+            }
+            if (temp2 < 1 || temp2 > 15)
+            {
+                yield return "sendtochaterror The specified row '" + parameters[0] + "' is out of range 1-15!";
+                yield break;
+            }
+            int ct = 0;
+            for (int y = colorIdxBoard.GetLength(1) - 1; y >= 0; y--)
+            {
+                if (colorIdxBoard[10 - temp1, y] > 0)
+                {
+                    ct++;
+                    if (ct == temp2)
+                    {
+                        yield return null;
+                        rowRenderersWithSelectables[y].rowSelectables[10 - temp1].OnInteract();
+                        yield return new WaitForSeconds(0.05f);
+                        rowRenderersWithSelectables[y].rowSelectables[10 - temp1].OnInteract();
+                        yield break;
+                    }
+                }
+            }
+            yield return "sendtochaterror The specified row has no block to be selected!";
+        }
+    }
+
+
     void TwitchHandleForcedSolve()
     {
         StopAllCoroutines();
