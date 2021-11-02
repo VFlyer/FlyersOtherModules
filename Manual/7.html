@@ -1,13 +1,12 @@
 <html>
 	<head>
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <meta charset="utf-8">
-        <title>7 — Keep Talking and Nobody Explodes Module</title>
-        <meta name="viewport" content="initial-scale=1">
-        <link rel="stylesheet" type="text/css" href="css/normalize.css">
-        <link rel="stylesheet" type="text/css" href="css/main.css">
-        <link href='https://fonts.googleapis.com/css?family=Special+Elite' rel='stylesheet' type='text/css'>
-        <script src="js/ktane-utils.js"></script>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1">
+		<title>7 — Keep Talking and Nobody Explodes Module</title>
+		<link rel="stylesheet" type="text/css" href="css/font.css">
+		<link rel="stylesheet" type="text/css" href="css/normalize.css">
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+		<script src="js/ktane-utils.js"></script>
 	</head>
 	<style>
 		table
@@ -27,18 +26,18 @@
                     </div>
                     <div class="page-content">
                         <img src="img/Component/Seven.svg" class="diagram">
-                        <h2>The Subject of 7</h2>
+                        <h2>On The Subject of 7</h2>
                         <p class="flavour-text">It got half as many lines as its counterpart. But double the problems as the counterpart.</p>
 						<p>The module shows a 7-segment display, a rotated diamond consisting of 8 unique RGB colors, a stage indicator, and an LED, which is pressable.<br>
 						If the LED is not pressable, there are more segments, the diamond is not rotated, or the stage indicator is showing more than 1 digit, you are looking at the wrong module.</p>
-						<p>The module will start on stage 0 with a black LED to denote the initial stage. The module will also generate stages based on the number of solvable modules present, including itself, up to 7 extra stages maxmium by default. For clarification, the initial stage counts as 1 stage; if there are 11 solvable modules on the bomb, including itself, this module would have generated 8 stages total by default.</p>
+						<p>The module will start on stage 0 with a black LED to denote the initial stage. The module will also generate stages based on the number of solvable modules present, including itself, up to 7 extra stages maxmium by default. For clarification, the initial stage counts as 1 stage; if there are 11 solvable modules on the bomb, including itself, this module would have generated 8 stages total by default. This can be configured on the defuser's end to make this module longer.</p>
 						<p>The 7-segment will display a variated pattern formed by mixing red, green, blue channels respectively. These channels denote initial values, where an inverted display of that channel denotes a negative number. These values are displayed in decimal format, known as base-10.</p>
 						<p>Refer to <a href="Faulty%20Seven%20Segment%20Display.html">Faulty Seven Segment Displays</a> for the digits that are shown on this module.</p>
 						<p>Perform the operation given based on the color of the LED for each stage, using the table on the next page.</p>
 						<p>Press the LED to advance to the next stage of the module, unless the module is on the last stage, the module will loop back to stage 0.</p>
 						<p>Once you calculated the final value for each channel, press the stage indicator to enter submission mode.</p>
 						<p>From there, all of triangles that make part of the diamond will colorize into a pallet. The LED will also turn off or blink if very specific conditions are satsfied.</p>
-						<p>Enter the final values of all 3 channels, inverting that channel if needed, and mixing them additively using the diamond to select the given color and the segment to apply on. Press the stage indicator to submit the given set, which is labeled as "SUb" on the module.</p>
+						<p>Enter the final values of all 3 channels, inverting that channel if the value in that channel is negative, and mixing them additively using the diamond to select the given color and the segment to apply on. Press the stage indicator to submit the given set, which is labeled as "SUb" on the module.</p>
 						
                     </div>
                    <div class="page-footer relative-footer">Page 1 of 3</div>
@@ -55,7 +54,7 @@
 							<li>less than -9, keep adding 10 until it is no longer less than -9.</li>
 							<li>greater than 9, keep subtracting 10 until it is no longer greater than 9.</li>
 						</ul>
-						<p>T<sub>x</sub> denotes the current value for that channel after X steps, while D<sub>x</sub> is the displayed number on the Xth step. Note that this table assumes D<sub>n</sub> as a positive number, including inverted values.</p>
+						<p>T<sub>x</sub> denotes the current value for that channel after X steps, while D<sub>x</sub> is the displayed number on the Xth step. Note that this table assumes D<sub>n</sub> as a positive number, when being calculated in the cell provided. D<sub>n</sub> can be positive or negative otherwise when checking the condition for the operation.</p>
 						<table>
 							<tr>
 								<th colspan="2" rowspan="2">Indicator Color</th>
@@ -97,10 +96,10 @@
 
 							</tr>
 						</table>
-						<p>You might be surprised about the specific conditions for this module to have the LED blink. A blinking LED allows the defuser to regrab the stages by just pressing the LED.</p>
-						<p>If the bomb started on Zen Mode or any mode that makes the timer tick up instead of down, the stages can be regrabbed during submission phase regardless of how many strikes obtained.</p>
-						<p>If the bomb started on Time Mode, at least 1 strike must be accumulated on this specific module alone to regrab the stage.</p>
-						<p>Otherwise, at least 1 strike from itself or other modules, must be accumulated to regrab the stages.</p>
+						<p>If the LED blinks while the defuser is submitting, the defuser can regrab the stages by pressing the LED. The LED during submission mode can blink based on the following conditions:</p>
+						<p>In Zen Mode or any mode that makes the timer tick up instead of down, the stages can be regrabbed during submission phase regardless of how many strikes obtained.</p>
+						<p>In Time Mode, at least 1 strike must be accumulated on this specific module alone to regrab the stages during submission phase.</p>
+						<p>In any other mode, at least 1 strike from itself or other modules, must be accumulated to regrab the stages during submission phase.</p>
                     </div>
                    <div class="page-footer relative-footer">Page 2 of 3</div>
                 </div>

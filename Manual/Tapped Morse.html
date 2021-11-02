@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1">
+        <title>Tapped Morse — Keep Talking and Nobody Explodes Module</title>
+        <link rel="stylesheet" type="text/css" href="css/font.css">
+        <link rel="stylesheet" type="text/css" href="css/normalize.css">
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+        <script src="js/ktane-utils.js"></script>
+    </head>
+    <body>
+        <div class="section">
+            <div class="page page-bg-01">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title"></span>
+                </div>
+                <div class="page-content">
+                    <img src="img/Component/.svg" class="diagram">
+                    <h2>On the Subject of Tapped Morse</h2>
+                    <p class="flavour-text">Putting Morse Code in Tap Code since 2019.</p>
+                    <table style="float: right">
+                        <tr>
+                            <td class="empty"></td>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <td>A</td>
+                            <td>B</td>
+                            <td>C</td>
+                            <td>D</td>
+                            <td>E</td>
+                        </tr>
+                        <tr>
+                            <th>2</th>
+                            <td>F</td>
+                            <td>G</td>
+                            <td>H</td>
+                            <td>I</td>
+                            <td>J</td>
+                        </tr>
+                        <tr>
+                            <th>3</th>
+                            <td>L</td>
+                            <td>M</td>
+                            <td>N</td>
+                            <td>O</td>
+                            <td>P</td>
+                        </tr>
+                        <tr>
+                            <th>4</th>
+                            <td>Q</td>
+                            <td>R</td>
+                            <td>S</td>
+                            <td>T</td>
+                            <td>U</td>
+                        </tr>
+                        <tr>
+                            <th>5</th>
+                            <td>V</td>
+                            <td>W</td>
+                            <td>X</td>
+                            <td>Y</td>
+                            <td>Z</td>
+                        </tr>
+                    </table>
+                    <p>This module consists of an intertwined message consisting of 3 letters. This is linked together to form a single message, with a long rest denoting the end of the sequence.</p>
+                    <p>To disarm the module, decode the Morse code based on the dots and dashes it flashes, then decode the Tap code based on the number of flashes on each set. Note that the table for Tap Code is used in row, col format for the 2 flashes, and K will NOT be used in Tap Code. Concatenate the result, with the Morse sequence being first in the set to get your message.</p>
+                    <table>
+                        <tr>
+                            <th colspan="12">1 Flash</th>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="empty"></td>
+                            <th>-</th>
+                            <td>T</td>
+                            <th>&bull;</th>
+                            <td>E</td>
+                            <td colspan="4" class="empty"></td>
+                        </tr>
+                        <tr>
+                            <th colspan="12">2 Flashes</th>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="empty"></td>
+                            <th>&bull;&bull;</th>
+                            <td>I</td>
+                            <th>&bull;-</th>
+                            <td>A</td>
+                            <th>-&bull;</th>
+                            <td>N</td>
+                            <th>--</th>
+                            <td>M</td>
+                            <td colspan="2" class="empty"></td>
+                        </tr>
+                        <tr>
+                            <th colspan="12">3 Flashes</th>
+                        </tr>
+                        <tr>
+                            <td colspan="2" rowspan="2" class="empty"></td>
+                            <th>&bull;&bull;&bull;</th>
+                            <td>S</td>
+                            <th>&bull;&bull;-</th>
+                            <td>U</td>
+                            <th>&bull;-&bull;</th>
+                            <td>R</td>
+                            <th>&bull;--</th>
+                            <td>W</td>
+                            <td colspan="2" rowspan="2" class="empty"></td>
+                        </tr>
+                        <tr>
+                            <th>-&bull;&bull;</th>
+                            <td>D</td>
+                            <th>-&bull;-</th>
+                            <td>K</td>
+                            <th>--&bull;</th>
+                            <td>G</td>
+                            <th>---</th>
+                            <td>O</td>
+                        </tr>
+                        <tr>
+                            <th colspan="12">4 Flashes</th>
+                        </tr>
+                        <tr>
+                            
+                            <th>-&bull;&bull;&bull;</th>
+                            <td>B</td>
+                            <th>-&bull;-&bull;</th>
+                            <td>C</td>
+                            <th>&bull;&bull;-&bull;</th>
+                            <td>F</td>
+                            <th>&bull;&bull;&bull;&bull;</th>
+                            <td>H</td>
+                            <th>&bull;---</th>
+                            <td>J</td>
+                            <th>&bull;-&bull;&bull;</th>
+                            <td>L</td>
+                        </tr>
+                        <tr>
+                            <th>&bull;--&bull;</th>
+                            <td>P</td>
+                            <th>--&bull;-</th>
+                            <td>Q</td>
+                            <th>&bull;&bull;&bull;-</th>
+                            <td>V</td>
+                            <th>-&bull;&bull;-</th>
+                            <td>X</td>
+                            <th>-&bull;--</th>
+                            <td>Y</td>
+                            <th>--&bull;&bull;</th>
+                            <td>Z</td>
+                        </tr>
+                        <tr>
+                            <th colspan="12">5 Flashes</th>
+                        </tr>
+                        <tr>
+                            <td rowspan="2" class="empty"></td>
+                            <th>-----</th>
+                            <td>0</td>
+                            <th>&bull;----</th>
+                            <td>1</td>
+                            <th>&bull;&bull;---</th>
+                            <td>2</td>
+                            <th>&bull;&bull;&bull;--</th>
+                            <td>3</td>
+                            <th>&bull;&bull;&bull;&bull;-</th>
+                            <td>4</td>
+                            <td rowspan="2" class="empty"></td>
+                        </tr>
+                        <tr>
+                            <th>&bull;&bull;&bull;&bull;&bull;</th>
+                            <td>5</td>
+                            <th>-&bull;&bull;&bull;&bull;</th>
+                            <td>6</td>
+                            <th>--&bull;&bull;&bull;</th>
+                            <td>7</td>
+                            <th>---&bull;&bull;</th>
+                            <td>8</td>
+                            <th>----&bull;</th>
+                            <td>9</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="page-footer relative-footer">Page 1 of 2</div>
+            </div>
+            <div class="page page-bg-01">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title"></span>
+                </div>
+                <div class="page-content">
+                    <h2>Transmit Responses</h2>
+                    <table>
+                        <tr>
+                            <th>Message</th>
+                            <th>Transmit</th>
+                            <th>Message</th>
+                            <th>Transmit</th>
+                            <th>Message</th>
+                            <th>Transmit</th>
+                        </tr>
+                        <tr>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                        </tr>
+                        <tr>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                        </tr>
+                        <tr>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                        </tr>
+                        <tr>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                        </tr>
+                        <tr>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                        </tr>
+                        <tr>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                        </tr>
+                        <tr>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                        </tr>
+                        <tr>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                        </tr>
+                        <tr>
+                            <th class="rsMsg"></th>
+                            <td class="rsTx"></td>
+                            <td colspan="4" class="empty"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="page-footer relative-footer">Page 2 of 2</div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using uernd = UnityEngine.Random;
+/* 
+ * That one flash game in the past? He brought it here.
+ * Original credit goes to Matthew Stradwick for creating the flash version of this game.
+ */
 public class HexiomCore : MonoBehaviour {
 
-	public KMSelectable selfSelectable, resetSelectable;
+	public KMSelectable selfSelectable, resetSelectable, replaySelectable, generateNewSelectable;
 	public KMSelectable[] allSelectables;
 	public Transform entireGrid;
 	public Color[] indicatorColors;
@@ -15,7 +19,7 @@ public class HexiomCore : MonoBehaviour {
 	public KMColorblindMode colorblindHandler;
 	public KMBombInfo bombInfo;
 	int idxHovering = -1, idxStartHold = -1;
-	bool isHolding = false, interactable = false, colorblindDetected, canForceUpdateTiles = false;
+	bool isHolding = false, interactable = false, colorblindDetected, canForceUpdateTiles = false, doNotLogBoard, focused;
 	int[] idxArray = new int[0], lastIdxArray = new int[0];
 	
 	bool[] isLocked = new bool[0];
@@ -26,7 +30,7 @@ public class HexiomCore : MonoBehaviour {
 	public HexiomTile[] activeTiles;
 	public HexiomTile ancilleryTile;
 	public MeshFilter[] insetObjects;
-	Dictionary<int, int[]> adjacentNodeMappings = new Dictionary<int, int[]>();
+	Dictionary<int, int[]> adjacentNodeMappings;
 	IEnumerator animatorHandler;
 
 	static int modCounter = 1;
@@ -157,7 +161,7 @@ public class HexiomCore : MonoBehaviour {
 		resetSelectable.OnInteract += delegate {
 			if (interactable)
 			{
-				if (!idxArray.Select(a => correctAdjacentTiles[a]).SequenceEqual(lastIdxArray.Select(b => correctAdjacentTiles[b])))
+				if (!idxArray.Select(a => correctAdjacentTiles[a]).SequenceEqual(lastIdxArray.Select(b => correctAdjacentTiles[b])) && !doNotLogBoard)
                 {
 					Debug.LogFormat("[Hexiom #{0}] Non initial board before reset:", modId);
 					LogCurrentGrid();
@@ -174,9 +178,13 @@ public class HexiomCore : MonoBehaviour {
 			return false;
 		};
 		bombInfo.OnBombExploded += delegate {
-			if (IsBoardSolved()) return;
+			if (IsBoardSolved() || doNotLogBoard) return;
 			Debug.LogFormat("[Hexiom #{0}] Unsolved board upon detonation:", modId);
 			LogCurrentGrid();
+		};
+		generateNewSelectable.OnInteract += delegate {
+
+			return false;
 		};
 
 		StartCoroutine(HandleRevealAnim());
@@ -207,7 +215,8 @@ public class HexiomCore : MonoBehaviour {
 	}
 	void GenerateBoard()
     {
-		FillGrid();
+		if (adjacentNodeMappings == null || !adjacentNodeMappings.Any())
+			FillGrid();
 		idxArray = new int[allSelectables.Length];
 		isStandardTile = new bool[allSelectables.Length];
 		isLocked = new bool[allSelectables.Length];
@@ -255,11 +264,13 @@ public class HexiomCore : MonoBehaviour {
 		}
 		while (IsBoardSolved());
 		lastIdxArray = idxArray.ToArray();
-		Debug.LogFormat("[Hexiom #{0}] One possible solution:", modId);
-		LogPossibleSolution();
-		Debug.LogFormat("[Hexiom #{0}] Initial state:", modId);
-		LogCurrentGrid();
-
+		if (!doNotLogBoard)
+		{
+			Debug.LogFormat("[Hexiom #{0}] One possible solution:", modId);
+			LogPossibleSolution();
+			Debug.LogFormat("[Hexiom #{0}] Initial state:", modId);
+			LogCurrentGrid();
+		}
 		for (int x = 0; x < insetObjects.Length; x++)
 		{
 			if (!isStandardTile[x])
@@ -433,10 +444,12 @@ public class HexiomCore : MonoBehaviour {
 			{
 				activeTiles[x].bodyRenderer.enabled = false;
 				activeTiles[x].textDisplay.text = "";
+				/*
 				if (isLocked[idxCorrect])
 				{
 
 				}
+				*/
 			}
 		}
 	}
@@ -495,10 +508,6 @@ public class HexiomCore : MonoBehaviour {
 			StartCoroutine(HandleDisappearAnim());
 			interactable = false;
 		}
-	}
-	
-	// Update is called once per frame
-	void Update () {
 	}
 
 	IEnumerator TwitchHandleForcedSolve()

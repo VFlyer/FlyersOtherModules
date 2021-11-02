@@ -1,0 +1,1016 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Singularity Button — Keep Talking and Nobody Explodes Module</title>
+    <meta name="viewport" content="initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="css/font.css">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+	<link href='https://fonts.googleapis.com/css?family=Special+Elite' rel='stylesheet' type='text/css'>
+    <script src="js/ktane-utils.js"></script>
+	<style>
+		.blankintent
+		{
+			text-align: center;
+		}
+		.verticaltext
+			{
+				position: absolute;
+				
+				transform: rotate(-90deg) translate(9%,-295%);
+				text-align: center;
+				text-orientation: mixed;
+			}
+		.footnote {
+            font-style: italic;
+            font-size: 12px;
+            margin-left: 00 cm;
+        }
+		div.footnote {
+                font-size: 75%;
+                margin-left: 10%;
+                margin-top: 1.5em;
+                position: relative;
+            }
+                div.footnote::before {
+                    content: '';
+                    position: absolute;
+                    left: -1em;
+                }
+                div.footnote::after {
+                    content: '';
+                    position: absolute;
+                    border-top: 1px solid #aaa;
+                    left: -1em;
+                    top: -1em;
+                    width: 15em;
+                }
+            div.footnote p {
+                margin: 0;
+            }
+		table
+		{
+			text-align: center;
+		}
+		.red
+		{
+			background-color: red;
+		}
+		.green
+		{
+			background-color: lime;
+		}
+		.blue
+		{
+			background-color: blue;
+			color: white;
+		}
+		.yellow
+		{
+			background-color: yellow;
+		}
+		.cyan
+		{
+			background-color: cyan;
+		}
+		.magenta
+		{
+			background-color: magenta;
+		}
+		.black
+		{
+			background-color: black;
+			color: white;
+		}
+		.colorfulset
+		{
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+    <div id="ManualContent">
+        <div class="section">
+            <div class="page page-bg-01">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+                    <img src="img/Component/Singularity%20Button.svg" class="diagram">
+                    <h2>On the Subject of Singularity Button</h2>
+                    <p class="flavour-text">Oh there is one of this. This should be easy. Wait is there more of itself?</p>
+					<p>This module consists of a singular round button with a screen at the center. The screen may or may not show a character at a certain time interval. To disarm this module, you must disarm <strong>ALL</strong> instances of Singularity Button attached to the given casing by interacting with them in a specific way. An incorrect combination of actions on the buttons will cause a strike. The display on Singularity Button may or may not change after a strike. The color around the button's display will not change, however.</p>
+					<h1 style="text-align: center;margin-top: 20%">Table of Contents</h1>
+					<ol>
+						<li>Appendix: The Disarm Button</li>
+						<li>Solving 1 Singularity Button</li>
+						<li>Solving 2 Singularity Buttons</li>
+						<li>Solving 3 Singularity Buttons</li>
+						<li>Solving 4 Singularity Buttons</li>
+						<li>Solving 5 Singularity Buttons</li>
+						<li>Solving 6 Singularity Buttons</li>
+						<li>Solving 7 Singularity Buttons</li>
+						<li>Solving 8 Singularity Buttons</li>
+						<li>Solving 9 Singularity Buttons</li>
+						<li>Solving 10 Singularity Buttons</li>
+						<li>Solving 11-15 Singularity Buttons</li>
+						<li>Solving 16+ Singularity Buttons</li>
+					</ol>
+					
+                </div>
+                <div class="page-footer relative-footer">Page 1 of 14</div>
+            </div>
+            <div class="page page-bg-02">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+                    <h2>Appendix: The Disarm Button</h2>
+					<img src="img/Component/ManualDisarmButton.svg" class="diagram">
+					<p class="flavour-text">It's there for a reason. And yes, you may not like it at all.</p>
+					<p>On the back of the module is a red rectangular button that says "DISARM MODULE MANUALLY." When pressed, this will automatically disarm the given Singularity Button only when Singularity Button's are put in a "solve state". Due to strange natures on the "solve detection system" for modules that handle synchronized solves like Singularity Button, all Singularity Button's will flip to the back if bomb does not consist of only Singularity Button due to the fact that there is no way Singularity Button could directly connect to a module that relies on solves without an override. Notable actions that forbid synchronized solves are, reading a stage on major modules that require an input at the end, and inputting an answer on a module before another solve. No time, solve or strike dependent actions are required for the disarm button to be pressed.</p>
+                </div>
+				<div class="footnote">
+					<p>
+					Originally, Singularity Button was going to detect if certain modules were present on the bomb and by their conditions. In summary, the effort to set up a system for solve dependent detection system was not worth the time at the end.</p>
+				</div>
+                <div class="page-footer relative-footer">Page 2 of 14</div>
+            </div>
+			<div class="page page-bg-03">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 1 Singularity Button</h2>
+					<p class="flavour-text">The first one is always simple, right?</p>
+					<p>The module will display a single digit at the center of the button. In order to disarm 1 Singularity Button, the defuser needs to hold the button at a given time and release it when the conditions are met.</p>
+					<p></p>
+					<h3>Holding the Button</h3>
+					<ul>
+						<li>If the button is red, green, or blue, press and immediately release the button when the seconds timer contains the digit on the display. Don't try to press and immediately release too late though, otherwise the module will interpret different time stamps registered for this module.</li>
+						<li>Otherwise, if the button is white or black or gray, hold the button at any time and refer to "Releasing Singularity Button" on this page.</li>
+						<li>Otherwise hold the button when the last digit in the seconds timer is the digit on the display and refer to "Releasing Singularity Button" on this page.</li>
+					</ul>
+					<h3>Releasing Singularity Button</h3>
+					<p>Upon holding the button for a short bit, the module will display digits 0 to 9 with 1 digit missing from the sequence. The module will detect that as a hold when this is shown. That digit is referred as the missing digit if the rules require this.</p>
+					<ul>
+						<li>If the button is black, release the button when the last digit in the seconds timer is (9 - the missing digit).</li>
+						<li>Otherwise, if the button is white, release the button when the seconds timer contains the digit before you held the button.</li>
+						<li>Otherwise, if the button is gray, release the button when the seconds timer contains the missing digit.</li>
+						<li>Otherwise release when the last seconds digit is the missing digit.</li>
+					</ul>
+					<p><strong>HOWEVER,</strong> if blue is the additive color around the button and the button is not gray, the actual displayed digit before holding is (9 - the digit on the display).</p>
+                </div>
+                <div class="page-footer relative-footer">Page 3 of 14</div>
+            </div>
+			<div class="page page-bg-04">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 2 Singularity Buttons</h2>
+					<p class="flavour-text">Twins! Or the Yin and the Yang of the system.</p>
+					<p>The 2 buttons will ALWAYS be white and black respectively. In order to disarm both of them, you must input a binary sequence of 16 digits. However, both Singularity Buttons will show a hexadecimal digit one at a time on either button. Both buttons flash white to signify end of sequence. Take notes on where the digits are flashing as this signifies inverted bits in the sequence. The 4-digit hexadecimal is shown from highest to lowest significant digit on the buttons.</p>
+					<table align="center" style="text-align: center">
+						<tr>
+							<th colspan="8"><h2>Hexadecimal to Binary Conversion</h2></th>
+						</tr>
+						<tr>
+							<th>Base-16 Digit</th>
+							<th>Binary Digits<br>(high to low)</th>
+							<th>Base-16 Digit</th>
+							<th>Binary Digits<br>(high to low)</th>
+							<th>Base-16 Digit</th>
+							<th>Binary Digits<br>(high to low)</th>
+							<th>Base-16 Digit</th>
+							<th>Binary Digits<br>(high to low)</th>
+						</tr>
+						<tr>
+							<td>0</td>
+							<td>0000</td>
+							<td>4</td>
+							<td>0100</td>
+							<td>8</td>
+							<td>1000</td>
+							<td>C</td>
+							<td>1100</td>
+						</tr>
+						<tr>
+							<td>1</td>
+							<td>0001</td>
+							<td>5</td>
+							<td>0101</td>
+							<td>9</td>
+							<td>1001</td>
+							<td>D</td>
+							<td>1101</td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td>0010</td>
+							<td>6</td>
+							<td>0110</td>
+							<td>A</td>
+							<td>1010</td>
+							<td>E</td>
+							<td>1110</td>
+						</tr>
+						<tr>
+							<td>3</td>
+							<td>0011</td>
+							<td>7</td>
+							<td>0111</td>
+							<td>B</td>
+							<td>1011</td>
+							<td>F</td>
+							<td>1111</td>
+						</tr>
+					</table>
+					<p>If the hexadecimal digit is shown on the white button, the significant bit in the 4 bit array from high to low is inverted in the input sequence, I.E if the flashing digits are in the pattern show from white,black,white,black in this order and one of the flashed digits has a binary representation of 0001 from high to low, the sequence to input for that digit is 1101, low to high. Otherwise, the bit in that array is not inverted.
+					</p>
+					<p>Now that you got you got the final sequence to input, the defuser can input the bits where 0 represents the black button and 1 represents the white button. Both buttons' actions must be a tap for the module to register. If there are no digits in the serial number or the last digit in the serial number is even, the black button must be tapped at an even time and the white button must be tapped at an odd time. Otherwise, the black button must be tapped at an odd time and the white button must be tapped at an even time. Significant bits must be entered lowest to highest. Inputting the wrong bit or at the wrong time will cause a strike.</p>
+					<p>The module will stop displaying once the first bit is entered correctly. To clear inputs, hold either button for at least 5 timer ticks or input an incorrect bit.</p>
+                </div>
+                <div class="page-footer relative-footer">Page 4 of 14</div>
+            </div>
+			<div class="page page-bg-05">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 3 Singularity Buttons</h2>
+					<p class="flavour-text">Three. Like a Triangle.</p>
+					<p>The 3 Singularity Buttons are always colored gray. 3 patterns will be selected from the tables below. Each of these will each flash a set of 6 colors in a pattern, with one of the buttons denoting an anchor point on one of the patterns. Each pattern will have an anchor point that can be used for a reference to figure out each button, marked with a number. Exactly 1 color in the selected pattern will be inverted. The correct button to tap is the button that has the inverted color. Tap the button when the last seconds digit is the pattern number obtained.</p>
+					<div style="column-count: 5;">
+						<table class="colorfulset">
+							<tr>
+								<th colspan="3">Pattern #0</th>
+							</tr>
+							<tr>
+								<td class="magenta">1</td>
+								<td class="red"></td>
+								<td class="yellow"></td>
+							</tr>
+							<tr>
+								<td class="red"></td>
+								<td class="yellow">2</td>
+								<td class="green"></td>
+							</tr>
+							<tr>
+								<td class="yellow"></td>
+								<td class="green"></td>
+								<td class="cyan">3</td>
+							</tr>
+							<tr>
+								<td class="green">1</td>
+								<td class="cyan"></td>
+								<td class="blue"></td>
+							</tr>
+							<tr>
+								<td class="cyan"></td>
+								<td class="blue">2</td>
+								<td class="magenta"></td>
+							</tr>
+							<tr>
+								<td class="blue"></td>
+								<td class="magenta"></td>
+								<td class="red">3</td>
+							</tr>
+						</table>
+						<table class="colorfulset">
+							<tr>
+								<th colspan="3">Pattern #1</th>
+							</tr>
+							<tr>
+								<td class="yellow"></td>
+								<td class="red"></td>
+								<td class="magenta">3</td>
+							</tr>
+							<tr>
+								<td class="green"></td>
+								<td class="yellow">2</td>
+								<td class="red"></td>
+							</tr>
+							<tr>
+								<td class="cyan">1</td>
+								<td class="green"></td>
+								<td class="yellow"></td>
+							</tr>
+							<tr>
+								<td class="blue"></td>
+								<td class="cyan"></td>
+								<td class="green">3</td>
+							</tr>
+							<tr>
+								<td class="magenta"></td>
+								<td class="blue">2</td>
+								<td class="cyan"></td>
+							</tr>
+							<tr>
+								<td class="red">1</td>
+								<td class="magenta"></td>
+								<td class="blue"></td>
+							</tr>
+						</table>
+						<table class="colorfulset">
+							<tr>
+								<th colspan="3">Pattern #2</th>
+							</tr>
+							<tr>
+								<td class="green">1</td>
+								<td class="red"></td>
+								<td class="blue"></td>
+							</tr>
+							<tr>
+								<td class="red">1</td>
+								<td class="green"></td>
+								<td class="blue"></td>
+							</tr>
+							<tr>
+								<td class="green"></td>
+								<td class="blue"></td>
+								<td class="red">3</td>
+							</tr>
+							<tr>
+								<td class="red"></td>
+								<td class="blue">2</td>
+								<td class="green"></td>
+							</tr>
+							<tr>
+								<td class="blue"></td>
+								<td class="red">2</td>
+								<td class="green"></td>
+							</tr>
+							<tr>
+								<td class="blue"></td>
+								<td class="green"></td>
+								<td class="red">3</td>
+							</tr>
+						</table>
+						<table class="colorfulset">
+							<tr>
+								<th colspan="3">Pattern #3</th>
+							</tr>
+							<tr>
+								<td class="red">1</td>
+								<td class="black"></td>
+								<td class="cyan"></td>
+							</tr>
+							<tr>
+								<td class="magenta">1</td>
+								<td class="green"></td>
+								<td class="black"></td>
+							</tr>
+							<tr>
+								<td class="black">1</td>
+								<td class="yellow"></td>
+								<td class="blue"></td>
+							</tr>
+
+							<tr>
+								<td class="black"></td>
+								<td class="cyan">2</td>
+								<td class="red"></td>
+							</tr>
+							<tr>
+								<td class="green"></td>
+								<td class="black"></td>
+								<td class="magenta">3</td>
+							</tr>
+							<tr>
+								<td class="yellow"></td>
+								<td class="blue">2</td>
+								<td class="black"></td>
+							</tr>
+						</table>
+						<table class="colorfulset">
+							<tr>
+								<th colspan="3">Pattern #4</th>
+							</tr>
+							<tr>
+								<td class="yellow">1</td>
+								<td class="blue"></td>
+								<td class="white"></td>
+							</tr>
+							<tr>
+								<td class="white">1</td>
+								<td class="cyan"></td>
+								<td class="red"></td>
+							</tr>
+							<tr>
+								<td class="green"></td>
+								<td class="white">2</td>
+								<td class="magenta"></td>
+							</tr>
+							<tr>
+								<td class="red"></td>
+								<td class="white">2</td>
+								<td class="cyan"></td>
+							</tr>
+							<tr>
+								<td class="magenta"></td>
+								<td class="green"></td>
+								<td class="white">3</td>
+							</tr>
+							<tr>
+								<td class="white"></td>
+								<td class="yellow"></td>
+								<td class="blue">3</td>
+							</tr>
+						</table>
+						<table class="colorfulset">
+							<tr>
+								<th colspan="3">Pattern #5</th>
+							</tr>
+							<tr>
+								<td class="cyan"></td>
+								<td class="magenta"></td>
+								<td class="yellow">3</td>
+							</tr>
+							<tr>
+								<td class="cyan"></td>
+								<td class="yellow">2</td>
+								<td class="magenta"></td>
+							</tr>
+							<tr>
+								<td class="yellow"></td>
+								<td class="cyan">2</td>
+								<td class="magenta"></td>
+							</tr>
+							<tr>
+								<td class="magenta"></td>
+								<td class="cyan">2</td>
+								<td class="yellow"></td>
+							</tr>
+							<tr>
+								<td class="magenta"></td>
+								<td class="yellow">2</td>
+								<td class="cyan"></td>
+							</tr>
+							<tr>
+								<td class="yellow">1</td>
+								<td class="magenta"></td>
+								<td class="cyan"></td>
+							</tr>
+						</table>
+						<table class="colorfulset">
+							<tr>
+								<th colspan="3">Pattern #6</th>
+							</tr>
+							<tr>
+								<td class="white"></td>
+								<td class="green">2</td>
+								<td class="black"></td>
+							</tr>
+							<tr>
+								<td class="black"></td>
+								<td class="white">2</td>
+								<td class="blue"></td>
+							</tr>
+							<tr>
+								<td class="red"></td>
+								<td class="black"></td>
+								<td class="white">3</td>
+							</tr>
+							<tr>
+								<td class="white">1</td>
+								<td class="blue"></td>
+								<td class="black"></td>
+							</tr>
+							<tr>
+								<td class="black"></td>
+								<td class="white"></td>
+								<td class="red">3</td>
+							</tr>
+							<tr>
+								<td class="green"></td>
+								<td class="black">2</td>
+								<td class="white"></td>
+							</tr>
+						</table>
+						<table class="colorfulset">
+							<tr>
+								<th colspan="3">Pattern #7</th>
+							</tr>
+							<tr>
+								<td class="black">1</td>
+								<td class="white"></td>
+								<td class="magenta"></td>
+							</tr>
+							<tr>
+								<td class="yellow"></td>
+								<td class="black"></td>
+								<td class="white">3</td>
+							</tr>
+							<tr>
+								<td class="white"></td>
+								<td class="cyan">2</td>
+								<td class="black"></td>
+							</tr>
+							<tr>
+								<td class="black"></td>
+								<td class="yellow">2</td>
+								<td class="white"></td>
+							</tr>
+							<tr>
+								<td class="magenta"></td>
+								<td class="white"></td>
+								<td class="black">3</td>
+							</tr>
+							<tr>
+								<td class="white"></td>
+								<td class="black"></td>
+								<td class="cyan">3</td>
+							</tr>
+						</table>
+						<table class="colorfulset">
+							<tr>
+								<th colspan="3">Pattern #8</th>
+							</tr>
+							<tr>
+								<td class="magenta">1</td>
+								<td class="red"></td>
+								<td class="yellow"></td>
+							</tr>
+							<tr>
+								<td class="red"></td>
+								<td class="yellow">2</td>
+								<td class="green"></td>
+							</tr>
+							<tr>
+								<td class="yellow"></td>
+								<td class="green"></td>
+								<td class="cyan">3</td>
+							</tr>
+							<tr>
+								<td class="green">4</td>
+								<td class="cyan"></td>
+								<td class="blue"></td>
+							</tr>
+							<tr>
+								<td class="cyan"></td>
+								<td class="blue">5</td>
+								<td class="magenta"></td>
+							</tr>
+							<tr>
+								<td class="blue"></td>
+								<td class="magenta"></td>
+								<td class="red">6</td>
+							</tr>
+						</table>
+						<table class="colorfulset">
+							<tr>
+								<th colspan="3">Pattern #9</th>
+							</tr>
+							<tr>
+								<td class="magenta">1</td>
+								<td class="red"></td>
+								<td class="yellow"></td>
+							</tr>
+							<tr>
+								<td class="red"></td>
+								<td class="yellow">2</td>
+								<td class="green"></td>
+							</tr>
+							<tr>
+								<td class="yellow"></td>
+								<td class="green"></td>
+								<td class="cyan">3</td>
+							</tr>
+							<tr>
+								<td class="green">4</td>
+								<td class="cyan"></td>
+								<td class="blue"></td>
+							</tr>
+							<tr>
+								<td class="cyan"></td>
+								<td class="blue">5</td>
+								<td class="magenta"></td>
+							</tr>
+							<tr>
+								<td class="blue"></td>
+								<td class="magenta"></td>
+								<td class="red">6</td>
+							</tr>
+						</table>
+					</div>
+					<table align="center">
+							<tr>
+								<th colspan="4">Color Reference</th>
+							</tr>
+							<tr>
+								<td class="red"></td>
+								<td>R</td>
+								<td class="yellow"></td>
+								<td>Y</td>
+							</tr>
+							<tr>
+								<td class="green"></td>
+								<td>G</td>
+								<td class="cyan"></td>
+								<td>C</td>
+							</tr>
+							<tr>
+								<td class="blue"></td>
+								<td>B</td>
+								<td class="magenta"></td>
+								<td>M</td>
+							</tr>
+							<tr>
+								<td class="white"></td>
+								<td>W</td>
+								<td class="black"></td>
+								<td>K</td>
+							</tr>
+						</table>
+                </div>
+                <div class="page-footer relative-footer">Page 5 of 14</div>
+            </div>
+			<div class="page page-bg-01">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 4 Singularity Buttons</h2>
+					<h3>Simon's Singularity</h3>
+					<p>The 4 buttons are ALWAYS colored Red, Yellow, Green, or Blue. To solve this module, you need to interpret by using other related Simon manuals out from <a href="https://ktane.timwi.de/">ktane.timwi.de</a>. Correct button presses can change. One button will flash a colored number, where the number is the manual corresponding to the given module. The color from the number refers to the color of the button to start looking for from the external manual. If the desired color to press is NOT red, yellow, green or blue, press the color that is not in the list of the main colors of the module's manual provided. (I.E. 3 G wants a pink button to be pressed but no pink button exists, press the red button, since yellow, blue, and green are present in Tasha Squeals.) If the module's manual requires the position of the given button, it is best assumed to check the other buttons for those. If the color on the module's manual does not exist at all on Singularity Button, skip it, unless after skipping, there are no other colors to press, hold either of the buttons that flashed on this stage and refer to "Holding A Singularity Button MK2" on the next page.</p>
+					<table align="center" style="text-align: center">
+						<tr>
+							<th>Number</th>
+							<th>Module in Reference</th>
+							<th>Number</th>
+							<th>Module in Reference</th>
+						</tr>
+						<tr>
+							<td>0</td>
+							<td>None (Tap the button whose color is the color of the given text.)</td>
+							<td>5</td>
+							<td><a href="Simon%20Scrambles.html">Simon Scrambles</a></td>
+						</tr>
+						<tr>
+							<td>1</td>
+							<td><a href="Simon%20Says.html">Simon Says</a></td>
+							<td>6</td>
+							<td><a href="Simon%20Screams.html">Simon Screams</a>*</td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td><a href="Simon%20States.html">Simon States</a>&dagger;</td>
+							<td>7</td>
+							<td><a href="Simon%20Simons.html">Simon Simons</a>*</td>
+						</tr>
+						<tr>
+							<td>3</td>
+							<td><a href="Tasha%20Squeals.html">Tasha Squeals</a>*&ddagger;</td>
+							<td>8</td>
+							<td><a href="Simon%20Squawks.html">Simon Squawks</a> (Use the previous correct button pressed for the 2nd flash.)</td>
+						</tr>
+						<tr>
+							<td>4</td>
+							<td><a href="Simon%20Sounds.html">Simon Sounds</a></td>
+							<td>9</td>
+							<td><a href="%E2%9D%96.html">❖</a></td>
+						</tr>
+					</table>
+					<p>The first stage will ALWAYS flash one colored number in any of the given buttons. Any following stage(s) can flash more than one from multiple buttons.</p>
+					<p>* Another button will flash a letter corresponding to the colored text.<br>For Tasha Squeals and Simon Simons the letters refer to (T)op, (B)ottom, (R)ight, and (L)eft respectively.<br>For Simon Screams, letters A - H refer to the smaller table.</p>
+                </div>
+				<div class="footnote">
+					<p>&dagger; Use the color of the first flash in the sequence instead for determining priority.</p>
+					<p>&ddagger; If red is the color of the text for this number, use pink for the tables.</p>
+					<p>Manuals referred for this set of Singularity Buttons are referred at rule seed 1.</p>
+				</div>
+                <div class="page-footer relative-footer">Page 6 of 14</div>
+            </div>
+			<div class="page page-bg-06">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 4 Singularity Buttons (Cont.)</h2>
+					<h3>Holding A Singularity Button MK2</h3>
+					
+					<p>Upon holding a button, that button will display colored text which contains a random digit. After releasing the button, resume inputting the rest of the sequence if the desired set of buttons require it.</p>
+					<ol>
+						<li>If the button is displaying text and color inconsistently, release the button any time.</li>
+						<li>Otherwise, if the button is only displaying text inconsistently grab the color that the button is displaying and refer to the digit on the seconds timer that needs to be present upon releasing the button:</li>
+						<ol style="column-count: 4">
+							<li><strong>Red:</strong> 1</li>
+							<li><strong>Yellow:</strong> 5</li>
+							<li><strong>Green:</strong> 3</li>
+							<li><strong>Cyan:</strong> 7</li>
+							<li><strong>Blue:</strong> 4</li>
+							<li><strong>Magenta:</strong> 4</li>
+							<li><strong>White:</strong> 7</li>
+						</ol>
+						<li>Otherwise, if the button is only displaying color inconsistently and the character shown is a digit, release the button when the last seconds digit is the digit shown.</li>
+						<li>Otherwise, use the the table underneath to figure out when to release the button:</li>
+					</ol>
+						<table style="text-align: center; width: 100%" align="center">
+							<tr>
+								<td colspan="2" rowspan="2" class="invisible"></td>
+								<th colspan="10">Displayed Digit</th>
+							</tr>
+							<tr>
+								<th>0</th>
+								<th>1</th>
+								<th>2</th>
+								<th>3</th>
+								<th>4</th>
+								<th>5</th>
+								<th>6</th>
+								<th>7</th>
+								<th>8</th>
+								<th>9</th>
+							</tr>
+							<tr>
+								<th rowspan="7" style="text-align: center;width: 5%"><span class="verticaltext">Displayed Color</span></th>
+								<th>W</th>
+								<td>:X5</td>
+								<td>:X6</td>
+								<td>:X7</td>
+								<td>:X8</td>
+								<td>:X9</td>
+								<td>:X0</td>
+								<td>:X1</td>
+								<td>:X2</td>
+								<td>:X3</td>
+								<td>:X4</td>
+							</tr>
+							<tr>
+								<th>Y</th>
+								<td>:DE</td>
+								<td>:ED</td>
+								<td>:0X</td>
+								<td>:1X</td>
+								<td>:2X</td>
+								<td>:3X</td>
+								<td>:4X</td>
+								<td>:5X</td>
+								<td>:DD</td>
+								<td>:EE</td>
+							</tr>
+							<tr>
+								<th>M</th>
+								<td>:X1</td>
+								<td>:X2</td>
+								<td>:X4</td>
+								<td>:X8</td>
+								<td>:X6</td>
+								<td>:X2</td>
+								<td>:X4</td>
+								<td>:X8</td>
+								<td>:X6</td>
+								<td>:X2</td>
+							</tr>
+							<tr>
+								<th>C</th>
+								<td>:X9</td>
+								<td>:X8</td>
+								<td>:X7</td>
+								<td>:X6</td>
+								<td>:X5</td>
+								<td>:X4</td>
+								<td>:X3</td>
+								<td>:X2</td>
+								<td>:X1</td>
+								<td>:X0</td>
+							</tr>
+							<tr>
+								<th>B</th>
+								<td>!:5X</td>
+								<td>!:4X</td>
+								<td>!:3X</td>
+								<td>!:2X</td>
+								<td>!:1X</td>
+								<td>!:0X</td>
+								<td>!:EE</td>
+								<td>!:ED</td>
+								<td>!:DE</td>
+								<td>!:DD</td>
+							</tr>
+							<tr>
+								<th>G</th>
+								<td>:D9</td>
+								<td>:D8</td>
+								<td>:D7</td>
+								<td>:D6</td>
+								<td>:D5</td>
+								<td>:D4</td>
+								<td>:D3</td>
+								<td>:D2</td>
+								<td>:D1</td>
+								<td>:D0</td>
+							</tr>
+							<tr>
+								<th>R</th>
+								<td>:E0</td>
+								<td>:E1</td>
+								<td>:E2</td>
+								<td>:E3</td>
+								<td>:E4</td>
+								<td>:E5</td>
+								<td>:E6</td>
+								<td>:E7</td>
+								<td>:E8</td>
+								<td>:E9</td>
+							</tr>
+						</table>
+						<p>"!:??" refers to NOT on the specified condition. "E" is refered to as any even digit; "D" is refered to as any odd digit; "X" is any digit. As an example "!:D5" is do not release the button when the 2nd to last seconds digit is odd and the last digit is a 5.</p>
+                </div>
+                <div class="page-footer relative-footer">Page 6 of 14</div>
+            </div>
+			<div class="page page-bg-07">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 5 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 7 of 14</div>
+            </div>
+			<div class="page page-bg-01">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 6 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 8 of 14</div>
+            </div>
+			<div class="page page-bg-02">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 7 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 9 of 14</div>
+            </div>
+			<div class="page page-bg-03">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 8 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 10 of 14</div>
+            </div>
+			<div class="page page-bg-04">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 9 Singularity Buttons</h2>
+					<p class="flavour-text">It looks like someone tried to make another Stores module... This time it went all over the place.</p>
+					<p>The module will consist of button colors reassembling another module however the buttons are scattered. Use the manual from Simon Stores plus this page to grab the value needed to disarm this set. b<sub>4</sub> is the target value to disarm this.</p>
+					<p>The module will display 5 flashes with the flash at XX:X1/X1.XX on the countdown timer being the end of sequence. Steps are applied based on the countdown timer ticking down until the end of sequence where the first step is at XX:X9/X9.XX and the last step is at XX:X3/X3.XX. At XX:X0/X0.XX, colored Singularity Button will show a digit on the display which represents safe digits* to tap when inputting. While the module does not accurately represent where each button is, it is best assumed that swapping colors are not needed to input. <strong>Drop decimal answers when dividing.</strong></p>
+					<table align="center">
+						<tr>
+							<th></th>
+							<th>a<sub>n</sub></th>
+							<th>b<sub>n</sub></th>
+						</tr>
+						<tr>
+							<th>W</th>
+							<td>W(a) = a<sub>n-1</sub> + a<sub>0</sub> / 2</td>
+							<td>W(b) = b<sub>n-1</sub> + a<sub>n-1</sub></td>
+						</tr>
+						<tr>
+							<th>K</th>
+							<td>K(a) = a<sub>n-1</sub> - a<sub>0</sub> / 2</td>
+							<td>K(b) = b<sub>n-1</sub> - a<sub>n-1</sub></td>
+						</tr>
+						<tr>
+							<th>1P, W</th>
+							<td>a<sub>n</sub> = P(a<sub>n-1</sub>) + D &times; n</td>
+							<td>b<sub>n</sub> = P(b<sub>n-1</sub>) + D - c<sub>0</sub></td>
+						</tr>
+						<tr>
+							<th>1P, K</th>
+							<td>a<sub>n</sub> = P(a<sub>n-1</sub>) - D &times; n</td>
+							<td>b<sub>n</sub> = P(b<sub>n-1</sub>) - D + c<sub>0</sub></td>
+						</tr>
+						<tr>
+							<th>1S, W</th>
+							<td>a<sub>n</sub> = a<sub>0</sub> - S(a<sub>n-1</sub>)</td>
+							<td>b<sub>n</sub> = S(b<sub>n-1</sub>) + c<sub>0</sub> / n</td>
+						</tr>
+						<tr>
+							<th>1S, K</th>
+							<td>a<sub>n</sub> = a<sub>0</sub> + S(a<sub>n-1</sub>)</td>
+							<td>b<sub>n</sub> = S(b<sub>n-1</sub>) - c<sub>0</sub> / n</td>
+						</tr>
+						<tr>
+							<th>W, K</th>
+							<td>a<sub>n</sub> = a<sub>n-1</sub> + a<sub>n-2</sub></td>
+							<td>b<sub>n</sub> = b<sub>n-1</sub> + b<sub>n-2</sub></td>
+						</tr>
+						<tr>
+							<th>2P, W</th>
+							<td>a<sub>n</sub> = P<sub>1</sub>(a<sub>n-1</sub>) + P<sub>2</sub>(a<sub>n-1</sub>) - W(a<sub>n-1</sub>)</td>
+							<td>b<sub>n</sub> = b<sub>0</sub> * n - |P<sub>1</sub>(b<sub>n-1</sub>) - P<sub>2</sub>(b<sub>n-1</sub>)|</td>
+						</tr>
+						<tr>
+							<th>2P, K</th>
+							<td>a<sub>n</sub> = P<sub>1</sub>(a<sub>n-1</sub>) + P<sub>2</sub>(a<sub>n-1</sub>) + K(a<sub>n-1</sub>)</td>
+							<td>b<sub>n</sub> = b<sub>0</sub> * n + |P<sub>1</sub>(b<sub>n-1</sub>) - P<sub>2</sub>(b<sub>n-1</sub>)|</td>
+						</tr>
+						<tr>
+							<th>1P, 1S, W</th>
+							<td>a<sub>n</sub> = max(P(a<sub>n-1</sub>), S(a<sub>n-1</sub>), W(a<sub>n-1</sub>))</td>
+							<td>b<sub>n</sub> = P(b<sub>n-1</sub>) + S(b<sub>n-1</sub>) - D</td>
+						</tr>
+						<tr>
+							<th>1P, 1S, K</th>
+							<td>a<sub>n</sub> = min(P(a<sub>n-1</sub>), S(a<sub>n-1</sub>), K(a<sub>n-1</sub>))</td>
+							<td>b<sub>n</sub> = P(b<sub>n-1</sub>) + S(b<sub>n-1</sub>) + D</td>
+						</tr>
+						<tr>
+							<th>2S, W</th>
+							<td>a<sub>n</sub> = |S<sub>1</sub>(a<sub>n-1</sub>) - S<sub>2</sub>(a<sub>n-1</sub>)| + a<sub>0</sub></td>
+							<td>b<sub>n</sub> = S<sub>3</sub>(b<sub>n-1</sub>) - a<sub>n-2</sub></td>
+						</tr>
+						<tr>
+							<th>2S, K</th>
+							<td>a<sub>n</sub> = a<sub>0</sub> - |S<sub>1</sub>(a<sub>n-1</sub>) - S<sub>2</sub>(a<sub>n-1</sub>)|</td>
+							<td>b<sub>n</sub> = S<sub>3</sub>(b<sub>n-1</sub>) + a<sub>n-2</sub></td>
+						</tr>
+						<tr>
+							<th>1P, W, K</th>
+							<td>a<sub>n</sub> = max(P(a<sub>n-1</sub>), a<sub>n-1</sub> - a<sub>n-2</sub>) - D</td>
+							<td>b<sub>n</sub> = max(R(b<sub>n-1</sub>), G(b<sub>n-1</sub>), B(b<sub>n-1</sub>))</td>
+						</tr>
+						<tr>
+							<th>1S, W, K</th>
+							<td>a<sub>n</sub> = min(S(a<sub>n-1</sub>), a<sub>n-1</sub> - a<sub>n-2</sub>) + D</td>
+							<td>b<sub>n</sub> = min(Y(b<sub>n-1</sub>), C(b<sub>n-1</sub>), M(b<sub>n-1</sub>))</td>
+						</tr>
+					</table>
+					<p>For a<sub>-1</sub>, use the number of modules on the bomb, modulo 365. For b<sub>-1</sub>, use the sum of the characters in the serial number (A=1, Z=26), squared, modulo 365.</p>
+                </div>
+				<div class="footnote">
+					<p>Simon Stores' manual can be found <a href="Simon%20Stores.html">here</a>.</p>
+					<p>* For safe digit interactions, the module does NOT detect miliseconds on the countdown timer.</p>
+				</div>
+                <div class="page-footer relative-footer">Page 11 of 14</div>
+            </div>
+			<div class="page page-bg-05">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 10 Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 12 of 14</div>
+            </div>
+			<div class="page page-bg-06">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 11-15 Singularity Buttons</h2>
+					<p class="flavour-text">Another game was referenced. What was that game again?</p>
+					<p>Each Singularity Button will show 3 characteristics, the digit visible on the button's screen, the color of the button's surroundings, and the color of the text. The objective is to make all of the Singularity Button's screen stop glowing white by tapping each Singularity Button.</p>
+					<p>The state of each Singularity Button can be toggled by tapping any Singularity Button that has its screen white. Attempting to tap a Singularity Button that does not have its screen white will result in a strike and not toggle that Singularity Button.</p>
+					<p>Not only does the tapped Singularity Button toggle itself but other Singularity Buttons will also be toggled if at least 2 properties are shared. If the main button is held for at least 5 timer ticks instead, all Singularity Button's that share at least 2 properties will flash.</p>
+					<h3>Sharable Properties:</h3>
+					<ul>
+						<li>Button's displayed digit</li>
+						<li>Button's backing color</li>
+						<li>Button's text color</li>
+					</ul>
+                </div>
+                <div class="page-footer relative-footer">Page 13 of 14</div>
+            </div>
+			<div class="page page-bg-07">
+                <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Singularity Button</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving 16+ Singularity Buttons</h2>
+                </div>
+                <div class="page-footer relative-footer">Page 14 of 14</div>
+            </div>
+			
+        </div>
+    </div>
+</body>
+</html>
