@@ -224,7 +224,7 @@ public class ForgetItNotHandler : MonoBehaviour {
         idxlit = -1;
         textMeshBig.text = "";
         textMeshStage.text = "--";
-        if (correctinputs - offsetStageCnt > 24 && offsetStageCnt + 12 < combinedDisplayString.Length)
+        if (correctinputs - offsetStageCnt >= 24 && offsetStageCnt + 12 < combinedDisplayString.Length)
         {
             offsetStageCnt += 12;
         }

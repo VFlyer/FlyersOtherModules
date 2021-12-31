@@ -627,13 +627,14 @@ public class RobitProgrammingCore : MonoBehaviour {
 	IEnumerator HandleNewRotation(int idx)
 	{
 		var rotationIdxes = new[] { 0, 180, 90, -90 };
-		var lastRotation = botPosition.transform.localEulerAngles;
+		var lastRotation = botPosition.transform.localRotation;
+		var modifiedRotation = Quaternion.Euler(0, rotationIdxes[idx], 0);
 		for (float x = 0; x < 1f; x += 15 * Time.deltaTime)
         {
 			yield return null;
-			botPosition.transform.localEulerAngles = lastRotation * (1f - x) + new Vector3(0, rotationIdxes[idx], 0) * x;
+			botPosition.transform.localRotation = Quaternion.Lerp(lastRotation, modifiedRotation, x);
 		}
-		botPosition.transform.localEulerAngles = new Vector3(0, rotationIdxes[idx], 0);
+		botPosition.transform.localRotation = modifiedRotation;
 
 	}
 	IEnumerator HandleDirectionalMovement()
@@ -884,7 +885,7 @@ public class RobitProgrammingCore : MonoBehaviour {
 					mAudio.PlaySoundAtTransform("strike", botPosition.transform);
 				break;
 			}
-			else if (!collectedCorners.Contains(0) && currentXPos == 0 && currentYPos == 0)
+			if (!collectedCorners.Contains(0) && currentXPos == 0 && currentYPos == 0)
             {
 				QuickLog("Successfully collected the TL cube. The TL quirk will now stop applying.");
 				collectedCorners.Add(0);
@@ -1028,24 +1029,30 @@ public class RobitProgrammingCore : MonoBehaviour {
 			yield return null;
         }
 	}
+	IEnumerator HandleFloatDownAnim(Transform selectedObject, Vector3 deltaModifier, float delay = 0f)
+    {
+		yield return new WaitForSecondsRealtime(delay);
+		for (float x = 0; x < 1f; x += Time.deltaTime * 9)
+		{
+			selectedObject.localPosition += deltaModifier * Time.deltaTime;
+			yield return null;
+		}
+		selectedObject.localPosition = deltaModifier;
+	}
+
 	IEnumerator HandleSolveAnim()
     {
 		modSelf.HandlePass();
 		mAudio.PlaySoundAtTransform("hiss", transform);
 		yield return null;
 		StartCoroutine(AnimateClearDisplay());
-        foreach (RowRenderers renderers in gridToDisplay.rowRenderers) 
+        for (int i = 0; i < gridToDisplay.rowRenderers.Length; i++) 
         {
-            for (float x = 0; x < 1f; x += Time.deltaTime * 9)
-            {
-                renderers.transform.localPosition += Vector3.down * Time.deltaTime;
-				yield return null;
-			}
-			renderers.transform.localPosition = Vector3.down;
-			for (var x = 0; x < renderers.canRender.Length; x++)
+            RowRenderers renderers = gridToDisplay.rowRenderers[i];
+            for (int c = 0; c < renderers.wallRenderers.Length; c++)
 			{
-				renderers.canRender[x] = false;
-				renderers.wallRenderers[x].enabled = false;
+                MeshRenderer wallRender = renderers.wallRenderers[c];
+				StartCoroutine(HandleFloatDownAnim(wallRender.transform, Vector3.down, (Mathf.Abs(i - currentYPos) + Mathf.Abs(c - currentXPos)) / 8f));
 			}
 		}
 	}

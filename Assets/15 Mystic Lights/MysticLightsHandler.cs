@@ -64,7 +64,7 @@ public class MysticLightsHandler : MonoBehaviour {
             }
             catch
             {
-                Debug.LogErrorFormat("<15 Mystic Lights>: The settings for Forget Infinty do not work as intended! The module will use default settings instead.");
+                Debug.LogErrorFormat("<15 Mystic Lights>: The settings for Flyer's Other Settings do not work as intended! The module will use default settings instead.");
                 instantMysticLights = false;
             }
         }
@@ -72,6 +72,8 @@ public class MysticLightsHandler : MonoBehaviour {
     // Use this for initialization
     void Start () {
 
+        if (instantMysticLights)
+            Debug.LogFormat("[15 Mystic Lights #{0}]: Instant Mystic Lights are enabled. This may be infuriating to other players. Use it with caution.", curmodid);
         float scalar = transform.lossyScale.x;// Account for scale factor for this module being smaller, check KTANE official discord in #modding
         foreach (Light onelight in lights)
         {
@@ -375,7 +377,6 @@ public class MysticLightsHandler : MonoBehaviour {
         }
         return null;
     }
-    int animDelay = 30;
     IEnumerator PlayTransitionAnim()
     {
         isGenerating = true;
@@ -386,7 +387,7 @@ public class MysticLightsHandler : MonoBehaviour {
         }
         kMAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSequenceMechanism, transform);
         Vector3 pointD = AnimPointD.transform.localPosition;
-        for (float x = 0; x <= 1; x+=Time.deltaTime * 2)
+        for (float x = 0; x <= 1; x+=Time.deltaTime * (instantMysticLights ? 10 : 2))
         {
             float zAnim = pointD.z * x;
             for (int idx = 0; idx < tiles.Length; idx++)
@@ -401,7 +402,7 @@ public class MysticLightsHandler : MonoBehaviour {
         }
         Generate4x4WithHolePuzzle();
         isGenerating = true;
-        for (float x = 0; x <= 1; x += Time.deltaTime * 2)
+        for (float x = 0; x <= 1; x += Time.deltaTime * (instantMysticLights ? 10 : 2))
         {
             float zAnim = pointD.z * (1f - x);
             for (int idx = 0; idx < tiles.Length; idx++)
@@ -429,7 +430,7 @@ public class MysticLightsHandler : MonoBehaviour {
         }
         kMAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSequenceMechanism, transform);
         Vector3 pointD = AnimPointD.transform.localPosition;
-        for (float x = 0; x <= 1; x += Time.deltaTime * 2)
+        for (float x = 0; x <= 1; x += Time.deltaTime * (instantMysticLights ? 10 : 2))
         {
             float zAnim = pointD.z * x;
             for (int idx = 0; idx < tiles.Length; idx++)
@@ -459,7 +460,7 @@ public class MysticLightsHandler : MonoBehaviour {
             Generate4x4Puzzle();
         }
         isGenerating = true;
-        for (float x = 0; x <= 1; x += Time.deltaTime * 2)
+        for (float x = 0; x <= 1; x += Time.deltaTime * (instantMysticLights ? 10 : 2))
         {
             float zAnim = pointD.z * (1f - x);
             for (int idx = 0; idx < tiles.Length; idx++)
@@ -642,7 +643,7 @@ public class MysticLightsHandler : MonoBehaviour {
         }
         float localX = pointBR.x * xcor / 3f + pointTL.x * (3 - xcor) / 3f;
         float localY = pointBR.y * ycor / 3f + pointTL.y * (3 - ycor) / 3f;
-        for (float x = 1; x >= 0; x -= Time.deltaTime)
+        for (float x = 1; x >= 0; x -= Time.deltaTime * (instantMysticLights ? 10 : 1))
         {
             float localZ = pointD.z * x;
             TileAnim.SetActive(true);
@@ -665,6 +666,26 @@ public class MysticLightsHandler : MonoBehaviour {
         moduleSelf.HandlePass();
         yield return null;
     }
+    // TP Handler Begins Here
+    IEnumerator TwitchHandleForcedSolve()
+    {
+        if (!hasExitedInitial)
+        {
+            for (var x = 0; x < lightStates.GetLength(0) - 1; x++)
+            {
+                for (var y = 0; y < lightStates.GetLength(1); y++)
+                {
+                    if ((bool)lightStates[x, y])
+                        tileSelectables[4 * x + y + 4].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                }
+            }
+            while (isGenerating) yield return true;
+        }
+        while (isGenerating) yield return true;
+        moduleSelf.HandlePass();
+    }
+
 #pragma warning disable IDE0051 // Remove unused private members
     private readonly string TwitchHelpMessage = "Press a button with “!{0} A1 B2 C3 D4...”. Columns are labeled A-D from left to right, rows are labeled 1-4 from top to bottom. Commands may be voided if the module enters a generation state or a solve state. \"press\" is optional.\nTo toggle colorblind: \"!{0} colorblind\" To generate a new board: \"!{0} regen[erate]\" or \"!{0} reset\". You can only regenerate up to 3 times on this module! To get the number of resets this module currently used up: \"!{0} resetcount\"";
     bool TwitchPlaysActive;

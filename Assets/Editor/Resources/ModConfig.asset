@@ -16,21 +16,21 @@ MonoBehaviour:
   description: "A collection of 27 (and possibly growing) modules made by VFlyer with
     some modules from other ideas.\r\n\r\nMod contains 3x3 Grid, \u2756, Time Accumulation,
     BuzzFizz, Forget It Not, 15 Mystic Lights, Simon Stages, Forget Infinity, Faulty
-    7 Segment Displays, 7\r, Rapid Subtraction, Logical Operators, Mastermind Restricted,
-    Even Or Odd, Digital Grid, Venn Diagrams, Numbered Buttons, Hexiom, Collapse\r,
+    7 Segment Displays, 7\r\n, Rapid Subtraction, Logical Operators, Mastermind Restricted,
+    Even Or Odd, Digital Grid, Venn Diagrams, Numbered Buttons, Hexiom, Collapse\r\n,
     Coprime Checker, Label Priorities, Labeled Priorities Plus, Mastermind Restricted
-    Cruel\r, Robit Programming, Simon, Extended Boolean Venn Diagram, Cruel Modulo\nThe
+    Cruel\r\n, Robit Programming, Simon, Extended Boolean Venn Diagram, Cruel Modulo\r\nThe
     following original ideas are by the following users in this pack:\r\n3x3 Grid:
     Lumbud84\r\n\u2756: Mirage Xel\r\nTime Accumulation: Kusane\r\nBuzzFizz: Blananas2\r\nForget
     It Not: RubyBfdi\r\nForget Infinity: Oshisure, Ry0001 (Revived by VFlyer to be
     more suitable)\r\nSimon Stages: Madela\r\nDigital Grid: ???\r\nEven Or Odd: BigCrunch\r\nVenn
     Diagrams: Danny7007\r\nNumbered Buttons: Kusane (originally developed by a departed
-    author)\r\nLabel Priorities: Kusane (originally developed by a departed author)\r\n\rSimon:
-    BigCrunch\nCruel Modulo: ktane1\nExtended Boolean Venn Diagram: Deaf\n\nNon-example
+    author)\r\nLabel Priorities: Kusane (originally developed by a departed author)\r\n\r\nSimon:
+    BigCrunch\r\nCruel Modulo: ktane1\r\nExtended Boolean Venn Diagram: Deaf\r\n\r\nNon-example
     assets used: Asset pack from Royal_Flu$h's tutorials, Simon's Stages assets, Modulo
     assets, Divided Squares backing by Timwi, Old FMN model by Hexicube, Mastermind
     Simple prefab by Eotall, custom dial and chip self-made\r\n, inspired by Bashly's
-    Tangrams chip model\r\n\r\nThe 25 Manuals can be found built-in or from these
+    Tangrams chip model\r\n\r\nThe 27 Manuals can be found built-in or from these
     repository links:\r\n[url=https://ktane.timwi.de/HTML/BuzzFizz.html]BuzzFizz[/url]\r\n[url=https://ktane.timwi.de/HTML/3x3%20Grid.html]3x3
     Grid[/url]\r\n[url=https://ktane.timwi.de/HTML/Forget%20It%20Not.html]Forget It
     Not[/url]\r\n[url=https://ktane.timwi.de/HTML/%E2%9D%96.html]\u2756[/url]\r\n[url=https://ktane.timwi.de/HTML/Time%20Accumulation.html]Time
@@ -48,7 +48,9 @@ MonoBehaviour:
     Checker[/url]\r\n[url=https://ktane.timwi.de/HTML/Mastermind%20Restricted%20Cruel.html]Mastermind
     Restricted Cruel[/url]\r\n[url=https://ktane.timwi.de/HTML/Simon.html]Simon[/url]\r\n[url=https://ktane.timwi.de/HTML/Robit%20Programming.html]Robit
     Programming[/url]\r\n[url=https://ktane.timwi.de/HTML/Label%20Priorities.html]Label
-    Priorities[/url]\r"
-  version: 2.2.02
+    Priorities[/url]\r\n[url=https://ktane.timwi.de/HTML/Extended%20Boolean%20Venn%20Diagram.html]Extended
+    Boolean Venn Diagram[/url]\r\n[url=https://ktane.timwi.de/HTML/Cruel%20Modulo.html]Cruel
+    Modulo[/url]\r\n"
+  version: 2.3
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 1ef85429cc456814abc9b3a88838dab4, type: 3}

@@ -11,7 +11,6 @@ using uernd = UnityEngine.Random;
 public class CollapseCore : MonoBehaviour {
 
     public KMAudio mAudio;
-    public KMGameCommands gameCommands;
     public KMSelectable modSelfSelectable;
     public KMNeedyModule needySelf;
     public KMBombInfo bombInfo;
@@ -82,13 +81,7 @@ public class CollapseCore : MonoBehaviour {
                 };
             }
         }
-        bombInfo.OnBombExploded += delegate {
-            if (!permDeactivate)
-            {
-                QuickLog("Board upon detonation: ");
-                LogBoard();
-            }
-        };
+
 
         modSelfSelectable.Children = allSelectablesDefault.ToArray();
         modSelfSelectable.UpdateChildren(); // Required for gamepad usage and updating.
@@ -101,6 +94,13 @@ public class CollapseCore : MonoBehaviour {
                 LogBoard();
             }
         };
+        bombInfo.OnBombExploded += delegate {
+            if (!permDeactivate)
+            {
+                QuickLog("Board upon detonation: ");
+                LogBoard();
+            }
+        };
         UpdateGrid();
         rowRenderersNextSet.transform.localPosition = new Vector3(0, 0, -6.5f);
         rowRenderersNextSet.transform.localScale = new Vector3(1, 1, 0);
@@ -109,7 +109,7 @@ public class CollapseCore : MonoBehaviour {
     }
     void QuickLog(string value)
     {
-        Debug.LogFormat("[Collaspe #{0}] {1}", modID, value);
+        Debug.LogFormat("[Collapse #{0}] {1}", modID, value);
     }
 
     void LogBoard()
@@ -268,7 +268,7 @@ public class CollapseCore : MonoBehaviour {
         while (isActive)
         {
             yield return null;
-            needySelf.SetNeedyTimeRemaining(timeLeftManaged * 9.9f);
+            needySelf.SetNeedyTimeRemaining(Mathf.Max(0.49f, timeLeftManaged * 9.9f));
             int[] heightCounts = new int[10];
             for (int x = 0; x < colorIdxBoard.GetLength(0); x++)
                 for (int y = 0; y < colorIdxBoard.GetLength(1); y++)
@@ -437,26 +437,14 @@ public class CollapseCore : MonoBehaviour {
     void SelectAllSimilarTiles(int curX, int curY, int idxColor)
     {
         isSelected[curX, curY] = true;
-        if (curX - 1 >= 0)
-        {
-            if (colorIdxBoard[curX - 1, curY] == idxColor && !isSelected[curX - 1, curY])
-                SelectAllSimilarTiles(curX - 1, curY, idxColor);
-        }
-        if (curX + 1 < colorIdxBoard.GetLength(0))
-        {
-            if (colorIdxBoard[curX + 1, curY] == idxColor && !isSelected[curX + 1, curY])
-                SelectAllSimilarTiles(curX + 1, curY, idxColor);
-        }
-        if (curY - 1 >= 0)
-        {
-            if (colorIdxBoard[curX, curY - 1] == idxColor && !isSelected[curX, curY - 1])
-                SelectAllSimilarTiles(curX, curY - 1, idxColor);
-        }
-        if (curY + 1 < colorIdxBoard.GetLength(1))
-        {
-            if (colorIdxBoard[curX, curY + 1] == idxColor && !isSelected[curX, curY + 1])
-                SelectAllSimilarTiles(curX, curY + 1, idxColor);
-        }
+        if (curX - 1 >= 0 && colorIdxBoard[curX - 1, curY] == idxColor && !isSelected[curX - 1, curY])
+            SelectAllSimilarTiles(curX - 1, curY, idxColor);
+        if (curX + 1 < colorIdxBoard.GetLength(0) && colorIdxBoard[curX + 1, curY] == idxColor && !isSelected[curX + 1, curY])
+            SelectAllSimilarTiles(curX + 1, curY, idxColor);
+        if (curY - 1 >= 0 && colorIdxBoard[curX, curY - 1] == idxColor && !isSelected[curX, curY - 1])
+            SelectAllSimilarTiles(curX, curY - 1, idxColor);
+        if (curY + 1 < colorIdxBoard.GetLength(1) && colorIdxBoard[curX, curY + 1] == idxColor && !isSelected[curX, curY + 1])
+            SelectAllSimilarTiles(curX, curY + 1, idxColor);
         return;
     }
     IEnumerator delayRotation()
@@ -486,7 +474,7 @@ public class CollapseCore : MonoBehaviour {
         }
     }
 
-    //twitch plays
+    //Twitch Plays, command handler by eXish
     #pragma warning disable 414
     private readonly string TwitchHelpMessage = @"!{0} <1-10> <1-15> [Selects the block in the specified column from left to right and row from top to bottom ignoring darkened blocks twice]";
     #pragma warning restore 414

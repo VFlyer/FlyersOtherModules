@@ -386,7 +386,7 @@ public class HexiomCore : MonoBehaviour {
 		UpdateGrid();
 		selfSelectable.Children = new KMSelectable[] { resetSelectable };
 		selfSelectable.UpdateChildren();
-		yield return new WaitForSeconds(1f);
+		yield return new WaitForSecondsRealtime(2.5f);
 		mAudio.PlaySoundAtTransform("1_Shrink_Trimmed", transform);
 		for (float x = 0; x < 1f; x += Time.deltaTime * 5)
 		{
