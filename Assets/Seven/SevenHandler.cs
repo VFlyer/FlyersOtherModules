@@ -35,7 +35,7 @@ public class SevenHandler : MonoBehaviour {
 	int curModID;
 
 	// Detection and Logging
-	bool zenDetected, timeDetected, hasStarted, isSubmitting, interactable, colorblinddetected,
+	bool zenDetected, timeDetected, hasStarted, isSubmitting, interactable, colorblindDetected,
 		uncapAll, delayChallenge, hasStruckTimeMode, hasEnteredSubmission, hasSubmitted, fastReads, disableUncapTP;
 	int curIdx = 0, curStrikeCount, maxPPA = -1;
 	float PPAScaling;
@@ -83,11 +83,11 @@ public class SevenHandler : MonoBehaviour {
 		{
 			try
 			{
-				colorblinddetected = colorblindMode.ColorblindModeActive;
+				colorblindDetected = colorblindMode.ColorblindModeActive;
 			}
 			catch
 			{
-				colorblinddetected = false;
+				colorblindDetected = false;
 			}
 		}
 		colorblindIndc.text = "";
@@ -138,7 +138,7 @@ public class SevenHandler : MonoBehaviour {
 				{
 					colorTrianglesHL[idx].enabled = true;
 					colorTriangles[idx].material.color = new Color(idx % 2, idx / 2 % 2, idx / 4 % 2);
-					if (colorblinddetected)
+					if (colorblindDetected)
 						colorblindTextTri[idx].text = colorList.Substring(idx, 1);
 				}
 			};
@@ -226,7 +226,7 @@ public class SevenHandler : MonoBehaviour {
 					for (int x = 0; x < colorTriangles.Length; x++)
 					{
 						colorTriangles[x].material.color = new Color(x % 2, x / 2 % 2, x / 4 % 2);
-						if (colorblinddetected)
+						if (colorblindDetected)
 							colorblindTextTri[x].text = colorList.Substring(x, 1);
 					}
 					for (int idx = 0; idx < colorTrianglesHL.Length; idx++)
@@ -371,7 +371,7 @@ public class SevenHandler : MonoBehaviour {
 					}
 				}
 				segments[x].material.color = new Color(displayCnl[0] ? 1: 0, displayCnl[1] ? 1 : 0, displayCnl[2] ? 1 : 0);
-				if (fastReads && colorblinddetected)
+				if (fastReads && colorblindDetected)
 					colorblindTextSeg[x].text = colorList.Substring((displayCnl[0] ? 1 : 0) + (displayCnl[1] ? 2 : 0) + (displayCnl[2] ? 4 : 0), 1);
 				else
 					colorblindTextSeg[x].text = "";
@@ -381,7 +381,7 @@ public class SevenHandler : MonoBehaviour {
 			Color[] cPallete = { Color.red, Color.green, Color.blue, Color.white };
 			string[] cPalleteCBlind = { "R", "G", "B", "W" };
 			LEDMesh.material.color = idxOperations[curIdx] < 0 || idxOperations[curIdx] >= 4 ? Color.black : cPallete[idxOperations[curIdx]] ;
-			colorblindIndc.text = colorblinddetected ? (idxOperations[curIdx] < 0 || idxOperations[curIdx] >= 4 ? "K": cPalleteCBlind[idxOperations[curIdx]]) : "";
+			colorblindIndc.text = colorblindDetected ? (idxOperations[curIdx] < 0 || idxOperations[curIdx] >= 4 ? "K": cPalleteCBlind[idxOperations[curIdx]]) : "";
 		}
 	}
 	IEnumerator AnimateText()
@@ -409,10 +409,9 @@ public class SevenHandler : MonoBehaviour {
 			segments[x].material.color = canValidCheck
 				? segmentsColored[x] == segmentsSolution[x] ? Color.green : Color.red
 				: new Color(segmentsColored[x] % 2, segmentsColored[x] / 2 % 2, segmentsColored[x] / 4 % 2);
-			if (colorblinddetected)
-				colorblindTextSeg[x].text = canValidCheck
+			colorblindTextSeg[x].text = colorblindDetected ? (canValidCheck
 					? segmentsColored[x] == segmentsSolution[x] ? "!" : "X"
-					: colorList.Substring(segmentsColored[x], 1);
+					: colorList.Substring(segmentsColored[x], 1)) : "";
 				
 		}
 	}
@@ -888,21 +887,35 @@ public class SevenHandler : MonoBehaviour {
 			if (splitted.Length <= 1 || splitted[1] == "toggle")
 			{
 				yield return null;
-				colorblinddetected = !colorblinddetected;
+				colorblindDetected = !colorblindDetected;
 				if (!isSubmitting)
 					DisplayGivenValue(displayedValues[curIdx]);
 				else
+				{
 					UpdateSegments(false);
+					for (int x = 0; x < colorTriangles.Length; x++)
+					{
+						colorTriangles[x].material.color = new Color(x % 2, x / 2 % 2, x / 4 % 2);
+						colorblindTextTri[x].text = colorblindDetected ? colorList.Substring(x, 1) : "";
+					}
+				}
 			}
 			else
             {
 				yield return null;
 				fastReads = !fastReads;
-				colorblinddetected = true;
+				colorblindDetected = true;
 				if (!isSubmitting)
 					DisplayGivenValue(displayedValues[curIdx]);
 				else
+				{
 					UpdateSegments(false);
+					for (int x = 0; x < colorTriangles.Length; x++)
+					{
+						colorTriangles[x].material.color = new Color(x % 2, x / 2 % 2, x / 4 % 2);
+						colorblindTextTri[x].text = colorblindDetected ? colorList.Substring(x, 1) : "";
+					}
+				}
 				yield return "sendtochat Colorblind fast read for 7 (#{1}) have been " + (fastReads ? "enabled" : "disabled")+".";
 			}
 		}

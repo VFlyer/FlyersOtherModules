@@ -35,6 +35,10 @@
 		{
 			transform: scaleY(-1)scaleX(-1);
 		}
+		.smaller
+		{
+			font-size: 75%;
+		}
     </style>
     <script>
         var allPossiblePhrases = [
@@ -253,7 +257,7 @@
 				<p>Incorrectly selecting a screen or pressing the screens in the wrong order will cause a strike and make the module reset with a new 4-digit number and 3 different phrases.</p>
 				<h4>Stages 1 - 3:</h4>
 				<p>Using the four digit number, pair each of the first 3 digits to the positions of the three phrases pressed. For each stage, use the intersection of these pairs to obtain a letter. This letter corresponds to an instruction that must be done to complete this stage.</p>
-				<table>
+				<table class="smaller">
 					<tr>
 						<td>
 							<table>
@@ -281,8 +285,8 @@
 						<td>
 							<ul style="text-align: left; margin: auto">
 								<li>A: Press the phrases shown on the module in order of the <strong>The Label Priority List,</strong> starting at the remembered phrase and going down, wrapping around if necessary.</li>
-								<li>B: Perform A but reverse the sequence to press.</li>
-								<li>C: </li>
+								<li>B: Press the phrases shown on the module in order of the <strong>The Label Priority List,</strong> starting at the remembered phrase and going up, wrapping around if necessary.</li>
+								<li>C: Press the phrases shown on the module in order of distance of the  remembered phrase from the <strong>The Label Priority List,</strong> and going outward, wrapping around if necessary.</li>
 								<li>D: Perform C but reverse the sequence to press.</li>
 							</ul>
 						</td>

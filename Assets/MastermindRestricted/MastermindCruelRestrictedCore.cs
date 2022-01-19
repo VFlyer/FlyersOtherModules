@@ -97,10 +97,12 @@ public class MastermindCruelRestrictedCore : MastermindRestrictedCore {
 		correctInputs = new int[selectableRenderer.Length];
 		queriesLeft = 15;
 		maxPossible = new[] { colorList.Length, colorblindLetters.Length, invertColorblindLetter.Length }.Min();
-		for (int x = 0; x < correctInputs.Length; x++)
-		{
-			correctInputs[x] = uernd.Range(0, maxPossible);
-		}
+		do
+			for (int x = 0; x < correctInputs.Length; x++)
+			{
+				correctInputs[x] = uernd.Range(0, maxPossible);
+			}
+		while (correctInputs.Distinct().Count() == 1);
 		QuickLog(string.Format("The correct answer is now [{0}] Get this within {1} distinct queries to disarm the module.", correctInputs.Select(a => colorblindLetters[a]).Join(), queriesLeft));
 		UpdateCurrentDisplay();
 		correctBothDisplay.text = "";
