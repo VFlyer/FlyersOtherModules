@@ -1,5 +1,5 @@
 ﻿public class FlyersOtherSettings {
-
+	public bool UseAuthorSuggestedDynamicScoring = true;
 	public bool InstantMysticLights = false;
     public float FIPPAScaleFactor = 0.5f;
 	public bool SevenHardCapStageGeneration = true;

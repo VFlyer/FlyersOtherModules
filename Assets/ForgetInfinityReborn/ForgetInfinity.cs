@@ -35,6 +35,7 @@ public class ForgetInfinity : MonoBehaviour {
     private int curModID, earliestSolveCountOrgan = -1;
 
     private float PPAScaling;
+    const float authorPPAScaling = 0.5f;
     private FlyersOtherSettings FIConfig = new FlyersOtherSettings();
 	// Use this for initialization
 	void Awake() {
@@ -86,7 +87,7 @@ public class ForgetInfinity : MonoBehaviour {
             // Update settings file incase of error during read
             universalConfig.Settings = FIConfig;
 
-            PPAScaling = FIConfig.FIPPAScaleFactor;
+            PPAScaling = FIConfig.UseAuthorSuggestedDynamicScoring ? authorPPAScaling : FIConfig.FIPPAScaleFactor;
         }
         catch
         {

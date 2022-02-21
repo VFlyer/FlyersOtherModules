@@ -192,7 +192,7 @@ public class GameChangerScript : MonoBehaviour {
 		}
 		if (currentState.SequenceEqual(expectedState))
 		{
-			if (iteractionCount < 32)
+			if (iteractionCount < 8)
 			{
 				GenerateExpectedState();
 				if (expectedState.SequenceEqual(lastFinishedState))

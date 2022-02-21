@@ -51,6 +51,6 @@ MonoBehaviour:
     Priorities[/url]\r\n[url=https://ktane.timwi.de/HTML/Extended%20Boolean%20Venn%20Diagram.html]Extended
     Boolean Venn Diagram[/url]\r\n[url=https://ktane.timwi.de/HTML/Cruel%20Modulo.html]Cruel
     Modulo[/url]\r\n"
-  version: 2.3.01
+  version: 2.3.02
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 1ef85429cc456814abc9b3a88838dab4, type: 3}

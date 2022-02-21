@@ -44,7 +44,7 @@ public class CoprimeCheckerScript : MonoBehaviour {
 		if (modSolved) return;
 		if (expectedCoprime ^ buttonPressed)
         {
-            QuickLog(string.Format("You pressed the wrong button! ({0} when expecting {1}) Generating a new answer.", buttonPressed ? "coprime" : "not coprime", expectedCoprime ? "coprime" : "not coprime"));
+            QuickLog("You pressed the wrong button! ({0} when expecting {1}) Generating a new answer.", buttonPressed ? "coprime" : "not coprime", expectedCoprime ? "coprime" : "not coprime");
 			modSelf.HandleStrike();
 			GenerateStage();
 			StartCoroutine(FlashIncorrect());
@@ -52,14 +52,14 @@ public class CoprimeCheckerScript : MonoBehaviour {
 		else
         {
 			stagesCompleted++;
-			QuickLog(string.Format("You pressed the right button. Correct presses made: {0}", stagesCompleted));
+			QuickLog("You pressed the right button. Correct presses made: {0}", stagesCompleted);
 			for (var x = 0; x < Mathf.Min( ledRenderers.Length, stagesCompleted); x++)
 			{
 				ledRenderers[x].material = ledMats[2];
 			}
 			if (stagesCompleted >= 3)
             {
-				QuickLog(string.Format("You made enough correct presses. Module disarmed."));
+				QuickLog("You made enough correct presses. Module disarmed.");
 				modSolved = true;
 				modSelf.HandlePass();
 				displayText.text = "";
@@ -102,13 +102,13 @@ public class CoprimeCheckerScript : MonoBehaviour {
 		}
 	}
 
-	void QuickLog(string value)
+	void QuickLog(string value, params object[] args)
 	{
-		Debug.LogFormat("[Coprime Checker #{0}] {1}", curModID, value);
+		Debug.LogFormat("[Coprime Checker #{0}] {1}", curModID, string.Format(value, args));
 	}
 	void GenerateStage()
     {
-		int attemptsMade = 0, maxAttempts = 256;
+		int attemptsMade = 0, maxAttempts = 64;
 		expectedCoprime = Random.value < 0.5f;
         bool isSuccessful = false;
         int givenNumA, givenNumB;
@@ -127,16 +127,19 @@ public class CoprimeCheckerScript : MonoBehaviour {
 		}
 		while (attemptsMade < maxAttempts);
 		if (isSuccessful)
-			QuickLog(string.Format("Generated a matching answer after {0} attempt(s)", attemptsMade));
+			QuickLog("Generated a matching answer after {0} attempt(s)", attemptsMade);
 		else
         {
-			QuickLog(string.Format("Unable to generate a matching answer after {0} attempt(s). Enforcing answer.", attemptsMade));
+			QuickLog("Unable to generate a matching answer after {0} attempt(s). Enforcing answer.", attemptsMade);
 			expectedCoprime = IsCoprime(givenNumA, givenNumB);
 		}
 		displayText.text = givenNumA.ToString() + "\n" + givenNumB.ToString();
-		QuickLog(string.Format("The 2 numbers now shown are {0} and {1}", givenNumA, givenNumB));
-		QuickLog(string.Format("These numbers are {0}coprime.", expectedCoprime ? "" : "not "));
+		QuickLog("The 2 numbers now shown are {0} and {1}", givenNumA, givenNumB);
+		QuickLog("Using the reworded manual by Danny7007, the greatest common multiple of {0} and {1} is {2}", givenNumA, givenNumB, ObtainGCM(givenNumA, givenNumB));
+		QuickLog("These numbers are {0}coprime.", expectedCoprime ? "" : "not ");
 	}
+	// Old checking section to obtain prime factors of a certain number.
+	/*
 	List<int> ObtainPrimeFactors(int aNum)
     {
 		var curNumA = aNum;
@@ -168,9 +171,33 @@ public class CoprimeCheckerScript : MonoBehaviour {
 		}
 		return primeFactors;
 	}
+	*/
+	int ObtainGCM(int numA, params int[] numsB)
+    {
+		var output = numA;
 
+		for (var x = 0; x < numsB.Length; x++)
+		{
+			var pairValues = new List<int>() { output, numsB[x] };
+			while (pairValues.Min() != 0)
+            {
+				if (pairValues[0] < pairValues[1])
+					pairValues[1] %= pairValues[0];
+				else
+					pairValues[0] %= pairValues[1];
+			}
+			if (pairValues[0] == 0)
+				output = pairValues[1];
+			else if (pairValues[1] == 0)
+				output = pairValues[0];
+		}
+
+		return output;
+    }
 	bool IsCoprime(int numA, params int[] numsB)
     {
+		// Old checking section to determine coprime status.
+		/*
 		var distPrimeFactors = ObtainPrimeFactors(numA).Distinct();
         for (var x = 0; x < numsB.Length; x++)
         {
@@ -178,6 +205,9 @@ public class CoprimeCheckerScript : MonoBehaviour {
 			distPrimeFactors = distPrimeFactors.Intersect(curDistPrimeFactors);
         }
 		return !distPrimeFactors.Any();
+		*/
+		return ObtainGCM(numA, numsB) == 1;
+
     }
 #pragma warning disable IDE0051 // Remove unused private members
     readonly string TwitchHelpMessage = "Press the button labeled \"Coprime\" with \"!{0} coprime\". Press the button labeled \"Not Coprime\" with \"!{0} notcoprime\".";
@@ -186,10 +216,7 @@ public class CoprimeCheckerScript : MonoBehaviour {
 	{
 		while (stagesCompleted < 3)
 		{
-			if (expectedCoprime)
-				coprimeButton.OnInteract();
-			else
-				notCoprimeButton.OnInteract();
+			(expectedCoprime ? coprimeButton : notCoprimeButton).OnInteract();
 			yield return new WaitForSeconds(0.1f);
 		}
 	}

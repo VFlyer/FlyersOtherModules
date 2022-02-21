@@ -24,6 +24,9 @@ public class SevenHandler : MonoBehaviour {
 	List<int[]> displayedValues = new List<int[]>();
 	List<int> idxOperations = new List<int>();
 
+	const float authorPPAScaling = 1.25f;
+	const int authorMaxPPA = -1;
+
 	readonly int[] segmentLogging = { 0, 5, 1, 6, 4, 2, 3 };
 	readonly string colorList = "KRGYBMCW";
 
@@ -67,9 +70,9 @@ public class SevenHandler : MonoBehaviour {
 
 			uncapAll = !universalSettings.SevenHardCapStageGeneration;
 			fastReads = universalSettings.SevenForceFastReads;
-			PPAScaling = universalSettings.SevenPPAScale;
-			maxPPA = universalSettings.SevenMaxPPA;
 			disableUncapTP = universalSettings.SevenNoTPUncapping;
+			PPAScaling = universalConfig.Settings.UseAuthorSuggestedDynamicScoring ? authorPPAScaling : universalSettings.SevenPPAScale;
+			maxPPA = universalConfig.Settings.UseAuthorSuggestedDynamicScoring ? authorMaxPPA : universalSettings.SevenMaxPPA;
 		}
 		catch {
 			Debug.LogWarningFormat("<7 #{0}>: Settings for 7 do not work as intended! Using default settings instead!", curModID);

@@ -17,7 +17,8 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 	
 	private string[] shuffledQuotes;
 	int[] idxSolutionQuotes, idxCurrentQuotes = new int[4],
-		currentCycleCnt, selectedDynamicScores, relabeledStageOrder;
+		currentCycleCnt, selectedDynamicScores, relabeledStageOrder,
+		authorDynamicScoring = new[] { 0, 2, 6, 0 };
 
 	int[][] possibleEachIdxQuotes = new int[4][];
 	List<int> correctButtonPressOrder = new List<int>(), currentButtonPressOrder = new List<int>(), selectedVariantIdxes = new List<int>();
@@ -98,7 +99,8 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 			universalSettings = universalConfig.Settings;
 			universalConfig.Settings = universalSettings;
 
-			selectedDynamicScores = new[]
+            selectedDynamicScores = universalSettings.UseAuthorSuggestedDynamicScoring ? authorDynamicScoring
+			: new[]
 			{ universalSettings.LPPLabeledPrioritiesTPScore, universalSettings.LPPUnlabeledPrioritiesTPScore,
 				universalSettings.LPPRelabeledPrioritiesTPScore, universalSettings.LPPMislabeledPrioritiesTPScore };
 			if (universalSettings.LPPEnableLabeledPriorities)
@@ -116,7 +118,7 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 		{
 			Debug.LogFormat("<Labeled Priorities Plus> Settings do not work as intended! Using default settings instead.");
 			selectedVariantIdxes.AddRange(new[] { 0, 1, 2 });
-			selectedDynamicScores = new[] { 5, 5, 9, 9 };
+			selectedDynamicScores = authorDynamicScoring;
 			
 		}
 		Debug.LogFormat("<Labeled Priorities Plus> Rollable Variants: {0}", selectedVariantIdxes.Select(a => new[] { "Labeled", "Unlabeled", "Relabeled", "Mislabeled" }.ElementAtOrDefault(a).Join(",")));
@@ -136,6 +138,7 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 			else
             {
 				relabeledStageOrder = new[] { 0, 2, 3, 4, -1 };
+				// Do stuff with Relabeled Priorities' stage ordering for the first 3 non-initial stages. TBD.
             }
 		}
 		else
@@ -904,7 +907,7 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
                 }
             }
 			var lastString = pressStr.LastOrDefault();
-			switch (lastString.ToLowerInvariant())
+			switch ((lastString ?? "").ToLowerInvariant())
             {
 				case "slow":
 				case "slower":
