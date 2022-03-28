@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using KeepCoding;
+using System;
+using System.Text.RegularExpressions;
+using Random = UnityEngine.Random;
 
 public class SevenHandler : MonoBehaviour {
 
@@ -39,7 +43,7 @@ public class SevenHandler : MonoBehaviour {
 
 	// Detection and Logging
 	bool zenDetected, timeDetected, hasStarted, isSubmitting, interactable, colorblindDetected,
-		uncapAll, delayChallenge, hasStruckTimeMode, hasEnteredSubmission, hasSubmitted, fastReads, disableUncapTP;
+		uncapAll, delayChallenge, hasStruckTimeMode, hasEnteredSubmission, hasSubmitted, fastReads, disableUncapTP, disableRecapTP;
 	int curIdx = 0, curStrikeCount, maxPPA = -1;
 	float PPAScaling;
 
@@ -71,6 +75,7 @@ public class SevenHandler : MonoBehaviour {
 			uncapAll = !universalSettings.SevenHardCapStageGeneration;
 			fastReads = universalSettings.SevenForceFastReads;
 			disableUncapTP = universalSettings.SevenNoTPUncapping;
+			disableRecapTP = universalSettings.SevenNoTPRecapping;
 			PPAScaling = universalConfig.Settings.UseAuthorSuggestedDynamicScoring ? authorPPAScaling : universalSettings.SevenPPAScale;
 			maxPPA = universalConfig.Settings.UseAuthorSuggestedDynamicScoring ? authorMaxPPA : universalSettings.SevenMaxPPA;
 		}
@@ -81,6 +86,7 @@ public class SevenHandler : MonoBehaviour {
 			PPAScaling = 1f;
 			maxPPA = -1;
 			disableUncapTP = false;
+			disableRecapTP = false;
 		}
 		finally
 		{
@@ -95,7 +101,52 @@ public class SevenHandler : MonoBehaviour {
 		}
 		colorblindIndc.text = "";
 	}
+	void TryOverrideMission()
+    {
+		try
+		{
+			var missionID = Application.isEditor ? "freeplay" : Game.Mission.ID;
+			switch (missionID)
+			{
+				case "freeplay":
+					Debug.LogFormat("<7 #{0}> MISSION DETECTED AS FREEPLAY. NOT OVERRIDING SETTINGS.", modID);
+					return;
+				case "mod_missionpack_VFlyer_mission47thWrathFlyer":
+					Debug.LogFormat("<7 #{0}> DETECTED MISSION BY ID, OVERRIDING SETTINGS.", modID);
+					disableUncapTP = true;
+					disableRecapTP = true;
+					uncapAll = true;
+					return;
+			}
+			var desc = Game.Mission.Description ?? "";
+			Match regexMatchCountVariants = Regex.Match(desc, @"\[7Override\]\s(Uncapped|Capped)");
+			disableUncapTP = true;
+			disableRecapTP = true;
+			uncapAll = false;
+			if (regexMatchCountVariants.Success)
+			{
+				var valueMatches = regexMatchCountVariants.Value;
+				switch (valueMatches.Split().Last())
+                {
+					case "Uncapped":
+						uncapAll = true;
+						break;
+					case "Capped":
+					default:
+						break;
+                }
+				Debug.LogFormat("<7 #{0}> DETECTED OVERRIDE BY DESCRIPTION. UNCAPPING? {1}", modID, uncapAll ? "YES" : "NO");
+			}
+		}
+		catch (Exception error)
+		{
+			Debug.LogErrorFormat("<Labeled Priorities Plus #{0}> EXCEPTION OCCURED. USING SETTINGS INSTEAD. PLEASE SEEK OUT THE CREATOR ON HOW TO FIX THIS.", modID);
+			Debug.LogException(error);
+
+		}
+	}
 	void Start () {
+		TryOverrideMission();
 		modSelf.OnActivate += delegate {
 			for (int x = 0; x < segments.Length; x++)
 				segments[x].material = matSwitch[1];
@@ -654,7 +705,7 @@ public class SevenHandler : MonoBehaviour {
 	IEnumerator HandleDelay()
 	{
 		delayChallenge = true;
-		yield return new WaitForSeconds(5f);
+		yield return new WaitForSecondsRealtime(5f);
 		delayChallenge = false;
 	}
 	IEnumerator ProcessTwitchCommand(string command)
@@ -720,7 +771,7 @@ public class SevenHandler : MonoBehaviour {
 			{
 				if (disableUncapTP)
                 {
-					yield return "antitroll Uncapping 7 is too dangerous! Who knows how long this attempt will last for!?";
+					yield return "sendtochaterror Uncapping 7 is too dangerous! Who knows how long this attempt will last for!?";
                 }
 				StartCoroutine(HandleDelay());
 				yield return "sendtochat {0}, are you sure you want to uncap 7 (#{1})? Type in the same command within 5 seconds to confirm.";

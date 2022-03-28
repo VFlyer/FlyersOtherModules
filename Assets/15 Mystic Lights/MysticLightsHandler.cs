@@ -59,7 +59,6 @@ public class MysticLightsHandler : MonoBehaviour {
                 miscSettings = universalConfig.Settings;
                 // Update settings file incase of error during read
                 universalConfig.Settings = miscSettings;
-
                 instantMysticLights = miscSettings.InstantMysticLights;
             }
             catch
@@ -74,7 +73,7 @@ public class MysticLightsHandler : MonoBehaviour {
 
         if (instantMysticLights)
             Debug.LogFormat("[15 Mystic Lights #{0}]: Instant Mystic Lights are enabled. This may be infuriating to other players. Use it with caution.", curmodid);
-        float scalar = transform.lossyScale.x;// Account for scale factor for this module being smaller, check KTANE official discord in #modding
+        float scalar = transform.lossyScale.x;// Account for scale factor for this module being smaller, check KTANE official discord in #mod-resources
         foreach (Light onelight in lights)
         {
             onelight.range *= scalar;
@@ -676,13 +675,61 @@ public class MysticLightsHandler : MonoBehaviour {
                 for (var y = 0; y < lightStates.GetLength(1); y++)
                 {
                     if ((bool)lightStates[x, y])
+                    {
                         tileSelectables[4 * x + y + 4].OnInteract();
-                    yield return new WaitForSeconds(0.1f);
+                        yield return new WaitForSeconds(0.1f);
+                    }
                 }
             }
             while (isGenerating) yield return true;
         }
-        while (isGenerating) yield return true;
+        while (isGenerating || playingAnim) yield return true;
+        
+        // If someone wants to make an autosolver better than this, LET ME KNOW.
+        /*
+        var expectedColor = Random.Range(0, 2) == 1;
+        {
+            while (!isAllCorrect())
+            {
+                var curHoleX = -1;
+                var curHoleY = -1;
+                do
+                {
+                    for (var x = 0; x < lightStates.GetLength(0); x++)
+                    {
+                        for (var y = 0; y < lightStates.GetLength(1); y++)
+                        {
+                            if (lightStates[x, y] == null)
+                            {
+                                curHoleX = x;
+                                curHoleY = y;
+                            }
+                        }
+                    }
+                    if (curHoleX != 3)
+                    tileSelectables[4 * curHoleX + curHoleY + 4].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                    while (playingAnim) yield return true;
+                }
+                while (curHoleX < 3);
+
+                for (var x = 0; x < lightStates.GetLength(0) - 1; x++)
+                {
+                    for (var y = 0; y < lightStates.GetLength(1); y++)
+                    {
+                        if (lightStates[x, y] == expectedColor && lightStates[x + 1, y] != null)
+                        {
+                            tileSelectables[4 * x + y + 4].OnInteract();
+                            yield return new WaitForSeconds(0.1f);
+                            while (playingAnim) yield return true;
+                        }
+                    }
+                }
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
+        while (playingAnim) yield return true;
+        */
         moduleSelf.HandlePass();
     }
 

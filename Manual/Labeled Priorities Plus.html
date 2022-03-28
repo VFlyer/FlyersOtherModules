@@ -14,94 +14,94 @@
             text-align: center;
         }
         table {
-			margin: 1em auto;
+            margin: 1em auto;
             text-align: center;
-            width: 100%;	
+            width: 100%;    
         }
-		.squeeze p:not(.exempt),h4:not(.exempt)
-		{
-			margin-bottom: 0%;
-			margin-top: 0%;
-		}
-		.flipX
-		{
-			transform: scaleX(-1);
-		}
-		.flipY
-		{
-			transform: scaleY(-1);
-		}
-		.flipXY
-		{
-			transform: scaleY(-1)scaleX(-1);
-		}
-		.smaller
-		{
-			font-size: 75%;
-		}
+        .squeeze p:not(.exempt),h4:not(.exempt)
+        {
+            margin-bottom: 0%;
+            margin-top: 0%;
+        }
+        .flipX
+        {
+            transform: scaleX(-1);
+        }
+        .flipY
+        {
+            transform: scaleY(-1);
+        }
+        .flipXY
+        {
+            transform: scaleY(-1)scaleX(-1);
+        }
+        .smaller
+        {
+            font-size: 75%;
+        }
     </style>
     <script>
         var allPossiblePhrases = [
         "I’m certain you press this button first.",
-		"ALWAYS press this button first.",
-		"I’m pretty sure you press this button first.",
-		"I am certain this is the first one.",
-		"I am certain you press this one first.",
-		"I’m certain you press this one first.",
-		"No, press THIS one first.",
-		"I’m pretty sure this is the first one.",
-		"You must press this button first.",
-		"No really, this is the first one.",
-		"Press this one.",
-		"First button.",
-		"I’m pretty sure this is the first button.",
-		"Maybe you should press this button first.",
-		"No no, press THIS button first.",
-		"I am pretty sure this is the first one.",
-		"No, press THIS button first.",
-		"I am pretty sure you press this button first.",
-		"Press this button first, please?",
-		"Press me first.",
-		"Press this one first.",
-		"This is the first button.",
-		"Press. This. Button. First.",
-		"First one.",
-		"I am certain you press this button first.",
-		"THIS, is the first button.",
-		"This one is the first button.",
-		"I am certain this is the first button.",
-		"This really is the first button.",
-		"No no no, press THIS button first.",
-		"No no no, press THIS one first.",
-		"Don’t press this one.",
-		"You should press this button first.",
-		"I’m certain this is the first one.",
-		"No really, this is the first button.",
-		"Press. This. One. First.",
-		"Button numero uno.",
-		"First, press this one.",
-		"Press this button first, will ya?",
-		"Number one.",
-		"I am pretty sure this is the first button.",
-		"Press this button first.",
-		"Number 1.",
-		"ALWAYS press this one first.",
-		"The first button is this one.",
-		"Press this one first, will ya?",
-		"I’m certain this is the first button.",
-		"Please press this button first.",
-		"First.",
-		"#1.",
-		"Will you press this button first?",
-		"First, press this button.",
-		"Maybe you should press this one first.",
-		"Press this one first, please?",
-		"Do not press this one.",
-		"THIS, is the first one.",
-		"No no, press THIS one first.",
-		"Will you press this one first?",
-		"Press this one first, will you?",
-		"Press this button first, will you?"
+        "ALWAYS press this button first.",
+        "I’m pretty sure you press this button first.",
+        "I am certain this is the first one.",
+        "I am certain you press this one first.",
+        "I’m certain you press this one first.",
+        "No, press THIS one first.",
+        "I’m pretty sure this is the first one.",
+        "You must press this button first.",
+        "No really, this is the first one.",
+        "Press this one.",
+        "First button.",
+        "I’m pretty sure this is the first button.",
+        "Maybe you should press this button first.",
+        "No no, press THIS button first.",
+        "I am pretty sure this is the first one.",
+        "No, press THIS button first.",
+        "I am pretty sure you press this button first.",
+        "Press this button first, please?",
+        "Press me first.",
+        "Press this one first.",
+        "This is the first button.",
+        "Press. This. Button. First.",
+        "First one.",
+        "I am certain you press this button first.",
+        "THIS, is the first button.",
+        "This one is the first button.",
+        "I am certain this is the first button.",
+        "This really is the first button.",
+        "No no no, press THIS button first.",
+        "No no no, press THIS one first.",
+        "Don’t press this one.",
+        "You should press this button first.",
+        "I’m certain this is the first one.",
+        "No really, this is the first button.",
+        "Press. This. One. First.",
+        "Button numero uno.",
+        "First, press this one.",
+        "Press this button first, will ya?",
+        "Number one.",
+        "I am pretty sure this is the first button.",
+        "Press this button first.",
+        "Number 1.",
+        "ALWAYS press this one first.",
+        "The first button is this one.",
+        "Press this one first, will ya?",
+        "I’m certain this is the first button.",
+        "Please press this button first.",
+        "First.",
+        "#1.",
+        "Will you press this button first?",
+        "First, press this button.",
+        "Maybe you should press this one first.",
+        "Press this one first, please?",
+        "Do not press this one.",
+        "THIS, is the first one.",
+        "No no, press THIS one first.",
+        "Will you press this one first?",
+        "Press this one first, will you?",
+        "Press this button first, will you?"
         ];
         var idxList = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59];
         var lowToHighPriorityLabeled = false;
@@ -113,33 +113,33 @@
                 {
                     allRSPhrases[x].innerHTML = allPossiblePhrases[idxList[x]];
                 }
-			
-			if (lowToHighPriorityLabeled)
-				{
-					var allRSPriorities = document.getElementsByClassName("rsPriorities");
-					for (var x = 0; x < allRSPriorities.length;x++)
-                	{
-                    	allRSPriorities[x].innerText = allRSPriorities[x].innerText.replace("highest","lowest");
-                	}
-					var allRSPrioritiesINV = document.getElementsByClassName("rsPrioritiesINV");
-					for (var x = 0; x < allRSPrioritiesINV.length;x++)
-                	{
-                    	allRSPrioritiesINV[x].innerText = "highest";
-                	}
-				}
-			else
-				{
-					var allRSPriorities = document.getElementsByClassName("rsPriorities");
-					for (var x = 0; x < allRSPriorities.length;x++)
-                	{
-						allRSPriorities[x].innerText.replace("lowest","highest");
-                	}
-					var allRSPrioritiesINV = document.getElementsByClassName("rsPrioritiesINV");
-					for (var x = 0; x < allRSPrioritiesINV.length;x++)
-                	{
-						allRSPrioritiesINV[x].innerText.replace("highest","lowest");
-                	}
-				}
+            
+            if (lowToHighPriorityLabeled)
+                {
+                    var allRSPriorities = document.getElementsByClassName("rsPriorities");
+                    for (var x = 0; x < allRSPriorities.length;x++)
+                    {
+                        allRSPriorities[x].innerText = allRSPriorities[x].innerText.replace("highest","lowest");
+                    }
+                    var allRSPrioritiesINV = document.getElementsByClassName("rsPrioritiesINV");
+                    for (var x = 0; x < allRSPrioritiesINV.length;x++)
+                    {
+                        allRSPrioritiesINV[x].innerText = "highest";
+                    }
+                }
+            else
+                {
+                    var allRSPriorities = document.getElementsByClassName("rsPriorities");
+                    for (var x = 0; x < allRSPriorities.length;x++)
+                    {
+                        allRSPriorities[x].innerText.replace("lowest","highest");
+                    }
+                    var allRSPrioritiesINV = document.getElementsByClassName("rsPrioritiesINV");
+                    for (var x = 0; x < allRSPrioritiesINV.length;x++)
+                    {
+                        allRSPrioritiesINV[x].innerText.replace("highest","lowest");
+                    }
+                }
         }
         
         function setDefaultRules(rnd)
@@ -149,7 +149,7 @@
         
         function setRules(rnd)
         {
-			idxList = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59];
+            idxList = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59];
             rnd.shuffleFisherYates(idxList);
             lowToHighPriorityLabeled = rnd.next(0, 2) != 1;
             lowToHighPriorityUnLabeled = rnd.next(0, 2) != 1;
@@ -178,14 +178,14 @@
                     <li>All display the exact same phrase from the <strong>The Label Priority List</strong>, the variant is Relabeled Priorities.</li>
                     <li>Have one displaying a 4-digit number and the rest displaying a unique phrase from the <strong>The Label Priority List</strong>, the variant is Mislabeled Priorities.</li>
                 </ul>
-				<p>Alternatively, the defuser can examine where the status light is to determine what Labeled Priorities variant it is. If the status light is on the:</p>
-				<ul>
-					<li>Top-Right: The module is Labeled Priorities.</li>
-					<li>Bottom-Left: The module is Unlabeled Priorities.</li>
-					<li>Top-Left: The module is Relabeled Priorities.</li>
-					<li>Bottom-Right: The module is Mislabeled Priorities.</li>
-				</ul>
-                <p>Once the variant has been determined, the expert will need to go to the respective page and follow the instructions for the provided variant to disarm the module. The variants will contain pages of how a strike is incurred for the given variant. For Labeled and Unlabeled Priorities when the manual references priorities, <strong>The Label Priority List</strong> uses the top-most phrase on page 1 of the appendix as the highest priority and the bottom-most phrase on page 2 of the appendix as the lowest priority.</p>
+                <p>Alternatively, the defuser can examine where the status light is to determine what Labeled Priorities variant it is. If the status light is on the:</p>
+                <ul>
+                    <li>Top-Right: The module is Labeled Priorities.</li>
+                    <li>Bottom-Left: The module is Unlabeled Priorities.</li>
+                    <li>Top-Left: The module is Relabeled Priorities.</li>
+                    <li>Bottom-Right: The module is Mislabeled Priorities.</li>
+                </ul>
+                <p>Once the variant has been determined, the expert will need to go to the respective page and follow the instructions for the provided variant to disarm the module. The variants will contain pages of how a strike is incurred for the given variant. For Labeled and Unlabeled Priorities when the manual references priorities, <strong>The Label Priority List</strong> uses the top-most phrase on page 1 of the appendix as the highest priority and the bottom-most phrase on page 2 of the appendix as the lowest priority. When the module references positions of the screens, it refers to 1 being the top-most screen, and 4 being the bottom-most screen.</p>
             </div>
             <div class="page-footer relative-footer">Page 1 of 7</div>
         </div>
@@ -200,7 +200,7 @@
                 <p class="appendix-reference">Refer to Appendix: Label Priority List for the list of phrases that show up on this module and its variants.</p>
                 <p>If the module is not showing unique phrases on each screen, nor the status light is in the top-right, you may be looking at the wrong module.</p>
                 <p>To disarm the module, examine phrase each screen is displaying with the <strong>The Label Priority List</strong> to determine the order of the screens to press to disarm the module. Press the screen whose phrase is the <span class="seedable rsPriorities">highest</span> priority, then the 2nd <span class="seedable rsPriorities">highest</span>, and then the 2nd <span class="seedable rsPrioritiesINV">lowest</span>. Avoid the remaining screen. The number shown after pressing that screen determines when the defuser selected the screen corresponding to the phrase was previously shown.</p>
-				<p>If you press an incorrect screen in order, the module will strike after 3 numbers have been displayed. This may also cause the module to reset with new phrases on the screens.</p>
+                <p>If you press an incorrect screen in order, the module will strike after 3 numbers have been displayed. This may also cause the module to reset with new phrases on the screens.</p>
             </div>
             <div class="page-footer relative-footer">Page 2 of 7</div>
         </div>
@@ -210,13 +210,13 @@
                 <span class="page-header-section-title">Unlabeled Priorities</span>
             </div>
             <div class="page-content">
-				<img src="img/Component/Labeled Priorities Plus.svg" class="diagram">
+                <img src="img/Component/Labeled Priorities Plus.svg" class="diagram">
                 <h2>On the Subject of Unlabeled Priorities</h2>
                 <p class="appendix-reference">Refer to Appendix: Label Priority List for the list of phrases that show up on this module and its variants.</p>
                 <p>If the module is not showing 1 digit on each screen, nor the status light is in the bottom-left, you may be looking at the wrong module.</p>
                 <p>To disarm the module, press a screen to cycle between 4 unique phrases. The screens must be pressed and have the phrases be placed in respect to that number shown before. The defuser may select more screens to show more phrases but try to avoid having all 4 screens showing phrases as that will automatically submit the answer. All 4 screens will contain the exact same set of phrases but mostly in a different order.</p>
-				<p>Use <strong>The Label Priority List</strong> below to determine the priority for each phrase. Select the screen to cycle between the phrases until the <span class="rsPriorities">highest</span> priority phrase belongs to screen originally displaying 1, 2nd <span class="rsPriorities">highest</span> phrase on 2, until each phrase is associated with the priority on the screen.</p>
-				<p>A strike will incur if the phrases shown conflict with the numbered priority previously shown and cause the module to reset with four new numbers and phrases.</p>
+                <p>Use <strong>The Label Priority List</strong> below to determine the priority for each phrase. Select the screen to cycle between the phrases until the <span class="rsPriorities">highest</span> priority phrase belongs to screen originally displaying 1, 2nd <span class="rsPriorities">highest</span> phrase on 2, until each phrase is associated with the priority on the screen.</p>
+                <p>A strike will incur if the phrases shown conflict with the numbered priority previously shown and cause the module to reset with four new numbers and phrases.</p>
             </div>
             <div class="page-footer relative-footer">Page 3 of 7</div>
         </div>
@@ -226,20 +226,20 @@
                 <span class="page-header-section-title">Relabeled Priorities</span>
             </div>
             <div class="page-content squeeze">
-				<img src="img/Component/Labeled Priorities Plus.svg" class="diagram flipY">
+                <img src="img/Component/Labeled Priorities Plus.svg" class="diagram flipY">
                 <h2>On the Subject of Relabeled Priorities</h2>
                 <p class="appendix-reference exempt">Refer to Appendix: Label Priority List for the list of phrases that show up on this module and its variants.</p>
                 <p>If the module is not showing the exact same phrase on each screen, nor the status light is in the top-left, you may be looking at the wrong module.</p>
                 <p>This module consists of 4 stages required to disarm the module. Initially, the module will show the exact same phrase for each screen. Remember that phrase shown and press any screen to start disarming the module. Distance in this page will be referred from how many spaces in between the specified phrases in <strong>The Label Priority List</strong>. The list does not wrap around unless otherwise stated.</p>
-				<h4>Stage 1:</h4>
-				<p>All 4 phrases on each screen will be unique and neither of them are exactly the phrase shown initially. Press the screen whose phrase is the closest to the initially shown phrase. If there are multiple phrases closest to the initially shown phrase, either can be pressed. Remember the position of the screen pressed and the pressed screen's phrase on this stage.</p>
-				<h4>Stage 2:</h4>
-				<p>Find any screens whose phrase is furthest from the remembered phrase from stage 1 and position is NOT pressed from stage 1. Press any one of those and remember the position and the phrase of the pressed screen on this stage.</p>
-				<h4>Stage 3:</h4>
-				<p>Starting at the remembered phrase from stage 2, go down <strong>The Label Priority List</strong> until you encounter a phrase on any of the screens, wrapping around to the top of the list if necessary. Press that screen if that screen has not yet been pressed from the previous stages. Otherwise continue until you reach an unpressed screen. Remember phrase and the position of the pressed screen for the next stage.</p>
-				<h4>Stage 4:</h4>
-				<p>The fourth stage will have all remembered phrases from before. From the previous stages, rearrange the remembered phrases based on the remembered positions on the screens from top to bottom, with the initial phrase taking the remaining unoccupied position. Then press the screens whose phrase is based on the result of that sequence. Numbers will replace the phrases denoting when you pressed it on this stage.</p>
-				<p class="exempt">Pressing an incorrect screen/sequence will result in a strike and reset all progress to the beginning. This will also display a new phrase for all screens.</p>
+                <h4>Stage 1:</h4>
+                <p>All 4 phrases on each screen will be unique and neither of them are exactly the phrase shown initially. Press the screen whose phrase is the closest to the initially shown phrase. If there are multiple phrases closest to the initially shown phrase, either can be pressed. Remember the position of the screen pressed and the pressed screen's phrase on this stage.</p>
+                <h4>Stage 2:</h4>
+                <p>Find any screens whose phrase is furthest from the remembered phrase from stage 1 and position is NOT pressed from stage 1. Press any one of those and remember the position and the phrase of the pressed screen on this stage.</p>
+                <h4>Stage 3:</h4>
+                <p>Starting at the remembered phrase from stage 2, go down <strong>The Label Priority List</strong> until you encounter a phrase on any of the screens, wrapping around to the top of the list if necessary. Press that screen if that screen has not yet been pressed from the previous stages. Otherwise continue until you reach an unpressed screen. Remember phrase and the position of the pressed screen for the next stage.</p>
+                <h4>Stage 4:</h4>
+                <p>The fourth stage will display all remembered phrases from before. From the previous stages, assign the initially remembered phrase the remaining position not pressed. Then in ascending order of the remembered positions, press the screens that have the remembered phrases displayed in that order. Numbers will replace the phrases denoting when you pressed it on this stage.</p>
+                <p class="exempt">Pressing an incorrect screen/sequence will result in a strike and reset all progress to the beginning. This will also display a new phrase for all screens.</p>
             </div>
             <div class="page-footer relative-footer">Page 4 of 7</div>
         </div>
@@ -249,57 +249,57 @@
                 <span class="page-header-section-title">Mislabeled Priorities</span>
             </div>
             <div class="page-content squeeze">
-				<img src="img/Component/Labeled Priorities Plus.svg" class="diagram flipX">
+                <img src="img/Component/Labeled Priorities Plus.svg" class="diagram flipX">
                 <h2>On the Subject of Mislabeled Priorities</h2>
                 <p class="appendix-reference exempt">Refer to Appendix: Label Priority List for the list of phrases that show up on this module and its variants.</p>
                 <p>If not exactly one screen displays a 4-digit number and the rest a unique phrase from the <strong>The Label Priority List</strong>, nor the status light is in the bottom-right, you may be looking at the wrong module.</p>
                 <p>To disarm the module, start by pressing the 3 displayed phrases in any order. Remember these phrases and the order they were pressed in. Remember the 4-digit number while NOT pressing the screen containing this.</p>
-				<p>Incorrectly selecting a screen or pressing the screens in the wrong order will cause a strike and make the module reset with a new 4-digit number and 3 different phrases.</p>
-				<h4>Stages 1 - 3:</h4>
-				<p>Using the four digit number, pair each of the first 3 digits to the positions of the three phrases pressed. For each stage, use the intersection of these pairs to obtain a letter. This letter corresponds to an instruction that must be done to complete this stage.</p>
-				<table class="smaller">
-					<tr>
-						<td>
-							<table>
-								<tr>
-									<th rowspan="2">Assigned Digit In Current Stage</th>
-									<th colspan="4">Initial Position Pressed</th>
-								</tr>
-								<tr>
-									<th>1</th><th>2</th><th>3</th><th>4</th>
-								</tr>
-								<tr>
-									<th>1</th><td>A</td><td>B</td><td>C</td><td>D</td>
-								</tr>
-								<tr>
-									<th>2</th><td>D</td><td>C</td><td>B</td><td>A</td>
-								</tr>
-								<tr>
-									<th>3</th><td>B</td><td>A</td><td>D</td><td>C</td>
-								</tr>
-								<tr>
-									<th>4</th><td>C</td><td>D</td><td>A</td><td>B</td>
-								</tr>
-							</table>
-						</td>
-						<td>
-							<ul style="text-align: left; margin: auto">
-								<li>A: Press the phrases shown on the module in order of the <strong>The Label Priority List,</strong> starting at the remembered phrase and going down, wrapping around if necessary.</li>
-								<li>B: Press the phrases shown on the module in order of the <strong>The Label Priority List,</strong> starting at the remembered phrase and going up, wrapping around if necessary.</li>
-								<li>C: Press the phrases shown on the module in order of distance of the  remembered phrase from the <strong>The Label Priority List,</strong> and going outward, wrapping around if necessary.</li>
-								<li>D: Perform C but reverse the sequence to press.</li>
-							</ul>
-						</td>
-					</tr>
-				</table>
-				<h4>Stage 4:</h4>
-				<p>All four screens will contain a single digit from 1 to 4. Exactly 1 of these meet a condition with the remaining digit noted earlier. Use the condition to find the correct digit to press and press the screen that has the correct digit. The correct digit if the remaining digit is:</p>
-				<ul>
-					<li>1, is equal to its position on the display.</li>
-					<li>2, is the position of the smallest digit displayed.</li>
-					<li>3, is the position of the largest digit displayed.</li>
-					<li>4, is the initial position of the 4-digit number.</li>
-				</ul>
+                <p>Incorrectly selecting a screen or pressing the screens in the wrong order will cause a strike and make the module reset with a new 4-digit number and 3 different phrases.</p>
+                <h4>Stages 1 - 3:</h4>
+                <p>Using the four digit number, pair the first 3 digits to each of the positions of the three phrases pressed. For each stage, use the intersection of these pairs to obtain a letter. This letter corresponds to an instruction that must be done to complete this stage. Note that only 3 screens need to be pressed for this stage.</p>
+                <table class="smaller">
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <th rowspan="2">Assigned Digit In Current Stage</th>
+                                    <th colspan="4">Initial Position Pressed</th>
+                                </tr>
+                                <tr>
+                                    <th>1</th><th>2</th><th>3</th><th>4</th>
+                                </tr>
+                                <tr>
+                                    <th>1</th><td>A</td><td>B</td><td>C</td><td>D</td>
+                                </tr>
+                                <tr>
+                                    <th>2</th><td>D</td><td>C</td><td>B</td><td>A</td>
+                                </tr>
+                                <tr>
+                                    <th>3</th><td>B</td><td>A</td><td>D</td><td>C</td>
+                                </tr>
+                                <tr>
+                                    <th>4</th><td>C</td><td>D</td><td>A</td><td>B</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <ul style="text-align: left; margin: auto">
+                                <li>A: Press the phrases shown on the module in order of the <strong>The Label Priority List,</strong> starting at the remembered phrase and going down, wrapping around if necessary.</li>
+                                <li>B: Press the phrases shown on the module in order of the <strong>The Label Priority List,</strong> starting at the remembered phrase and going up, wrapping around if necessary.</li>
+                                <li>C: Press the phrases shown on the module in order of distance of the  remembered phrase from the <strong>The Label Priority List,</strong> and going outward.</li>
+                                <li>D: Press the phrases shown on the module in order of distance of the  remembered phrase from the <strong>The Label Priority List,</strong> and going inward.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+                <h4>Stage 4:</h4>
+                <p>All four screens will contain a single digit from 1 to 4. Exactly 1 of these meet a condition with the remaining digit noted earlier. Use the condition to find the correct digit to press and press the screen that has the correct digit. The correct digit if the remaining digit is:</p>
+                <ul>
+                    <li>1, is equal to its position on the display.</li>
+                    <li>2, is the position of the smallest digit displayed.</li>
+                    <li>3, is the position of the largest digit displayed.</li>
+                    <li>4, is equal to the initial position of the 4 digit code.</li>
+                </ul>
             </div>
             <div class="page-footer relative-footer">Page 5 of 7</div>
         </div>
@@ -494,13 +494,13 @@
                     <tr>
                         <td class="rsPhrases">No no, press THIS one first.</td>
                     </tr>
-					<tr>
+                    <tr>
                         <td class="rsPhrases">Will you press this one first?</td>
                     </tr>
-					<tr>
+                    <tr>
                         <td class="rsPhrases">Press this one first, will you?</td>
                     </tr>
-					<tr>
+                    <tr>
                         <td class="rsPhrases">Press this button first, will you?</td>
                     </tr>
                 </table>

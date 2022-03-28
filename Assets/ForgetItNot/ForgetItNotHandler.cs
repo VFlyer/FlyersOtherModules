@@ -12,6 +12,7 @@ public class ForgetItNotHandler : MonoBehaviour {
     public KMBombModule modSelf;
     public Material[] statusLEDClr = new Material[2];
     public KMAudio kMAudio;
+    public KMSelectable modSelfSelectable;
 
     public TextMesh inputTextMesh, textMeshBig, textMeshStage;
 
@@ -25,7 +26,8 @@ public class ForgetItNotHandler : MonoBehaviour {
     private static int modID = 1;
     private int curModID;
     private bool canStart = false;
-
+    FlyersOtherSettings universalSettings = new FlyersOtherSettings();
+    private bool acceptNumInput = true, focused = false;
 
     private void Awake()
     {
@@ -33,6 +35,20 @@ public class ForgetItNotHandler : MonoBehaviour {
         inputTextMesh.text = "";
         textMeshBig.text = "";
         textMeshStage.text = "";
+        try
+        {
+            ModConfig<FlyersOtherSettings> universalConfig = new ModConfig<FlyersOtherSettings>("FlyersOtherSettings");
+            universalSettings = universalConfig.Settings;
+            universalConfig.Settings = universalSettings;
+
+            acceptNumInput = universalSettings.FINNumpadInputAllowed;
+            Debug.LogFormat("<Forget It Not> Keypad Input Allowed? {0}", acceptNumInput ? "YES" : "NO");
+        }
+        catch
+        {
+            Debug.LogFormat("<Forget It Not> Settings do not work as intended! Using default settings instead.");
+            acceptNumInput = true;
+        }
     }
 
     // Use this for initialization
@@ -152,6 +168,11 @@ public class ForgetItNotHandler : MonoBehaviour {
                 }
                 return false;
             };
+        }
+        if (acceptNumInput)
+        {
+            modSelfSelectable.OnFocus += delegate { focused = true; };
+            modSelfSelectable.OnDefocus += delegate { focused = false; };
         }
 
     }
@@ -320,6 +341,31 @@ public class ForgetItNotHandler : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        // Keyboard usage.
+        if (acceptNumInput && focused)
+        {
+            if (Input.GetKeyDown(KeyCode.Keypad0))
+                digitSelectables[0].OnInteract();
+            if (Input.GetKeyDown(KeyCode.Keypad1))
+                digitSelectables[1].OnInteract();
+            if (Input.GetKeyDown(KeyCode.Keypad2))
+                digitSelectables[2].OnInteract();
+            if (Input.GetKeyDown(KeyCode.Keypad3))
+                digitSelectables[3].OnInteract();
+            if (Input.GetKeyDown(KeyCode.Keypad4))
+                digitSelectables[4].OnInteract();
+            if (Input.GetKeyDown(KeyCode.Keypad5))
+                digitSelectables[5].OnInteract();
+            if (Input.GetKeyDown(KeyCode.Keypad6))
+                digitSelectables[6].OnInteract();
+            if (Input.GetKeyDown(KeyCode.Keypad7))
+                digitSelectables[7].OnInteract();
+            if (Input.GetKeyDown(KeyCode.Keypad8))
+                digitSelectables[8].OnInteract();
+            if (Input.GetKeyDown(KeyCode.Keypad9))
+                digitSelectables[9].OnInteract();
+        }
+        // Actual boss mechanic here.
         if (canStart)
         {
             if (cooldown > 0)
@@ -358,7 +404,7 @@ public class ForgetItNotHandler : MonoBehaviour {
         {
             int d = int.Parse(combinedDisplayString.Substring(i, 1));
             digitSelectables[d].OnInteract();
-            yield return new WaitForSeconds(0);
+            yield return null;
         }
         yield return null;
     }

@@ -4494,6 +4494,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: aeac6ceec3f337b419bedab68f61cdf2, type: 2}
   - {fileID: 2100000, guid: 673f154c09515334b99c881f006486b5, type: 2}
   kMAudio: {fileID: 114973064306044212}
+  modSelfSelectable: {fileID: 114310405057296760}
   inputTextMesh: {fileID: 102644455497444682}
   textMeshBig: {fileID: 102219337947951278}
   textMeshStage: {fileID: 102370247399229900}

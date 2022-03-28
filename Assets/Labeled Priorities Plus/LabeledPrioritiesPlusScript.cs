@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using rnd = UnityEngine.Random;
+using KeepCoding;
 public class LabeledPrioritiesPlusScript : MonoBehaviour {
 
 	public KMBombModule modSelf;
@@ -14,13 +15,18 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 	public KMSelectable[] displaySelectables;
 	public TextMesh[] displayedMeshes;
 	public Transform backingAll, screensAll;
-	
+
 	private string[] shuffledQuotes;
 	int[] idxSolutionQuotes, idxCurrentQuotes = new int[4],
 		currentCycleCnt, selectedDynamicScores, relabeledStageOrder,
-		authorDynamicScoring = new[] { 0, 2, 6, 0 };
+		authorDynamicScoring = new[] { 0, 2, 6, 7 };
 
-	int[][] possibleEachIdxQuotes = new int[4][];
+	int[][] possibleEachIdxQuotes = new int[4][], mislabeledPrioritiesGrid = new int[][] {
+        new[] {0, 1, 2, 3},
+        new[] {3, 2, 1, 0},
+        new[] {1, 0, 3, 2},
+        new[] {2, 3, 0, 1},
+		};
 	List<int> correctButtonPressOrder = new List<int>(), currentButtonPressOrder = new List<int>(), selectedVariantIdxes = new List<int>();
 
 	static int modIDCnt = 1;
@@ -91,6 +97,10 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 		"Press this button\nfirst, will you?",
 	};
 	FlyersOtherSettings universalSettings = new FlyersOtherSettings();
+	// Mission overrides.
+	static int[] variantsCountAll;
+	static bool overrideSuccessful;
+
 	void Awake()
     {
 		try
@@ -109,19 +119,21 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 				selectedVariantIdxes.Add(1);
 			if (universalSettings.LPPEnableRelabeledPriorities)
 				selectedVariantIdxes.Add(2);
-			/*
-			if (LPSettings.enableMislabeledPriorities)
+			
+			if (universalSettings.LPPEnableMislabeledPriorities)
 				selectedVariantIdxes.Add(3);
-			*/
+			
 		}
 		catch
 		{
 			Debug.LogFormat("<Labeled Priorities Plus> Settings do not work as intended! Using default settings instead.");
-			selectedVariantIdxes.AddRange(new[] { 0, 1, 2 });
+			selectedVariantIdxes.AddRange(new[] { 0, 1, 2, 3 });
 			selectedDynamicScores = authorDynamicScoring;
 			
 		}
 		Debug.LogFormat("<Labeled Priorities Plus> Rollable Variants: {0}", selectedVariantIdxes.Select(a => new[] { "Labeled", "Unlabeled", "Relabeled", "Mislabeled" }.ElementAtOrDefault(a).Join(",")));
+		if (variantsCountAll != null)
+			variantsCountAll = null;
 	}
 	void HandleRuleSeed()
 	{
@@ -137,7 +149,7 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 				relabeledStageOrder = new[] { 0, 1, 2, 3, -1 };
 			else
             {
-				relabeledStageOrder = new[] { 0, 2, 3, 4, -1 };
+				relabeledStageOrder = new[] { 0, 2, 2, 2, -1 };
 				// Do stuff with Relabeled Priorities' stage ordering for the first 3 non-initial stages. TBD.
             }
 		}
@@ -207,7 +219,112 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 			displayedMeshes[x].text = "";
 		}
 	}
+	// Mission Overrides begin here.
+	void TryOverrideMission()
+    {
+		try
+        {
+			var missionID = Application.isEditor ? "freeplay" : Game.Mission.ID;
+			switch (missionID)
+            {
+				case "freeplay":
+					Debug.LogFormat("<Labeled Priorities Plus #{0}> MISSION DETECTED AS FREEPLAY. NOT OVERRIDING SETTINGS.", modID);
+					return;
+				case "mod_missionpack_VFlyer_mission23rdProblem":
+					selectedVariantIdxes.Clear();
+                    selectedVariantIdxes.AddRange(Enumerable.Range(0, 2));
+					Debug.LogFormat("<Labeled Priorities Plus #{0}> DETECTED MISSION BY ID \"Flyer's 23rd Problem\", OVERRIDING VARIANTS.", modID);
+					return;
+				case "mod_missionpack_VFlyer_mission47thWrathFlyer":
+					if (variantsCountAll == null)
+						variantsCountAll = new int[] { 1, 1, 1, 1 };
+					selectedVariantIdxes.Clear();
+					selectedVariantIdxes.AddRange(Enumerable.Range(0, 4).Where(a => variantsCountAll[a] > 0));
+					overrideSuccessful = true;
+					Debug.LogFormat("<Labeled Priorities Plus #{0}> DETECTED MISSION BY ID \"Flyer's 47th Wrath\", OVERRIDING VARIANTS.", modID);
+					return;
+			}
+			var desc = Game.Mission.Description ?? "";
+			Match regexMatchCountVariants = Regex.Match(desc, @"\[LPPOverride\]\s([0-9]+,\s?){3}[0-9]+"),
+				regexMatchRandomizeCertainVariants = Regex.Match(desc, @"\[LPPOverride\]\s((Re|Un|Mis)?-,\s?)*(Re|Un|Mis)?-");
+			if (regexMatchRandomizeCertainVariants.Success)
+            {
+				var matchedValue = regexMatchRandomizeCertainVariants.Value;
+				var sectionMatchVariantsOnly = Regex.Match(matchedValue, @"((Re|Un|Mis)?-,\s?)*(Re|Un|Mis)?-");
+				selectedVariantIdxes.Clear();
+				foreach (string section in sectionMatchVariantsOnly.Value.Split( new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+					switch (section)
+                    {
+						case "-":
+							selectedVariantIdxes.Add(0);
+							break;
+						case "Un-":
+							selectedVariantIdxes.Add(1);
+							break;
+						case "Re-":
+							selectedVariantIdxes.Add(2);
+							break;
+						case "Mis-":
+							selectedVariantIdxes.Add(3);
+							break;
+                    }
+                }
+				Debug.LogFormat("<Labeled Priorities Plus #{0}> MISSION OVERRIDE BY DESCRIPTION. LOCKING TO THESE VARIANTS: {1}", modID,
+					Enumerable.Range(0, 4).Where(a => selectedVariantIdxes.Contains(a)).Select(a => new[] { "Labeled", "Unlabeled", "Relabeled", "Mislabeled" }[a] + "(Weight = " + selectedVariantIdxes.Count(b => b == a) + ")").Join(", "));
+			}
+			else if (regexMatchCountVariants.Success)
+            {
+				if (variantsCountAll == null)
+                {
+					variantsCountAll = new int[4];
+					var matchedValue = regexMatchCountVariants.Value;
+					var portionMatched = Regex.Match(matchedValue, @"([0-9]+,\s?){3}[0-9]+");
+					var resultingMatch = portionMatched.Value.Where(a => !char.IsWhiteSpace(a)).Join("");
+                    string[] array = resultingMatch.Split(',');
+                    for (int i = 0; i < array.Length; i++)
+                    {
+                        string aValue = array[i];
+						if (!int.TryParse(aValue, out variantsCountAll[i]))
+                        {
+							Debug.LogFormat("<Labeled Priorities Plus #{0}> VALUE DETECTED AS INPROCESSABLE. CANCELING OVERRIDE.", modID, variantsCountAll.Join(", "));
+							return;
+						}
+                    }
+					overrideSuccessful = true;
+					Debug.LogFormat("<Labeled Priorities Plus #{0}> MISSION OVERRIDE BY DESCRIPTION. MAX OF EACH OF THESE VARIANTS: {1}", modID, variantsCountAll.Join(", "));
+				}
+				else
+					Debug.LogFormat("<Labeled Priorities Plus #{0}> MISSION OVERRIDE BY DESCRIPTION. USING EXISTING ARRAY.", modID);
+				if (overrideSuccessful)
+				{
+					selectedVariantIdxes.Clear();
+					selectedVariantIdxes.AddRange(Enumerable.Range(0, 4).Where(a => variantsCountAll[a] > 0));
+				}
+				else
+                {
+					Debug.LogFormat("<Labeled Priorities Plus #{0}> INSTANCE MARKED NOT SUCCESSFUL. CANCELING.", modID, variantsCountAll.Join(", "));
+				}
+			}
+			Debug.LogFormat("<Labeled Priorities Plus #{0}> UNABLE TO OVERRIDE BY MISSION ID AND DESCRIPTION.", modID);
+		}
+		catch (Exception error)
+        {
+			Debug.LogErrorFormat("<Labeled Priorities Plus #{0}> EXCEPTION OCCURED. USING SETTINGS INSTEAD. PLEASE SEEK OUT THE CREATOR ON HOW TO FIX THIS.", modID);
+			Debug.LogException(error);
+			selectedVariantIdxes.Clear();
+			if (universalSettings.LPPEnableLabeledPriorities)
+				selectedVariantIdxes.Add(0);
+			if (universalSettings.LPPEnableUnlabeledPriorities)
+				selectedVariantIdxes.Add(1);
+			if (universalSettings.LPPEnableRelabeledPriorities)
+				selectedVariantIdxes.Add(2);
+			if (universalSettings.LPPEnableMislabeledPriorities)
+				selectedVariantIdxes.Add(3);
+		}
+    }
 	// Use this for initialization
+
 	void Start () {
 		modID = modIDCnt++;
         for (int x = 0; x < displayedMeshes.Length; x++)
@@ -216,8 +333,9 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 			displayedMeshes[x].color = Color.clear;
         }
         HandleRuleSeed();
+		TryOverrideMission();
 		if (!selectedVariantIdxes.Any())
-			selectedVariantIdxes.Add(rnd.Range(0, 3));
+			selectedVariantIdxes.Add(rnd.Range(0, 4));
 		idxVariantGenerated = selectedVariantIdxes.PickRandom();
 		dynamicScoreToGive = selectedDynamicScores[idxVariantGenerated];
 		switch (idxVariantGenerated)
@@ -267,15 +385,12 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 		}
 		backingAll.localEulerAngles = Vector3.up * 180;
 		screensAll.localEulerAngles = Vector3.up * 180;
+		if (variantsCountAll != null && overrideSuccessful)
+			variantsCountAll[0]--;
 	}
 	void GenerateSolutionLabeled()
     {
-		var idxAll = new int[shuffledQuotes.Length];
-		for (int x = 0; x < idxAll.Length; x++)
-		{
-			idxAll[x] = x;
-		}
-		idxAll.Shuffle();
+		var idxAll = Enumerable.Range(0,shuffledQuotes.Length).ToArray().Shuffle();
         for (int x = 0; x < possibleEachIdxQuotes.Length; x++)
         {
 			var anItem = new[] { idxAll[x] };
@@ -362,6 +477,8 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 			};
 		}
 		TPFlipPressOrder = true;
+		if (variantsCountAll != null && overrideSuccessful)
+			variantsCountAll[1]--;
 	}
     void HandleScreenPressUnlabeled(int idx)
     {
@@ -483,6 +600,8 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 
 		backingAll.localEulerAngles = Vector3.up * 90;
 		screensAll.localEulerAngles = Vector3.up * 180;
+		if (variantsCountAll != null && overrideSuccessful)
+			variantsCountAll[2]--;
 	}
 	void GenerateSolutionRelabeled()
 	{
@@ -525,8 +644,8 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 					{
 						assignedOrderIdx[Array.IndexOf(idxCurrentQuotes, rememberedIdxPhrases[x])] = combinedIdxes.ElementAt(x);
 					}
-					Debug.Log(assignedOrderIdx.Join());
-					Debug.Log(Enumerable.Range(0, 4).OrderBy(a => assignedOrderIdx.ElementAtOrDefault(a)).Join());
+					//Debug.Log(assignedOrderIdx.Join());
+					//Debug.Log(Enumerable.Range(0, 4).OrderBy(a => assignedOrderIdx.ElementAtOrDefault(a)).Join());
 					correctButtonPressOrder.AddRange(Enumerable.Range(0, 4).OrderBy(a => assignedOrderIdx[a]).Reverse());
 					//Debug.Log(Enumerable.Range(0, 4).OrderBy(a => combinedIdxes.ElementAt(a)).Join());
 					QuickLog(string.Format("Press the screens from top to bottom in this order from left to right: {0}", correctButtonPressOrder.Any() ? correctButtonPressOrder.Select(a => 4 - a).Join() : "?"));
@@ -719,13 +838,159 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 	void PrepMislabeledPriorities()
     {
 		modSelf.OnActivate += delegate { GenerateSoultionMislabeled(); StartCoroutine(HandleRevealAnim()); };
-
+		for (int x = 0; x < displaySelectables.Length; x++)
+		{
+			int y = x;
+			displaySelectables[x].OnInteract += delegate {
+				displaySelectables[y].AddInteractionPunch(0.2f);
+				mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, displaySelectables[y].transform);
+				if (interactable && !modSolved)
+				{
+					HandleScreenPressMislabeled(y);
+				}
+				return false;
+			};
+		}
 		backingAll.localEulerAngles = Vector3.down * 90;
 		TPFlipPressOrder = true;
+		if (variantsCountAll != null && overrideSuccessful)
+			variantsCountAll[3]--;
 	}
     void GenerateSoultionMislabeled()
     {
-
+		var idxAll = Enumerable.Range(0, shuffledQuotes.Length).ToArray().Shuffle();
+		currentButtonPressOrder.Clear();
+		switch (curStageCnt)
+		{
+			case 0:
+				QuickLog("Initial Stage:");
+				currentCycleCnt = Enumerable.Range(0, 4).ToArray().Shuffle();
+				var selectedScnIdxForbid = rnd.Range(0, 4);
+				var selected3RandomIdxes = idxAll.Take(3);
+				var curIdxSelectedRandomIdx = 0;
+				var stringCode = currentCycleCnt.Select(a => a + 1).Join("");
+				for (var x = 0; x < idxCurrentQuotes.Length; x++)
+                {
+					if (selectedScnIdxForbid != x)
+					{
+						var selectedIdx = selected3RandomIdxes.ElementAt(curIdxSelectedRandomIdx);
+						idxCurrentQuotes[x] = selectedIdx;
+						displayedMeshes[x].text = shuffledQuotes[selectedIdx];
+						curIdxSelectedRandomIdx++;
+					}
+					else
+                    {
+						idxCurrentQuotes[x] = -1;
+						displayedMeshes[x].text = stringCode;
+					}
+				}
+				QuickLog("The following are now shown from top to bottom:");
+				for (int x = 0; x < 4; x++)
+				{
+					QuickLog(string.Format("{0}: \"{1}\"", x + 1, x == selectedScnIdxForbid ? stringCode : shuffledQuotes[idxCurrentQuotes[x]].Replace("\n", " ")));
+				}
+				QuickLog("Press the phrases in any order to disarm the module. DO NOT press the 4-digit code. And make sure to remember the initial displays and the order they were pressed in.");
+				break;
+			case 1:
+			case 2:
+			case 3:
+				{
+					QuickLog(string.Format("Stage {0}:", curStageCnt));
+					correctButtonPressOrder.Clear();
+					var filteredUnrememberedIdxesAll = idxAll.Where(a => !rememberedIdxPhrases.Contains(a));
+					var selected4RandomIdxes = filteredUnrememberedIdxesAll.Take(4);
+					var selectedIdxRule = mislabeledPrioritiesGrid[currentCycleCnt[curStageCnt - 1]][rememberedIdxPositions[curStageCnt - 1]];
+					QuickLog(string.Format("Remembered position pressed {0}: {1}", new[] { "1st", "2nd", "3rd" }[curStageCnt - 1], rememberedIdxPositions[curStageCnt - 1] + 1));
+					QuickLog(string.Format("Remembered phrase pressed {0}: \"{1}\"", new[] { "1st", "2nd", "3rd" }[curStageCnt - 1], shuffledQuotes[rememberedIdxPhrases[curStageCnt - 1]].Replace("\n", " ")));
+					QuickLog(string.Format("Intersecting the {0} digit of the 4-digit code ({2}) and the {0} initial position pressed results in this letter: {1}", new[] { "1st", "2nd", "3rd" }[curStageCnt - 1], "ABCD"[selectedIdxRule], currentCycleCnt[curStageCnt - 1]));
+					for (var x = 0; x < idxCurrentQuotes.Length; x++)
+					{
+						var selectedIdx = filteredUnrememberedIdxesAll.ElementAt(x);
+						idxCurrentQuotes[x] = selectedIdx;
+					}
+					switch (selectedIdxRule)
+                    {
+						case 0:
+						case 1:
+							for (var i = 0; i < shuffledQuotes.Length && correctButtonPressOrder.Count < 4; i++)
+                            {
+								var curIdxPhraseScan = (rememberedIdxPhrases[curStageCnt - 1] + i) % shuffledQuotes.Length;
+								if (idxCurrentQuotes.Contains(curIdxPhraseScan))
+									correctButtonPressOrder.AddRange(Enumerable.Range(0, 4).Where(a => idxCurrentQuotes[a] == curIdxPhraseScan));
+                            }
+							if (selectedIdxRule == 1) correctButtonPressOrder.Reverse();
+							break;
+						case 2:
+						case 3:
+							var distancesAll = idxCurrentQuotes.Select(a => Math.Abs(a - rememberedIdxPhrases[curStageCnt - 1]));
+							while (distancesAll.Distinct().Count() < 4)
+							{
+								idxAll.Shuffle();
+								filteredUnrememberedIdxesAll = idxAll.Where(a => !rememberedIdxPhrases.Contains(a));
+								selected4RandomIdxes = filteredUnrememberedIdxesAll.Take(4);
+								for (var x = 0; x < idxCurrentQuotes.Length; x++)
+								{
+									var selectedIdx = filteredUnrememberedIdxesAll.ElementAt(x);
+									idxCurrentQuotes[x] = selectedIdx;
+								}
+								distancesAll = idxCurrentQuotes.Select(a => Math.Abs(a - rememberedIdxPhrases[curStageCnt - 1]));
+							}
+							correctButtonPressOrder.AddRange(Enumerable.Range(0, 4).OrderBy(a => distancesAll.ElementAt(a)));
+							if (selectedIdxRule == 3) correctButtonPressOrder.Reverse();
+							break;
+						default:
+							break;
+                    }
+					correctButtonPressOrder.RemoveAt(3);
+					for (var x = 0; x < idxCurrentQuotes.Length; x++)
+					{
+						displayedMeshes[x].text = shuffledQuotes[idxCurrentQuotes[x]];
+					}
+					QuickLog("The following are now shown from top to bottom:");
+					for (int x = 0; x < 4; x++)
+					{
+						QuickLog(string.Format("{0}: \"{1}\"", x + 1, shuffledQuotes[idxCurrentQuotes[x]].Replace("\n", " ")));
+					}
+					QuickLog(string.Format("Expected sequence of screens to press: {0}", correctButtonPressOrder.Select(a => a + 1).Join()));
+				}
+				break;
+			case 4:
+                {
+					QuickLog(string.Format("Stage {0}:", curStageCnt));
+					var finalNumber = currentCycleCnt.Last();
+					var shuffledValues = Enumerable.Range(0, 4).ToArray().Shuffle();
+					correctButtonPressOrder.Clear();
+					switch (finalNumber)
+                    {
+						case 3:
+							correctButtonPressOrder.AddRange(Enumerable.Range(0, 4).Where(a => !rememberedIdxPositions.Contains(shuffledValues[a])));
+							break;
+						case 2:
+							var largestDigitPos = Enumerable.Range(0, 4).Where(a => shuffledValues[a] == shuffledValues.Max()).Single();
+							correctButtonPressOrder.AddRange(Enumerable.Range(0, 4).Where(a => shuffledValues[a] == largestDigitPos));
+							break;
+						case 1:
+							var smallestDigitPos = Enumerable.Range(0, 4).Where(a => shuffledValues[a] == shuffledValues.Min()).Single();
+							correctButtonPressOrder.AddRange(Enumerable.Range(0, 4).Where(a => shuffledValues[a] == smallestDigitPos));
+							break;
+						case 0:
+							while (Enumerable.Range(0, 4).Count(a => a == shuffledValues[a]) != 1)
+								shuffledValues.Shuffle();
+							correctButtonPressOrder.AddRange(Enumerable.Range(0, 4).Where(a => a == shuffledValues[a]));
+							break;
+                    }
+					QuickLog("The following are now shown from top to bottom:");
+					for (int x = 0; x < 4; x++)
+					{
+						displayedMeshes[x].text = (shuffledValues[x] + 1).ToString();
+						QuickLog(string.Format("{0}: \"{1}\"", x + 1, shuffledValues[x] + 1));
+					}
+					QuickLog(string.Format("Remaining Digit: {0}", finalNumber + 1));
+					QuickLog(string.Format("Press the screen in this position to complete the stage: {0}", correctButtonPressOrder.Select(a => a + 1).Join()));
+				}
+				break;
+        }
+		interactable = true;
     }
 	void HandleScreenPressMislabeled(int idx)
 	{
@@ -733,21 +998,61 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 		bool isAllCorrect = true;
 		switch (curStageCnt)
 		{
-			case -1:
+			case 4:
+				{
+					QuickLog(string.Format("The defuser pressed screen #{0} from the top for stage {1}", idx + 1, curStageCnt));
+					isAllCorrect = correctButtonPressOrder.Contains(idx);
+					break;
+				}
+			case 0:
+                {
+					if (!currentButtonPressOrder.Contains(idx))
+					{
+						currentButtonPressOrder.Add(idx);
+						displayedMeshes[idx].text = currentButtonPressOrder.Count.ToString();
+					}
+					if (idxCurrentQuotes[idx] == -1) {
+						isAllCorrect = false;
+						QuickLog(string.Format("The defuser pressed screen #{0} from the top for the initial stage, which contained the 4-digit code.", idx + 1, curStageCnt));
+						break;
+					}
+					else if (currentButtonPressOrder.Count != 3) return;
+					
+					break;
+                }
 			case 1:
 			case 2:
 			case 3:
 				{
-					QuickLog(string.Format("The defuser pressed screen #{0} from the bottom for stage {1}", idx + 1, curStageCnt));
-					isAllCorrect = correctButtonPressOrder.Contains(idx);
+					if (!currentButtonPressOrder.Contains(idx))
+					{
+						currentButtonPressOrder.Add(idx);
+						displayedMeshes[idx].text = currentButtonPressOrder.Count.ToString();
+					}
+					if (currentButtonPressOrder.Count < correctButtonPressOrder.Count) return;
+					QuickLog(string.Format("Sequence of presses for stage {1}: {0}", currentButtonPressOrder.Select(a => a + 1).Join(), curStageCnt));
+					isAllCorrect = correctButtonPressOrder.SequenceEqual(currentButtonPressOrder);
 					break;
 				}
 		}
 		if (isAllCorrect)
 		{
 			interactable = false;
-			if (curStageCnt != 0)
-				QuickLog(string.Format("That seems right."));
+			if (curStageCnt == 0)
+			{
+				QuickLog(string.Format("Storing the following phrases pressed in this order:"));
+				for (int x = 0; x < currentButtonPressOrder.Count; x++)
+				{
+					QuickLog(string.Format("{0}: \"{1}\"", currentButtonPressOrder[x] + 1, shuffledQuotes[idxCurrentQuotes[currentButtonPressOrder[x]]].Replace("\n", " ")));
+				}
+				rememberedIdxPositions.AddRange(currentButtonPressOrder);
+				rememberedIdxPhrases.AddRange(currentButtonPressOrder.Select(a => idxCurrentQuotes[a]));
+				QuickLog(string.Format("Storing the 4-digit code: {0}", currentCycleCnt.Select(a => a + 1).Join()));
+			}
+			else
+            {
+				QuickLog("That seems correct.");
+			}
 			if (curStageCnt >= 4)
 			{
 				QuickLog(string.Format("You cleared enough stages. Module disarmed."));
@@ -779,7 +1084,7 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 			for (int x = 0; x < displayedMeshes.Length; x++)
 			{
 				displayedMeshes[x].color = hasStruck ? new Color(1, 0, 0, 1f - y) :
-					x + 1 < curStageCnt ? new Color(0, 1, 0, 1f - y) : new Color(1, 1, 1, 1f - y);
+					4 - x < curStageCnt ? new Color(0, 1, 0, 1f - y) : new Color(1, 1, 1, 1f - y);
 			}
 		}
 		interactable = true;
@@ -791,6 +1096,7 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 	// TP Handler Begins Here
 	IEnumerator TwitchHandleForcedSolve()
     {
+		while (!interactable) yield return true;
 		switch (idxVariantGenerated)
         {
 			case 0:
@@ -824,7 +1130,7 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 			case 2:
 				while (!modSolved)
                 {
-					if (!interactable) yield return true;
+					while (!interactable) yield return true;
 					if (relabeledStageOrder[curStageCnt] != -1)
                     {
 						if (!correctButtonPressOrder.Any())
@@ -845,6 +1151,45 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
                     }
 					yield return null;
                 }
+				break;
+			case 3:
+                {
+					while (!modSolved)
+					{
+						while (!interactable) yield return true;
+						switch (curStageCnt)
+						{
+							case 0:
+								var selectedRandomOrderPress = Enumerable.Range(0, 4).Where(a => idxCurrentQuotes[a] != -1).ToArray().Shuffle();
+								for (int i = 0; i < selectedRandomOrderPress.Length && curStageCnt == 0; i++)
+								{
+									int idxValid = selectedRandomOrderPress[i];
+									displaySelectables[idxValid].OnInteract();
+									yield return new WaitForSeconds(0.1f);
+								}
+								break;
+							case 1:
+							case 2:
+							case 3:
+								currentButtonPressOrder.Clear();
+								for (var x = 0; x < 4; x++)
+								{
+									displayedMeshes[x].text = shuffledQuotes[idxCurrentQuotes[x]];
+								}
+								for (var x = 0; x < correctButtonPressOrder.Count; x++)
+								{
+									displaySelectables[correctButtonPressOrder[x]].OnInteract();
+									yield return new WaitForSeconds(0.1f);
+								}
+								break;
+							case 4:
+								{
+									displaySelectables[correctButtonPressOrder.PickRandom()].OnInteract();
+								}
+								break;
+						}	
+					}
+				}
 				break;
 			default:
 				yield return null;
