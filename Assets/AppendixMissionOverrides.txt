@@ -1,0 +1,15 @@
+Mission Overrides Description Appendix
+Overriding 7:
+- Syntax: "[7Override] Capped/Uncapped/Choice"
+-- Capped: Caps 7 to the 8 stages max
+-- Uncapped: Uncaps 7 to generate as many stages as possible.
+-- Choice: Allows settings for this module. (Same as if the module was detected in some other mission with no overrides)
+Overriding Labeled Priorities Plus:
+- Syntax: "[LPPOverride] ##,##,##,##"
+-- ## for each represents up to how many variants of this kind before the module rolls randomly for variants, Labeled, Unlabeled, Relabeled, Mislabeled, in this order
+-- SETTING THIS VALUE TOO BIG WILL CAUSE IT TO STOP WORKING.
+- Syntax: "[LPPOverride] -,Un-,Re-,Mis-,..."
+-- "-" adds 1 point of weight to roll for Labeled Priorities.
+-- "Un-" adds 1 point of weight to roll for Unlabeled Priorities.
+-- "Re-" adds 1 point of weight to roll for Relabeled Priorities.
+-- "Mis-" adds 1 point of weight to roll for Mislabeled Priorities.

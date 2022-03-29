@@ -119,24 +119,30 @@ public class SevenHandler : MonoBehaviour {
 					return;
 			}
 			var desc = Game.Mission.Description ?? "";
-			Match regexMatchCountVariants = Regex.Match(desc, @"\[7Override\]\s(Uncapped|Capped)");
-			disableUncapTP = true;
-			disableRecapTP = true;
-			uncapAll = false;
+			Match regexMatchCountVariants = Regex.Match(desc, @"\[7Override\]\s(Uncapped|Capped|Choice)");
 			if (regexMatchCountVariants.Success)
 			{
 				var valueMatches = regexMatchCountVariants.Value;
 				switch (valueMatches.Split().Last())
                 {
 					case "Uncapped":
+						disableUncapTP = true;
+						disableRecapTP = true;
 						uncapAll = true;
 						break;
 					case "Capped":
-					default:
+						disableRecapTP = true;
+						disableUncapTP = true;
+						uncapAll = false;
 						break;
+					default:
+						Debug.LogFormat("<7 #{0}> DETECTED OVERRIDE BY DESCRIPTION. LET THE DEFUSER DECIDE ON THIS.", modID);
+						return;
                 }
 				Debug.LogFormat("<7 #{0}> DETECTED OVERRIDE BY DESCRIPTION. UNCAPPING? {1}", modID, uncapAll ? "YES" : "NO");
 			}
+			else
+				Debug.LogFormat("<7 #{0}> UNABLE TO OVERRIDE BY ID AND DESCRIPTION. LET THE DEFUSER DECIDE ON THIS.", modID);
 		}
 		catch (Exception error)
 		{
