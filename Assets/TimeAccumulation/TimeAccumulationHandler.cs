@@ -147,7 +147,7 @@ public class TimeAccumulationHandler : MonoBehaviour {
         }
         else if (isLightsFirstOn)
         {
-            textDisplay.text = UnityEngine.Random.Range(0, 100).ToString("00");
+            textDisplay.text = Random.Range(0, 100).ToString("00");
         }
         else
         {
@@ -187,7 +187,7 @@ public class TimeAccumulationHandler : MonoBehaviour {
     void TwitchHandleForcedSolve()
     {
         canRun = false;
-        needyModule.SetResetDelayTime(float.PositiveInfinity, float.PositiveInfinity);
+        needyModule.SetResetDelayTime(float.MaxValue, float.MaxValue);
         needyModule.HandlePass();
     }
     

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using uernd = UnityEngine.Random;
-using System;
 
 public class SimonSemibossHandler : MonoBehaviour {
 
@@ -19,7 +18,17 @@ public class SimonSemibossHandler : MonoBehaviour {
 	public MeshRenderer faceRender;
 	public Texture[] faces = new Texture[3];
 
-	string[] ignoredModuleNames;
+	protected string[] ignoredModuleNames;
+
+	static Dictionary<KMBomb, SimonGlobalHandler> allSimonGlobalHandlers = new Dictionary<KMBomb, SimonGlobalHandler>();
+	public class SimonGlobalHandler
+	{
+		public List<SimonSemibossHandler> simonHandlers;
+		public SimonGlobalHandler()
+        {
+			simonHandlers = new List<SimonSemibossHandler>();
+        }
+	}
 
 	Color[] colorList = {
 		Color.red,
@@ -36,7 +45,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 
 	List<int> possiblePressIdx = new List<int>();
 
-	bool isSolved, mashToSolve, hasStarted, isPanicking, alterDefaultHandling, hasStruck;
+	bool isSolved, mashToSolve, hasStarted, isPanicking, alterDefaultHandling, hasStruck, hasGeneratedFlashes;
 	float mashCooldown = 0f;
 	static int modID = 1;
 	int curmodID, solveCountActivation = 0, curPressIdx = 0, curSolveCount, unignoredModuleCount, maxFlashesAllowed;
@@ -59,6 +68,10 @@ public class SimonSemibossHandler : MonoBehaviour {
 			maxFlashesAllowed = 40;
 		}
 		Debug.LogFormat("<SimonSettings> Max flashes allowed: {0}", maxFlashesAllowed < 10 ? "unlimited" : maxFlashesAllowed.ToString());
+		foreach (KMBomb kmKey in allSimonGlobalHandlers.Keys)
+        {
+			allSimonGlobalHandlers.Remove(kmKey);
+        }
 	}
 	IEnumerator FlashButton(int idx)
 	{
@@ -310,9 +323,30 @@ public class SimonSemibossHandler : MonoBehaviour {
 				Debug.LogFormat("[Simon #{0}]: Detected this many unignored modules on the bomb: {1}", curmodID, unignoredModuleCount);
 			}
 			StartCoroutine(HandleOrganMysteryModuleCore());
-			// Set a random number of solves required to make Simon panic.
+			var bomb = GetComponentInParent<KMBomb>();
+			if (bomb != null)
+            {
+				var allPossibleSolveCounts = Enumerable.Range(1, unignoredModuleCount * 3 / 4);
+				SimonGlobalHandler globalHandler;
+				if (!allSimonGlobalHandlers.ContainsKey(bomb))
+				{
+					globalHandler = new SimonGlobalHandler();
+					allSimonGlobalHandlers.Add(bomb, globalHandler);
+				}
+				else
+					globalHandler = allSimonGlobalHandlers[bomb];
+				globalHandler.simonHandlers.Add(this);
+				// Set a random number of solves required to make Simon panic. Default to the number of Access Codes required.
+				var unusedSolveCounts = allPossibleSolveCounts.Except(globalHandler.simonHandlers.Select(a => a.solveCountActivation));
+				solveCountActivation = unusedSolveCounts.Any() ?
+				unusedSolveCounts.PickRandom() :
+				bombInfo.GetSolvableModuleIDs().Where(a => a == "GSAccessCodes").Count();
+			}
+			else
+			// Set a random number of solves required to make Simon panic. Default handling.
 			if (unignoredModuleCount > 0)
 				solveCountActivation = uernd.Range(1, unignoredModuleCount * 3 / 4 + 1);
+			Debug.LogFormat("<Simon #{0}>: Debug. Panic at this many non-ignored solves: {1} or until 75%+ unignored solved.", curmodID, solveCountActivation);
 			hasStarted = true;
 		};
 		buttonFlashSet = new IEnumerator[possibleButtons.Length];
@@ -384,6 +418,8 @@ public class SimonSemibossHandler : MonoBehaviour {
 	}
 	void GenerateFlashes()
 	{
+		if (hasGeneratedFlashes) return;
+		hasGeneratedFlashes = true;
 		int solveCountUponGeneration = bombInfo.GetSolvedModuleIDs().Count();
 		Debug.LogFormat("[Simon #{0}]: Simon has started paniking at {1} solve(s).", curmodID, solveCountUponGeneration);
 		if (solveCountUponGeneration > 0)

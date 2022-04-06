@@ -95,7 +95,8 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
 
         for (var x = 0; x < 4; x++)
         {
-            idxMerges.Add(Enumerable.Range(0, x + 2).ToArray().Shuffle().Take(2).ToArray());
+            var startOffsetIdx = Random.Range(0, x + 1);
+            idxMerges.Add(Enumerable.Range(startOffsetIdx, 2).ToArray());
             idxOperatorSets.Add(Random.Range(0, 8));
         }
 
