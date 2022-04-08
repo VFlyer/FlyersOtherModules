@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -11,7 +10,6 @@ public class LabelPrioritiesScript : MonoBehaviour {
 	public KMSelectable[] phrasesSelectable;
 	public KMAudio mAudio;
 	public TextMesh[] phraseDisplays;
-
 	string[] possibleQuotes = {
 		"Press this button first.",
 		"ALWAYS press this button first.",
@@ -64,7 +62,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
 	};
 
 	List<int> correctInputs, currentInputs;
-	bool moduleSolved, interactable;
+	bool moduleSolved, interactable, playingAnim;
 	static int modIDCnt;
 	int modID;
 	int[] displayPhraseIdxes;
@@ -145,6 +143,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
     }
 	IEnumerator AnimateSolveAnim()
 	{
+		playingAnim = true;
 		yield return null;
 		var textsToDisplay = new[] { "SEQUENCE", "CORRECT", "MODULE", "DISARMED" };
 		for (var x = 0; x < phraseDisplays.Length; x++)
@@ -168,6 +167,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
 	}
 	IEnumerator AnimateRestartAnim()
     {
+		playingAnim = true;
 		yield return null;
 		var textsToDisplay = new[] { "SEQUENCE", "INCORRECT", "STRIKE", "START OVER" };
 		for (var x = 0; x < phraseDisplays.Length; x++)
@@ -188,6 +188,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
 	}
 	IEnumerator HandleRevealAnim()
     {
+		playingAnim = true;
 		for (var x = 0; x < phraseDisplays.Length; x++)
 		{
 			phraseDisplays[x].color = Color.clear;
@@ -204,8 +205,28 @@ public class LabelPrioritiesScript : MonoBehaviour {
 		{
 			phraseDisplays[x].color = Color.white;
 		}
+		playingAnim = false;
 	}
-
+	byte animDelay = 0;
+	void FixedUpdate()
+    {
+		if (playingAnim || !interactable) return;
+		animDelay++;
+		if (animDelay < 20)
+		{
+			for (var x = 0; x < phraseDisplays.Length; x++)
+			{
+				phraseDisplays[x].color = currentInputs.Contains(x) ? Color.yellow : Color.white;
+			}
+			return;
+		}
+		animDelay = 0;
+		if (Random.value < 0.1f)
+        {
+			var randomIDxSelected = Random.Range(0, 4);
+			phraseDisplays[randomIDxSelected].color = Color.white * 0.5f;
+		}
+    }
     void CalculateSolution()
     {
         correctInputs.Clear();
@@ -239,7 +260,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
 		}
 	}
 #pragma warning disable IDE0051 // Remove unused private members
-	readonly string TwitchHelpMessage = "Press a given button with \"!{0} press ### # # #\" where 1 is the top-most button in that module.";
+	readonly string TwitchHelpMessage = "Press a given button with \"!{0} press ### # # #\" where 1 is the top-most button on that module.";
 #pragma warning restore IDE0051 // Remove unused private members
 	IEnumerator ProcessTwitchCommand(string cmd)
     {

@@ -68,10 +68,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 			maxFlashesAllowed = 40;
 		}
 		Debug.LogFormat("<SimonSettings> Max flashes allowed: {0}", maxFlashesAllowed < 10 ? "unlimited" : maxFlashesAllowed.ToString());
-		foreach (KMBomb kmKey in allSimonGlobalHandlers.Keys)
-        {
-			allSimonGlobalHandlers.Remove(kmKey);
-        }
+		allSimonGlobalHandlers.Clear();
 	}
 	IEnumerator FlashButton(int idx)
 	{

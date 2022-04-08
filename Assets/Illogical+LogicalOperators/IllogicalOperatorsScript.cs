@@ -3,8 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class IllogicalOperatorsScript : MonoBehaviour {
-
-	public KMSelectable nonogramTile, keypad, switchesSwitch, crazyTalkSwitch, superlogicButton, doubleExpertSwitch, valve;
+	public MeshRenderer[] nonogramMeshes;
+	public Transform valueTransform, ctSwitchBaseTransform;
+	public KMSelectable nonogramTileSelectable,
+		keypadSelectable,
+		switchesSwitchSelectable,
+		crazyTalkSwitchSelectable,
+		superlogicButtonSelectable,
+		doubleExpertSwitchSelectable,
+		valveSelectable;
 
 	// Use this for initialization
 	void Start () {

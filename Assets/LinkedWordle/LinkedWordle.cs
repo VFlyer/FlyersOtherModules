@@ -53,10 +53,14 @@ public partial class LinkedWordle : MonoBehaviour {
     public KMSelectable[] scrollSelectable;
     public KMSelectable modSelf;
     public QuerySet[] allQueryVisuals;
-    public TextMesh overlayTextMesh;
+    public TextMesh overlayTextMesh, numMeshQueries;
     public MeshRenderer overlayRenderer;
+    public MeshRenderer[] keyboardRenderer;
     public KMAudio mAudio;
     public KMBombModule module;
+    public Color[] keyboardShowColors;
+    public BarExtendedScript _3PartBar;
+    const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     bool modSolved, modFocused, disableImmediateSolve, allowInteractions = false, TwitchPlaysActive;
     void Awake()
     {
@@ -83,9 +87,12 @@ public partial class LinkedWordle : MonoBehaviour {
         if (word == selectedCorrectWord)
         {
             modSolved = true;
+            mAudio.PlaySoundAtTransform("215415__unfa__ping_Trimmed", transform);
+            UpdateKeyboard();
             if (!disableImmediateSolve)
                 module.HandlePass();
             allQueryVisuals[positionedIdxInput].UpdateStatus(word, response);
+            numMeshQueries.text = "\u2713";
         }
         else
         {
@@ -102,7 +109,42 @@ public partial class LinkedWordle : MonoBehaviour {
             var curIDxSeeResult = curIDxQueryFirstVisible + x;
             allQueryVisuals[x].UpdateStatus(allWordQueries[curIDxSeeResult], allResponses[curIDxSeeResult]);
         }
+        var queuesLeft = globalHandler.maxQueriesAllowed - allWordQueries.Count;
+        numMeshQueries.text = queuesLeft > 99 ? "99+" : queuesLeft.ToString("00");
         allQueryVisuals.Last().UpdateStatus();
+        _3PartBar.progressDelta = Mathf.Min(6f / (allWordQueries.Count + 1), 1f);
+        _3PartBar.curProgress = allWordQueries.Count < 6 ? 0f : (float)(allWordQueries.Count - 5) / (allWordQueries.Count + 1);
+        _3PartBar.UpdateProgress();
+        UpdateKeyboard();
+    }
+    void UpdateKeyboard()
+    {
+        for (var x = 0; x < keyboardRenderer.Length; x++)
+        {
+            var curLetter = alphabet[x];
+            var rangesofQueriesWithGivenLetter = Enumerable.Range(0, allWordQueries.Count).Where(a => allWordQueries[a].Contains(curLetter));
+            
+            if (rangesofQueriesWithGivenLetter.Any())
+            {
+                var markedIdx = 1;
+                for (var y = 0; y < rangesofQueriesWithGivenLetter.Count(); y++)
+                {
+                    var curIdxScan = rangesofQueriesWithGivenLetter.ElementAt(y);
+                    var queriedWord = allWordQueries.ElementAt(curIdxScan);
+                    var idxesFiltered = Enumerable.Range(0, queriedWord.Length).Where(a => queriedWord[a] == curLetter);
+                    if (idxesFiltered.Any(a => allResponses[curIdxScan][a] == 1))
+                    {
+                        markedIdx = 3;
+                        break;
+                    }
+                    else if (idxesFiltered.Any(a => allResponses[curIdxScan][a] == 2))
+                        markedIdx = 2;
+                }
+                keyboardRenderer[x].material.color = keyboardShowColors[markedIdx];
+            }
+            else
+                keyboardRenderer[x].material.color = keyboardShowColors[0];
+        }
     }
     void QuickLog(string stuff, params object[] args)
     {
@@ -145,10 +187,13 @@ public partial class LinkedWordle : MonoBehaviour {
                 return false;
             };
         }
+        _3PartBar.progressDelta = 1f;
+        _3PartBar.curProgress = 0f;
+        _3PartBar.UpdateProgress();
     }
     void HandleArrowPress(int delta)
     {
-        curIDxQueryFirstVisible = Mathf.Min(Mathf.Max(curIDxQueryFirstVisible + delta, 0), allWordQueries.Count + 1 - allQueryVisuals.Length);
+        curIDxQueryFirstVisible = Mathf.Min(Mathf.Max(curIDxQueryFirstVisible + delta, 0), Mathf.Max(allWordQueries.Count + 1 - allQueryVisuals.Length, 0));
         for (var x = 0; x < Mathf.Min(allWordQueries.Count, allQueryVisuals.Length); x++)
         {
             var curIDxSeeResult = curIDxQueryFirstVisible + x;
@@ -157,6 +202,8 @@ public partial class LinkedWordle : MonoBehaviour {
             else
                 allQueryVisuals[x].UpdateStatus(globalHandler.curWordQuery);
         }
+        _3PartBar.curProgress = allWordQueries.Count < 6 ? 0f : (float)curIDxQueryFirstVisible / (allWordQueries.Count + 1);
+        _3PartBar.UpdateProgress();
     }
     void HandleKeyPress(int idx)
     {

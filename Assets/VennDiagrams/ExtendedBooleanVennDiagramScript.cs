@@ -61,7 +61,6 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
             {
                 Debug.LogFormat("[Extended Boolean Venn Diagram #{0}] That's all of them. Module disarmed.", curModID);
                 SolveModule();
-
             }
             buttonRenderers[idx].material.color = Color.green * 0.5f + Color.white * 0.5f;
         }
@@ -95,8 +94,10 @@ public class ExtendedBooleanVennDiagramScript : MonoBehaviour {
 
         for (var x = 0; x < 4; x++)
         {
+            // This portion is what it is used to make the 5-set expression generator consistent.
             var startOffsetIdx = Random.Range(0, x + 1);
             idxMerges.Add(Enumerable.Range(startOffsetIdx, 2).ToArray());
+            
             idxOperatorSets.Add(Random.Range(0, 8));
         }
 

@@ -96,9 +96,9 @@ public class GameChangerScript : MonoBehaviour {
 		}
 		modSelf.OnActivate += GenerateExpectedState;
 	}
-	void QuickLog(string value)
+	void QuickLog(string value, params object[] args)
 	{
-		Debug.LogFormat("[Game Changer #{0}] {1}", modID, value);
+		Debug.LogFormat("[Game Changer #{0}] {1}", modID, string.Format(value, args));
 	}
 
 	void SolveModule()
@@ -117,33 +117,33 @@ public class GameChangerScript : MonoBehaviour {
 		if (!hasStarted)
 		{
 			hasStarted = true;
-			lastFinishedState = new bool[16];
+			lastFinishedState = new bool[18];
 			for (var x = 0; x < lastFinishedState.Length; x++)
 			{
 				lastFinishedState[x] = Random.value < 0.5f;
 			}
-			expectedState = new bool[16];
+			expectedState = new bool[18];
 			currentState = lastFinishedState.ToArray();
 			QuickLog("Initial Board State:");
 		}
 		else
 		{
 			lastFinishedState = expectedState.ToArray();
-			QuickLog(string.Format("Board State after {0} correct iteration{1}:", iteractionCount, iteractionCount == 1 ? "" : "s"));
+			QuickLog("Board State after {0} correct iteration{1}:", iteractionCount, iteractionCount == 1 ? "" : "s");
 		}
 
-		for (var x = 0; x < 4; x++)
+		for (var x = 0; x < 6; x++)
 		{
-			QuickLog(lastFinishedState.Skip(x * 4).Take(4).Select(a => a ? "W" : "K").Join(""));
+			QuickLog(lastFinishedState.Skip(x * 3).Take(3).Select(a => a ? "W" : "K").Join(""));
 		}
 
-		var adjacentFromBlack = Enumerable.Repeat(false, 1).Concat(lastFinishedState.Take(8));
-		var adjacentFromWhite = Enumerable.Repeat(false, 1).Concat(lastFinishedState.TakeLast(8));
+		var adjacentFromBlack = lastFinishedState.Take(9);
+		var adjacentFromWhite = lastFinishedState.TakeLast(9).Reverse();
 
-		QuickLog(string.Format("White cell birth requires this many surrounding tiles: {0}",
-			adjacentFromBlack.Any(a => a) ? Enumerable.Range(0, adjacentFromBlack.Count()).Where(a => adjacentFromBlack.ElementAt(a)).Join(", ") : "(empty)"));
-		QuickLog(string.Format("White cell survival requires this many surrounding tiles: {0}",
-			adjacentFromWhite.Any(a => a) ? Enumerable.Range(0, adjacentFromWhite.Count()).Where(a => adjacentFromWhite.ElementAt(a)).Join(", ") : "(empty)"));
+		QuickLog("White cell birth requires this many surrounding tiles: {0}",
+			adjacentFromBlack.Any(a => a) ? Enumerable.Range(0, adjacentFromBlack.Count()).Where(a => adjacentFromBlack.ElementAt(a)).Join(", ") : "(empty)");
+		QuickLog("White cell survival requires this many surrounding tiles: {0}",
+			adjacentFromWhite.Any(a => a) ? Enumerable.Range(0, adjacentFromWhite.Count()).Where(a => adjacentFromWhite.ElementAt(a)).Join(", ") : "(empty)");
 		for (var x = 0; x < lastFinishedState.Length; x++)
 		{
 			var whiteNeighborCount = 0;
@@ -152,10 +152,10 @@ public class GameChangerScript : MonoBehaviour {
 				for (var deltaY = -1; deltaY <= 1; deltaY++)
 				{
 					if ((deltaX != 0 || deltaY != 0) &&
-						x % 4 + deltaX >= 0 && x % 4 + deltaX <= 3 &&
-						x / 4 + deltaY >= 0 && x / 4 + deltaY <= 3)
+						x % 3 + deltaX >= 0 && x % 3 + deltaX <= 2 &&
+						x / 3 + deltaY >= 0 && x / 3 + deltaY <= 5)
 					{
-						whiteNeighborCount += lastFinishedState[x + deltaX + 4 * deltaY] ? 1 : 0;
+						whiteNeighborCount += lastFinishedState[x + deltaX + 3 * deltaY] ? 1 : 0;
 					}
 				}
 			}
@@ -170,10 +170,10 @@ public class GameChangerScript : MonoBehaviour {
 			}
 		}
 		iteractionCount++;
-		QuickLog(string.Format("Expected board state for {0} iteration{1}:", iteractionCount, iteractionCount == 1 ? "" : "s"));
-		for (var x = 0; x < 4; x++)
+		QuickLog("Expected board state for {0} iteration{1}:", iteractionCount, iteractionCount == 1 ? "" : "s");
+		for (var x = 0; x < 6; x++)
 		{
-			QuickLog(expectedState.Skip(x * 4).Take(4).Select(a => a ? "W" : "K").Join(""));
+			QuickLog(expectedState.Skip(x * 3).Take(3).Select(a => a ? "W" : "K").Join(""));
 		}
 		interactable = true;
 		UpdateVisuals();
@@ -203,16 +203,16 @@ public class GameChangerScript : MonoBehaviour {
 			}
 			else
 			{
-				QuickLog("You overflowed the iteraction counter. Disarming...");
+				QuickLog("You submitted 8 iterations correctly. Disarming...");
 				SolveModule();
 			}
 		}
 		else
 		{
 			QuickLog("You submitted an incorrect board state:");
-			for (var x = 0; x < 4; x++)
+			for (var x = 0; x < 6; x++)
 			{
-				QuickLog(currentState.Skip(x * 4).Take(4).Select(a => a ? "W" : "K").Join(""));
+				QuickLog(currentState.Skip(x * 3).Take(3).Select(a => a ? "W" : "K").Join(""));
 			}
 			modSelf.HandleStrike();
 			currentState = lastFinishedState.ToArray();
@@ -309,10 +309,10 @@ public class GameChangerScript : MonoBehaviour {
         }
     }
 #pragma warning disable IDE0051 // Remove unused private members
-	readonly string TwitchHelpMessage = "Toggle the following cell with \"!{0} [A-D][1-4]\" where columns are labeled A-D from left to right, rows are numbered 1-4 from top to bottom. " +
+	readonly string TwitchHelpMessage = "Toggle the following cell with \"!{0} [A-C][1-6]\" where columns are labeled A-C from left to right, rows are numbered 1-6 from top to bottom. " +
 		"Multiple cells can be toggled in one command. " +
 		"Submit the current board with \"!{0} submit\" or \"!{0} s\", reset the current board with \"!{0} reset\" or \"!{0} r\", or clear the current board with \"!{0} clear\" or \"!{0} c\". " +
-		"All of the mentioned possible commands can be chained into one command using spaces, E.G: \"!{0} c A1 B4 r C3 D2 s\". Commands may be interrupted upon trying to chain past the submit command if the submitted grid is incorrect at any point. ";
+		"All of the mentioned possible commands can be chained into one command using spaces, E.G: \"!{0} c A1 B4 r C3 D2 s\". Commands may be interrupted upon trying to chain past the submit command if the submitted grid is incorrect at any point.";
 #pragma warning restore IDE0051 // Remove unused private members
 	IEnumerator ProcessTwitchCommand(string cmd)
 	{
@@ -336,8 +336,8 @@ public class GameChangerScript : MonoBehaviour {
 			if (coordMatch.Success)
 			{
 				var curCoord = coordMatch.Value.ToLower().ToCharArray();
-				var idxCol = "abcd".IndexOf(curCoord.First());
-				var idxRow = "1234".IndexOf(curCoord.Last());
+				var idxCol = "abc".IndexOf(curCoord.First());
+				var idxRow = "123456".IndexOf(curCoord.Last());
 				if (idxCol == -1 || idxRow == -1)
                 {
 					yield return string.Format("sendtochaterror Your command has been interrupted after {0} press{1} due to a bad coordinate: \"{2}\".",
@@ -345,7 +345,7 @@ public class GameChangerScript : MonoBehaviour {
 					yield break;
 				}
 				yield return null;
-				gridSelectables[idxCol + idxRow * 4].OnInteract();
+				gridSelectables[idxCol + idxRow * 3].OnInteract();
 				yield return new WaitForSeconds(0.1f);
 			}
 			else if (submitMatch.Success)

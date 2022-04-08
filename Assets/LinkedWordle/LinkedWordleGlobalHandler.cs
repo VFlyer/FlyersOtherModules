@@ -53,6 +53,7 @@ public partial class LinkedWordle
                 curUnsolvedWordle.positionedIdxInput = 0;
                 curUnsolvedWordle.QuickLog("Selected correct word for this instance: {0}", curUnsolvedWordle.selectedCorrectWord);
                 curUnsolvedWordle.QuickLog("Maxmium guesses allowed before failure: {0}", maxQueriesAllowed);
+                curUnsolvedWordle.numMeshQueries.text = maxQueriesAllowed > 99 ? "99+" : maxQueriesAllowed.ToString("00");
             }
             for (var x = 0; x < unsolvedWordles.Count(); x++)
             {
@@ -110,6 +111,8 @@ public partial class LinkedWordle
             var unsolvedWordles = wordlesAll.Where(a => !a.modSolved);
             if (unsolvedWordles.Any() && unsolvedWordles.All(a => a.allWordQueries.Count >= maxQueriesAllowed))
             {
+                for (var x = 0; x < unsolvedWordles.Count(); x++)
+                    unsolvedWordles.ElementAt(x).QuickLog("Unable to guess correct word. Activating cooldown.");
                 unsolvedWordles.First().StartCoroutine(HandleDelayedReset());
             }
         }
@@ -130,6 +133,8 @@ public partial class LinkedWordle
                 curWordle.allQueryVisuals[curWordle.positionedIdxInput].UpdateStatus(curWordQuery);
                 for (var a = 0; a < curWordle.allQueryVisuals[curWordle.positionedIdxInput].displayTexts.Length; a++)
                     curWordle.allQueryVisuals[curWordle.positionedIdxInput].displayTexts[a].color = Color.white;
+                curWordle._3PartBar.curProgress = curWordle.allWordQueries.Count < 6 ? 0f : (float)(curWordle.allWordQueries.Count - 5) / (curWordle.allWordQueries.Count + 1);
+                curWordle._3PartBar.UpdateProgress();
             }
         }
         IEnumerator HandleDelayedReset()
