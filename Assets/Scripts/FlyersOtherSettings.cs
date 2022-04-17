@@ -9,6 +9,7 @@
 	public int SevenMaxPPA = -1;
 	public bool SevenNoTPUncapping = false;
 	public bool SevenNoTPRecapping = false;
+	public float SimonSemibossDynamicScorePerFlash = 0.15f;
 	public int SimonSemibossMaxFlashes = 40;
 	public bool LPPEnableLabeledPriorities = true;
 	public bool LPPEnableUnlabeledPriorities = true;

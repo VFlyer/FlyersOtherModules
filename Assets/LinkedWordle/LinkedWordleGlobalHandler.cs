@@ -59,6 +59,10 @@ public partial class LinkedWordle
             {
                 unsolvedWordles.ElementAt(x).disableImmediateSolve |= containsDupe;
                 unsolvedWordles.ElementAt(x).allowInteractions = true;
+                unsolvedWordles.ElementAt(x).UpdateKeyboard();
+                unsolvedWordles.ElementAt(x)._3PartBar.progressDelta = 1f;
+                unsolvedWordles.ElementAt(x)._3PartBar.curProgress = 0;
+                unsolvedWordles.ElementAt(x)._3PartBar.UpdateProgress();
             }
         }
         public void StartGlobalHandling()
@@ -112,7 +116,12 @@ public partial class LinkedWordle
             if (unsolvedWordles.Any() && unsolvedWordles.All(a => a.allWordQueries.Count >= maxQueriesAllowed))
             {
                 for (var x = 0; x < unsolvedWordles.Count(); x++)
+                {
                     unsolvedWordles.ElementAt(x).QuickLog("Unable to guess correct word. Activating cooldown.");
+                    unsolvedWordles.ElementAt(x)._3PartBar.curProgress = unsolvedWordles.ElementAt(x).allWordQueries.Count < 6 ? 0f : (float)(unsolvedWordles.ElementAt(x).allWordQueries.Count - 6) / unsolvedWordles.ElementAt(x).allWordQueries.Count;
+                    unsolvedWordles.ElementAt(x)._3PartBar.progressDelta = Mathf.Min(6f / unsolvedWordles.ElementAt(x).allWordQueries.Count, 1f);
+                    unsolvedWordles.ElementAt(x)._3PartBar.UpdateProgress();
+                }
                 unsolvedWordles.First().StartCoroutine(HandleDelayedReset());
             }
         }
@@ -134,7 +143,9 @@ public partial class LinkedWordle
                 for (var a = 0; a < curWordle.allQueryVisuals[curWordle.positionedIdxInput].displayTexts.Length; a++)
                     curWordle.allQueryVisuals[curWordle.positionedIdxInput].displayTexts[a].color = Color.white;
                 curWordle._3PartBar.curProgress = curWordle.allWordQueries.Count < 6 ? 0f : (float)(curWordle.allWordQueries.Count - 5) / (curWordle.allWordQueries.Count + 1);
+                curWordle._3PartBar.progressDelta = Mathf.Min(6f / (curWordle.allWordQueries.Count + 1), 1f);
                 curWordle._3PartBar.UpdateProgress();
+                curWordle.overlayInvalidWordMesh.enabled = false;
             }
         }
         IEnumerator HandleDelayedReset()
@@ -144,6 +155,8 @@ public partial class LinkedWordle
             {
                 var curUnsolvedWordle = unsolvedWordles.ElementAt(u);
                 curUnsolvedWordle.allowInteractions = false;
+                curUnsolvedWordle.overlayTextMeshRenderer.enabled = true;
+                curUnsolvedWordle.overlayRenderer.enabled = true;
                 var allQueryVisuals = curUnsolvedWordle.allQueryVisuals;
                 for (var x = 0; x < curUnsolvedWordle.allQueryVisuals.Length; x++)
                 {
@@ -194,7 +207,8 @@ public partial class LinkedWordle
             for (var u = 0; u < unsolvedWordles.Count(); u++)
             {
                 var curUnsolvedWordle = unsolvedWordles.ElementAt(u);
-                curUnsolvedWordle.overlayRenderer.material.color = Color.clear;
+                curUnsolvedWordle.overlayRenderer.enabled = false;
+                curUnsolvedWordle.overlayTextMeshRenderer.enabled = false;
                 curUnsolvedWordle.overlayTextMesh.color = new Color(1f, 1f, 1f, 0f);
             }
         }

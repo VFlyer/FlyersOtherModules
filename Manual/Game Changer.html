@@ -8,8 +8,8 @@
         <link rel="stylesheet" type="text/css" href="css/normalize.css">
         <link rel="stylesheet" type="text/css" href="css/main.css">
         <script src="js/ktane-utils.js"></script>
-		<style>
-		</style>
+        <style>
+        </style>
     </head>
     <body>
         <div class="section">
@@ -24,10 +24,14 @@
                     <p class="flavour-text">Wait... How many stages?! I thought you said there were only two to four!</p>
                     <p>This module consists of a 6 row, 3 column grid, a binary counter of 3 LEDs, a green submit button, and a red reset button.</p>
                     <p>To solve the module, solve the 6 row, 3 column Game of Life grid for each iteration. The rules for this game are different to the normal Game of Life.</p>
-					<p>Take the first 9 tiles in reading order. Ordered from 0 - 8 inclusive, tiles that are white will correspond to how many white tiles must surround a tile to turn a black tile into a white tile.</p>
-					<p>Then take the first 9 tiles in <strong>reverse</strong> reading order. Ordered from 0 - 8 inclusive, tiles that are white will correspond to how many white tiles must surround a tile to keep a tile white.</p>
-					<p>Using the current board and the determined conditions, iterate the displayed board</p>
-                    <p>The module will solve when 8 iterations are submitted correctly or when the next iteration to submit is the same as the current board.</p>
+                    <p>Using the current board and the determined conditions, iterate the displayed board using those conditions to obtain the next iteration to submit. Upon submitting the correct iteration, the 3 LEDs will start counting up in binary how many iterations were correctly submitted, and you then must the use correct iteration to submit the next iteration from the current iteration. For clarity, the initial board display is iteration 0, iteration 1 is the first board to submit after determining the conditions from the initial board.</p>
+                    <p>For each iteration to submit:</p>
+                    <ol>
+                        <li>Take the first 9 tiles in reading order from the current iteration. Ordered from 0 - 8 inclusive, tiles that are white will correspond to how many white tiles must surround a tile to turn a black tile into a white tile.</li>
+                        <li>Then take the first 9 tiles in <strong>reverse</strong> reading order from the current iteration. Ordered from 0 - 8 inclusive, tiles that are white will correspond to how many white tiles must surround a tile to keep a tile white.</li>
+						<li>Apply these rules to the current board.</li>
+                    </ol>
+                    <p>The module will solve when 8 iterations have been submitted correctly or when the next correctly submitted iteration is the same as any previous iteration. Alternatively, the user may interact with the status light to make the module solve on the next iteration. The status light may only be safely toggled if the user submitted at least 2 iterations correctly.</p>
                 </div>
                 <div class="page-footer relative-footer">Page 1 of 1</div>
             </div>

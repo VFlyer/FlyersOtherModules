@@ -53,8 +53,8 @@ public partial class LinkedWordle : MonoBehaviour {
     public KMSelectable[] scrollSelectable;
     public KMSelectable modSelf;
     public QuerySet[] allQueryVisuals;
-    public TextMesh overlayTextMesh, numMeshQueries;
-    public MeshRenderer overlayRenderer;
+    public TextMesh overlayTextMesh, numMeshQueries, overlayInvalidWord;
+    public MeshRenderer overlayRenderer, overlayTextMeshRenderer, overlayInvalidWordMesh;
     public MeshRenderer[] keyboardRenderer;
     public KMAudio mAudio;
     public KMBombModule module;
@@ -87,11 +87,21 @@ public partial class LinkedWordle : MonoBehaviour {
         if (word == selectedCorrectWord)
         {
             modSolved = true;
-            mAudio.PlaySoundAtTransform("215415__unfa__ping_Trimmed", transform);
+            mAudio.PlaySoundAtTransform(globalHandler.wordlesAll.Count(a => !a.modSolved) == 0 ? "disarmed" : "215415__unfa__ping_Trimmed", transform);
             UpdateKeyboard();
+            disableImmediateSolve |= TwitchPlaysActive;
             if (!disableImmediateSolve)
                 module.HandlePass();
+            if (allWordQueries.Count > 6)
+            for (var x = 0; x < Mathf.Min(allWordQueries.Count - 6, allQueryVisuals.Length); x++)
+            {
+                var curIDxSeeResult = allWordQueries.Count - 6 + x;
+                allQueryVisuals[x].UpdateStatus(allWordQueries[curIDxSeeResult], allResponses[curIDxSeeResult]);
+            }
             allQueryVisuals[positionedIdxInput].UpdateStatus(word, response);
+            _3PartBar.progressDelta = Mathf.Min(6f / allWordQueries.Count, 1f);
+            _3PartBar.curProgress = allWordQueries.Count < 6 ? 0f : (float)(allWordQueries.Count - 6) / allWordQueries.Count;
+            _3PartBar.UpdateProgress();
             numMeshQueries.text = "\u2713";
         }
         else
@@ -190,6 +200,9 @@ public partial class LinkedWordle : MonoBehaviour {
         _3PartBar.progressDelta = 1f;
         _3PartBar.curProgress = 0f;
         _3PartBar.UpdateProgress();
+        overlayInvalidWordMesh.enabled = false;
+        overlayRenderer.enabled = false;
+        overlayTextMeshRenderer.enabled = false;
     }
     void HandleArrowPress(int delta)
     {
@@ -202,6 +215,9 @@ public partial class LinkedWordle : MonoBehaviour {
             else
                 allQueryVisuals[x].UpdateStatus(globalHandler.curWordQuery);
         }
+        var curQueryVisual = allQueryVisuals[positionedIdxInput];
+        for (var x = 0; x < curQueryVisual.displayTexts.Length; x++)
+            curQueryVisual.displayTexts[x].color = Color.white;
         _3PartBar.curProgress = allWordQueries.Count < 6 ? 0f : (float)curIDxQueryFirstVisible / (allWordQueries.Count + 1);
         _3PartBar.UpdateProgress();
     }
@@ -230,7 +246,6 @@ public partial class LinkedWordle : MonoBehaviour {
         globalHandler.wordlesAll.Add(this);
         if (globalHandler.referenceBomb == null)
             globalHandler.referenceBomb = bombAlone;
-        disableImmediateSolve |= TwitchPlaysActive;
         globalHandler.StartGlobalHandling();
     }
     void HandleInvalidWord()
@@ -238,6 +253,7 @@ public partial class LinkedWordle : MonoBehaviour {
         var curQueryVisual = allQueryVisuals[positionedIdxInput];
         for (var x = 0; x < curQueryVisual.displayTexts.Length; x++)
             curQueryVisual.displayTexts[x].color = Color.red;
+        overlayInvalidWordMesh.enabled = true;
     }
     void Update()
     {
@@ -328,7 +344,7 @@ public partial class LinkedWordle : MonoBehaviour {
     {
         var remainingCmd = cmd;
         var matchQueryScan = Regex.Match(cmd, @"^q(uery)?\s\d+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-        var matchQueryWord = Regex.Match(cmd, @"^g(uess)?\s+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        var matchQueryWord = Regex.Match(cmd, @"^g(uess)?\s+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         if (matchQueryScan.Success)
         {
             var matchedValue = matchQueryScan.Value.Split().Last();

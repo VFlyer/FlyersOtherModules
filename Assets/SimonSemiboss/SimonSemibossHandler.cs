@@ -6,6 +6,7 @@ using uernd = UnityEngine.Random;
 
 public class SimonSemibossHandler : MonoBehaviour {
 
+	const float authorScoreDynamicFlash = 0.15f;
 	public KMSelectable[] possibleButtons = new KMSelectable[8];
 	public MeshRenderer[] buttonRenderers;
 	public Light[] buttonLights;
@@ -46,9 +47,9 @@ public class SimonSemibossHandler : MonoBehaviour {
 	List<int> possiblePressIdx = new List<int>();
 
 	bool isSolved, mashToSolve, hasStarted, isPanicking, alterDefaultHandling, hasStruck, hasGeneratedFlashes;
-	float mashCooldown = 0f;
+	float mashCooldown = 0f, assignedDynamicScorePerFlash;
 	static int modID = 1;
-	int curmodID, solveCountActivation = 0, curPressIdx = 0, curSolveCount, unignoredModuleCount, maxFlashesAllowed;
+	int curmodID, solveCountActivation = 0, curPressIdx = 0, curSolveCount, unignoredModuleCount, maxFlashesAllowed, scoreToGive;
 	IEnumerator[] buttonFlashSet;
 	IEnumerator flashingSequence;
 	private FlyersOtherSettings selfSettings = new FlyersOtherSettings();
@@ -61,11 +62,13 @@ public class SimonSemibossHandler : MonoBehaviour {
 			selfSettings = universalConfig.Settings;
 			universalConfig.Settings = selfSettings;
 			maxFlashesAllowed = selfSettings.SimonSemibossMaxFlashes;
+			assignedDynamicScorePerFlash = selfSettings.UseAuthorSuggestedDynamicScoring ? authorScoreDynamicFlash : selfSettings.SimonSemibossDynamicScorePerFlash;
 		}
 		catch
 		{
 			Debug.LogFormat("<SimonSettings> Settings do not work as intended! using default settings.");
 			maxFlashesAllowed = 40;
+			assignedDynamicScorePerFlash = authorScoreDynamicFlash;
 		}
 		Debug.LogFormat("<SimonSettings> Max flashes allowed: {0}", maxFlashesAllowed < 10 ? "unlimited" : maxFlashesAllowed.ToString());
 		allSimonGlobalHandlers.Clear();
@@ -426,7 +429,7 @@ public class SimonSemibossHandler : MonoBehaviour {
 				possiblePressIdx.Add(uernd.Range(0, 8));
 			}
 			Debug.LogFormat("[Simon #{0}]: And is flashing the following colors: {1}", curmodID, possiblePressIdx.Select(a => debugColorString[idxColorList[a]]).Join(", "));
-
+			scoreToGive = Mathf.FloorToInt(assignedDynamicScorePerFlash * possiblePressIdx.Count);
 			isPanicking = true;
 			//solveCountActivation = bombInfo.GetSolvedModuleNames().Count(a => !ignoredModuleNames.Contains(a));
 			flashingSequence = FlashSequenceQuickly(3);
@@ -560,6 +563,8 @@ public class SimonSemibossHandler : MonoBehaviour {
 			hasStruck = false;
             for (int x = 0; x < allPresses.Count && !hasStruck; x++)
             {
+				if (curPressIdx + 1 >= possiblePressIdx.Count && scoreToGive > 0)
+					yield return string.Format("awardpointsonsolve {0}", scoreToGive);
 				allPresses[x].OnInteract();
 				yield return new WaitForSeconds(0.1f);
             }

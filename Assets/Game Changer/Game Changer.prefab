@@ -624,6 +624,9 @@ GameObject:
   - component: {fileID: 4299410197823362}
   - component: {fileID: 114063390228878750}
   - component: {fileID: 114918729550051824}
+  - component: {fileID: 33883460780205578}
+  - component: {fileID: 23400517166322130}
+  - component: {fileID: 114823484777413550}
   m_Layer: 0
   m_Name: Status Light
   m_TagString: Untagged
@@ -1039,7 +1042,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1448539612921134}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.06, y: 0.016, z: 0}
+  m_LocalPosition: {x: 0.075167, y: 0.016, z: 0.015}
   m_LocalScale: {x: 0.01, y: 0.001, z: 0.01}
   m_Children:
   - {fileID: 4040600770394994}
@@ -1303,7 +1306,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1083411835265862}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.06, y: 0.016, z: -0.015}
+  m_LocalPosition: {x: 0.075167, y: 0.016, z: 0.03}
   m_LocalScale: {x: 0.01, y: 0.001, z: 0.01}
   m_Children:
   - {fileID: 4242402197662482}
@@ -1369,7 +1372,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1897620117144780}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.06, y: 0.0165, z: 0.02}
+  m_LocalPosition: {x: -0.06, y: 0.0165, z: 0.02}
   m_LocalScale: {x: 1, y: 1, z: 0.5}
   m_Children:
   - {fileID: 4267511458636702}
@@ -1398,7 +1401,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1903106835486072}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.06, y: 0.0165, z: -0.02}
+  m_LocalPosition: {x: -0.06, y: 0.0165, z: -0.02}
   m_LocalScale: {x: 1, y: 1.0000005, z: 0.5}
   m_Children:
   - {fileID: 4177317554265840}
@@ -1714,7 +1717,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1880991984863930}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.06, y: 0.016, z: 0.015}
+  m_LocalPosition: {x: 0.075167, y: 0.016, z: 0}
   m_LocalScale: {x: 0.01, y: 0.001, z: 0.01}
   m_Children:
   - {fileID: 4922389740934738}
@@ -2301,6 +2304,40 @@ MeshRenderer:
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
   m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!23 &23400517166322130
+MeshRenderer:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1723941680278150}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 0
@@ -3049,6 +3086,13 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1280316426975518}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!33 &33883460780205578
+MeshFilter:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1723941680278150}
+  m_Mesh: {fileID: 4300000, guid: 2b6c12c86941aa943ab1a36a971e3619, type: 3}
 --- !u!33 &33916285334691596
 MeshFilter:
   m_ObjectHideFlags: 1
@@ -3394,7 +3438,7 @@ MonoBehaviour:
   - {fileID: 114226617949474820}
   - {fileID: 114413287041151620}
   - {fileID: 114590646250842160}
-  - {fileID: 0}
+  - {fileID: 114918729550051824}
   - {fileID: 114103735696252808}
   - {fileID: 114681187524182870}
   - {fileID: 114954746988572060}
@@ -4146,6 +4190,18 @@ MonoBehaviour:
   AllowSelectionWrapY: 0
   ForceSelectionHighlight: 0
   ForceInteractionHighlight: 0
+--- !u!114 &114823484777413550
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1723941680278150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShaderNames: []
 --- !u!114 &114824471730441644
 MonoBehaviour:
   m_ObjectHideFlags: 1

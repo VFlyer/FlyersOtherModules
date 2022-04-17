@@ -11,8 +11,10 @@ public class GameChangerScript : MonoBehaviour {
 	public KMBombModule modSelf;
 	public KMAudio mAudio;
 
-	bool[] lastFinishedState, expectedState, currentState;
-	bool hasStarted = false, moduleSolved, interactable = false;
+
+	List<bool[]> allExpectedStates;
+	bool[] lastFinishedState, currentState;
+	bool moduleSolved, interactable = false, flashingRed;
 	static int modIDCnt = 1;
 	int modID, iteractionCount = 0;
 	IEnumerator flashingAnim;
@@ -90,11 +92,15 @@ public class GameChangerScript : MonoBehaviour {
 			}
 			return false;
 		};
+		statusLight.OnInteract += delegate {
+			return false;
+		};
+
 		for (var x = 0; x < LEDRenderers.Length; x++)
 		{
 			LEDRenderers[x].material.color = Color.black;
 		}
-		modSelf.OnActivate += GenerateExpectedState;
+		modSelf.OnActivate += GenerateAllExpectedStates;
 	}
 	void QuickLog(string value, params object[] args)
 	{
@@ -107,11 +113,84 @@ public class GameChangerScript : MonoBehaviour {
 		modSelf.HandlePass();
 		for (var x = 0; x < LEDRenderers.Length; x++)
 		{
-			LEDRenderers[x].material.color = Color.green;
+			LEDRenderers[x].material.color = Color.black;
 		}
 	}
+	void GenerateAllExpectedStates()
+    {
+		lastFinishedState = new bool[18];
+		for (var x = 0; x < lastFinishedState.Length; x++)
+		{
+			lastFinishedState[x] = Random.value < 0.5f;
+		}
+		currentState = lastFinishedState.ToArray();
+		QuickLog("Initial Board State:");
+		for (var x = 0; x < 6; x++)
+		{
+			QuickLog(lastFinishedState.Skip(x * 3).Take(3).Select(a => a ? "W" : "K").Join(""));
+		}
+        allExpectedStates = new List<bool[]>
+        {
+            lastFinishedState.ToArray()
+        };
+        var duplicateBoardFound = false;
+        for (var iter = 0; iter < 8 && !duplicateBoardFound; iter++)
+        {
+			var lastState = allExpectedStates[iter].ToArray();
+			var adjacentFromBlack = lastState.Take(9);
+			var adjacentFromWhite = lastState.TakeLast(9).Reverse();
+			QuickLog("White cell birth requires this many surrounding tiles: {0}",
+				adjacentFromBlack.Any(a => a) ? Enumerable.Range(0, adjacentFromBlack.Count()).Where(a => adjacentFromBlack.ElementAt(a)).Join(", ") : "(empty)");
+			QuickLog("White cell survival requires this many surrounding tiles: {0}",
+				adjacentFromWhite.Any(a => a) ? Enumerable.Range(0, adjacentFromWhite.Count()).Where(a => adjacentFromWhite.ElementAt(a)).Join(", ") : "(empty)");
+			var expectedState = new bool[18];
+			for (var x = 0; x < lastState.Length; x++)
+			{
+				var whiteNeighborCount = 0;
+				for (var deltaX = -1; deltaX <= 1; deltaX++)
+				{
+					for (var deltaY = -1; deltaY <= 1; deltaY++)
+					{
+						var curX = x % 3;
+						var curY = x / 3;
 
-
+						if ((deltaX != 0 || deltaY != 0) &&
+							x % 3 + deltaX >= 0 && x % 3 + deltaX <= 2 &&
+							x / 3 + deltaY >= 0 && x / 3 + deltaY <= 5)
+						{
+							whiteNeighborCount += lastState[x + deltaX + 3 * deltaY] ? 1 : 0;
+						}
+					}
+				}
+				//Debug.Log(whiteNeighborCount);
+				expectedState[x] = lastState[x]
+                    ? adjacentFromWhite.ElementAtOrDefault(whiteNeighborCount)
+                    : adjacentFromBlack.ElementAtOrDefault(whiteNeighborCount);
+            }
+			QuickLog("Expected board state after {0} iteration{1}:", iter + 1, iter == 0 ? "" : "s");
+			for (var x = 0; x < 6; x++)
+			{
+				QuickLog(expectedState.Skip(x * 3).Take(3).Select(a => a ? "W" : "K").Join(""));
+			}
+			if (allExpectedStates.Any(a => expectedState.SequenceEqual(a)))
+			{
+				duplicateBoardFound = true;
+				QuickLog("At {0} iteration{1}, a duplicate board was found that is exactly the same state as the previous iterations. Stopping here.", iter + 1, iter == 0 ? "" : "s");
+			}
+			allExpectedStates.Add(expectedState.ToArray());
+		}
+		interactable = true;
+		UpdateVisuals();
+		iteractionCount = 1;
+	}
+	void UpdateIterationCounter()
+    {
+		iteractionCount++;
+		lastFinishedState = allExpectedStates[iteractionCount - 1];
+		UpdateVisuals();
+		interactable = true;
+	}
+		/*
 	void GenerateExpectedState()
 	{
 		if (!hasStarted)
@@ -178,6 +257,7 @@ public class GameChangerScript : MonoBehaviour {
 		interactable = true;
 		UpdateVisuals();
 	}
+		*/
 	IEnumerator HandleCellFlashAnim()
     {
 		interactable = false;
@@ -190,26 +270,19 @@ public class GameChangerScript : MonoBehaviour {
 		{
 			gridRenderers[x].material.color = currentState[x] ? Color.white : Color.black;
 		}
-		if (currentState.SequenceEqual(expectedState))
+		if (currentState.SequenceEqual(allExpectedStates[iteractionCount]))
 		{
-			if (iteractionCount < 8)
+			UpdateIterationCounter();
+			if (iteractionCount >= allExpectedStates.Count)
 			{
-				GenerateExpectedState();
-				if (expectedState.SequenceEqual(lastFinishedState))
-				{
-					QuickLog("Expected board state is exactly the previous board state. Disarming...");
-					SolveModule();
-				}
-			}
-			else
-			{
-				QuickLog("You submitted 8 iterations correctly. Disarming...");
+				QuickLog("You submitted all {0} iteration{1} correctly. Disarming...", iteractionCount - 1, iteractionCount == 0 ? "" : "s");
 				SolveModule();
+				interactable = false;
 			}
 		}
 		else
 		{
-			QuickLog("You submitted an incorrect board state:");
+			QuickLog("You submitted an incorrect board state at {0} iteration{1}:", iteractionCount, iteractionCount == 1 ? "" : "s");
 			for (var x = 0; x < 6; x++)
 			{
 				QuickLog(currentState.Skip(x * 3).Take(3).Select(a => a ? "W" : "K").Join(""));
@@ -229,41 +302,19 @@ public class GameChangerScript : MonoBehaviour {
 
 	IEnumerator HandleFlashingLEDAnim()
     {
-		int displayedIterCount;
-		for (var z = 0; z < 5; z++)
-        {
-			displayedIterCount = iteractionCount - 1;
-			for (var x = 0; x < LEDRenderers.Length; x++)
-			{
-				var y = 1;
-				for (var u = 0; u < x; u++)
-				{
-					y *= 2;
-				}
-				LEDRenderers[x].material.color = displayedIterCount / y % 2 == 1 ? Color.white : Color.black;
-			}
-			yield return new WaitForSeconds(0.1f);
-			for (var x = 0; x < LEDRenderers.Length; x++)
-			{
-				var y = 1;
-				for (var u = 0; u < x; u++)
-				{
-					y *= 2;
-				}
-				LEDRenderers[x].material.color = Color.red;
-			}
-			yield return new WaitForSeconds(0.1f);
-        }
-		displayedIterCount = iteractionCount - 1;
+		flashingRed = true;
 		for (var x = 0; x < LEDRenderers.Length; x++)
 		{
-			var y = 1;
-			for (var u = 0; u < x; u++)
-			{
-				y *= 2;
-			}
-			LEDRenderers[x].material.color = displayedIterCount / y % 2 == 1 ? Color.white : Color.black;
+			LEDRenderers[x].material.color = Color.red;
 		}
+		yield return new WaitForSeconds(1f);
+		var displayedIterCount = iteractionCount - 1;
+		for (var x = 0; x < LEDRenderers.Length; x++)
+		{
+			var y = 1 << x;
+			LEDRenderers[x].material.color = displayedIterCount / y % 2 == 1 ? Color.green : Color.black;
+		}
+		flashingRed = false;
 	}
 
 	void UpdateVisuals()
@@ -272,6 +323,7 @@ public class GameChangerScript : MonoBehaviour {
         {
 			gridRenderers[x].material.color = currentState[x] ? Color.white : Color.black;
 		}
+		if (flashingRed) return;
 		var displayedIterCount = iteractionCount - 1;
         for (var x = 0; x < LEDRenderers.Length; x++)
         {
@@ -280,7 +332,7 @@ public class GameChangerScript : MonoBehaviour {
             {
 				y *= 2;
             }
-			LEDRenderers[x].material.color = displayedIterCount / y % 2 == 1 ? Color.white : Color.black;
+			LEDRenderers[x].material.color = displayedIterCount / y % 2 == 1 ? Color.green : Color.black;
         }
 
     }
@@ -290,6 +342,7 @@ public class GameChangerScript : MonoBehaviour {
         {
 			while (!interactable)
 				yield return true;
+			var expectedState = allExpectedStates[iteractionCount];
 			while (!currentState.SequenceEqual(expectedState))
             {
 				for (var x = 0; x < expectedState.Length; x++)
@@ -351,7 +404,7 @@ public class GameChangerScript : MonoBehaviour {
 			else if (submitMatch.Success)
 			{
 				yield return null;
-				var willStrike = !currentState.SequenceEqual(expectedState);
+				var willStrike = !currentState.SequenceEqual(allExpectedStates[iteractionCount]);
 				yield return willStrike ? "strike" : "solve";
                 submitButton.OnInteract();
                 if (willStrike || x + 1 >= allPossibleCommands.Length)
@@ -382,7 +435,7 @@ public class GameChangerScript : MonoBehaviour {
             }
 			else
             {
-				yield return string.Format("sendtochaterror I do not know what \"{0}\" does.",curCmdPart);
+				yield return string.Format("sendtochaterror I do not know what \"{0}\" does. Command interrupted.",curCmdPart);
 				yield break;
             }
         }

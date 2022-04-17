@@ -179,17 +179,19 @@ public class EvenOrOddHandler : MonoBehaviour {
 
 			timerMesh.text = randomTime < 9.9f ? randomTime.ToString("0.0") : randomTime.ToString("00");
 			digitMesh.text = Random.Range(0, 10).ToString();
-			yield return new WaitForSeconds(1 / 30f);
+			yield return new WaitForFixedUpdate();
+			yield return new WaitForFixedUpdate();
 			timerMesh.color = Color.white * (60 - x) / 60f;
 			digitMesh.color = (isRedText ? Color.red : Color.green) * (60 - x) / 60f;
 		}
 		timerMesh.text = "";
 		digitMesh.text = "/";
-		for (int x = 0; x <= 60; x++)
+		for (float x = 0; x <= 1f; x += Time.deltaTime / 1.5f)
 		{
-			yield return new WaitForSeconds(1 / 30f);
-			digitMesh.color = Color.white * ((30 - Mathf.Abs(x - 30)) / 30f);
+			yield return null;
+			digitMesh.color = Color.white * (1f - Mathf.Abs(2 * x - 1));
 		}
+		digitMesh.color = Color.clear;
 	}
 	IEnumerator CountdownTimeLeft()
     {
