@@ -6,17 +6,20 @@ using UnityEngine;
 
 public class GameChangerScript : MonoBehaviour {
 	public KMSelectable[] gridSelectables;
-	public MeshRenderer[] gridRenderers, LEDRenderers;
+	public MeshRenderer[] gridRenderers, LEDRenderers, oldGridRenderers;
 	public KMSelectable statusLight, submitButton, resetButton;
 	public KMBombModule modSelf;
 	public KMAudio mAudio;
+	public GameObject allOldGridRenderers;
 
+	private static readonly int[] oldGCStates = { 42088, 22757, 61367, 49135, 55037, 63485, 62429, 47939, 41925, 1632 };
 
 	List<bool[]> allExpectedStates;
 	bool[] lastFinishedState, currentState;
-	bool moduleSolved, interactable = false, flashingRed;
+	bool moduleSolved, interactable = false, flashingRed, solveOnNextIteration;
 	static int modIDCnt = 1;
-	int modID, iteractionCount = 0;
+	int modID, iteractionCount = 0, statusLightClickCount;
+	float cooldownThreshold = 0f;
 	IEnumerator flashingAnim;
 
 	// Use this for initialization
@@ -93,6 +96,32 @@ public class GameChangerScript : MonoBehaviour {
 			return false;
 		};
 		statusLight.OnInteract += delegate {
+			if (!solveOnNextIteration && !moduleSolved && interactable)
+            {
+				if (cooldownThreshold <= 0f)
+                {
+					statusLightClickCount = 0;
+                }
+				cooldownThreshold = 1f;
+				statusLightClickCount++;
+				if (statusLightClickCount >= 5)
+				{
+					mAudio.PlaySoundAtTransform("StaticEnd", transform);
+					solveOnNextIteration = true;
+					interactable = false;
+					StartCoroutine(HandleChangeStatusLightAnim());
+					QuickLog("You are attempting to make the module solve on the next correct iteration...");
+					if (iteractionCount <= 3)
+					{
+						QuickLog("...Before at least 3 iterations were correctly submitted. This is fine to get rid of Game Changer, but worth the strike?");
+						modSelf.HandleStrike();
+					}
+				}
+				else
+                {
+					mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, statusLight.transform);
+				}
+            }
 			return false;
 		};
 
@@ -101,6 +130,8 @@ public class GameChangerScript : MonoBehaviour {
 			LEDRenderers[x].material.color = Color.black;
 		}
 		modSelf.OnActivate += GenerateAllExpectedStates;
+		statusLight.gameObject.SetActive(true);
+		allOldGridRenderers.SetActive(false);
 	}
 	void QuickLog(string value, params object[] args)
 	{
@@ -114,6 +145,10 @@ public class GameChangerScript : MonoBehaviour {
 		for (var x = 0; x < LEDRenderers.Length; x++)
 		{
 			LEDRenderers[x].material.color = Color.black;
+		}
+		if (allOldGridRenderers.activeSelf)
+		{
+			StartCoroutine(HandleSolveAnimOldBoardOnly(iteractionCount));
 		}
 	}
 	void GenerateAllExpectedStates()
@@ -180,8 +215,8 @@ public class GameChangerScript : MonoBehaviour {
 			allExpectedStates.Add(expectedState.ToArray());
 		}
 		interactable = true;
-		UpdateVisuals();
 		iteractionCount = 1;
+		UpdateVisuals();
 	}
 	void UpdateIterationCounter()
     {
@@ -258,6 +293,55 @@ public class GameChangerScript : MonoBehaviour {
 		UpdateVisuals();
 	}
 		*/
+	IEnumerator HandleSolveAnimOldBoardOnly(int startIdx = 0)
+    {
+		var curIt = startIdx;
+		while (curIt < oldGCStates.Length)
+		{
+			for (var x = 0; x < oldGridRenderers.Length; x++)
+			{
+				oldGridRenderers[x].material.color = (oldGCStates[curIt] >> (oldGridRenderers.Length - 1 - x)) % 2 == 1 ? Color.green : Color.black;
+			}
+			yield return new WaitForSeconds(1f);
+			curIt++;
+		}
+		for (var x = 0; x < oldGridRenderers.Length; x++)
+		{
+			oldGridRenderers[x].material.color = (oldGCStates.Last() >> (oldGridRenderers.Length - 1 - x)) % 2 == 1 ? Color.green : Color.black;
+		}
+	}
+	IEnumerator HandleChangeStatusLightAnim()
+    {
+		for (float t = 1; t > 0; t -= Time.deltaTime * 2f)
+		{
+			statusLight.transform.localScale = Vector3.one * t;
+			yield return null;
+		}
+		statusLight.transform.localScale = Vector3.zero;
+		statusLight.gameObject.SetActive(false);
+		allOldGridRenderers.SetActive(true);
+		for (var x = 0; x < oldGridRenderers.Length; x++)
+		{
+			oldGridRenderers[x].material.color = (oldGCStates[iteractionCount] >> (oldGridRenderers.Length - 1 - x)) % 2 == 1 ? (iteractionCount <= 3 ? Color.red : Color.white) : Color.black;
+		}
+		for (float t = 0; t < 1f; t += Time.deltaTime * 2f)
+		{
+			for (var x = 0; x < oldGridRenderers.Length; x++)
+			{
+				oldGridRenderers[x].transform.localScale = Vector3.one * t;
+			}
+			yield return null;
+		}
+		for (var x = 0; x < oldGridRenderers.Length; x++)
+		{
+			oldGridRenderers[x].transform.localScale = Vector3.one;
+		}
+		interactable = true;
+		for (var x = 0; x < oldGridRenderers.Length; x++)
+		{
+			oldGridRenderers[x].material.color = (oldGCStates[iteractionCount] >> (oldGridRenderers.Length - 1 - x)) % 2 == 1 ? Color.white : Color.black;
+		}
+	}
 	IEnumerator HandleCellFlashAnim()
     {
 		interactable = false;
@@ -275,7 +359,13 @@ public class GameChangerScript : MonoBehaviour {
 			UpdateIterationCounter();
 			if (iteractionCount >= allExpectedStates.Count)
 			{
-				QuickLog("You submitted all {0} iteration{1} correctly. Disarming...", iteractionCount - 1, iteractionCount == 0 ? "" : "s");
+				QuickLog("You submitted all {0} iteration{1} correctly. Disarming...", iteractionCount - 1, iteractionCount == 1 ? "" : "s");
+				SolveModule();
+				interactable = false;
+			}
+			else if (solveOnNextIteration)
+            {
+				QuickLog("You bailed after submitting {0} iteration{1} correctly. Disarming...", iteractionCount - 1, iteractionCount == 1 ? "" : "s");
 				SolveModule();
 				interactable = false;
 			}
@@ -307,6 +397,11 @@ public class GameChangerScript : MonoBehaviour {
 		{
 			LEDRenderers[x].material.color = Color.red;
 		}
+		if (allOldGridRenderers.activeSelf)
+			for (var x = 0; x < oldGridRenderers.Length; x++)
+			{
+				oldGridRenderers[x].material.color = (oldGCStates[iteractionCount] >> (oldGridRenderers.Length - 1 - x)) % 2 == 1 ? Color.red : Color.black;
+			}
 		yield return new WaitForSeconds(1f);
 		var displayedIterCount = iteractionCount - 1;
 		for (var x = 0; x < LEDRenderers.Length; x++)
@@ -314,6 +409,11 @@ public class GameChangerScript : MonoBehaviour {
 			var y = 1 << x;
 			LEDRenderers[x].material.color = displayedIterCount / y % 2 == 1 ? Color.green : Color.black;
 		}
+		if (allOldGridRenderers.activeSelf)
+			for (var x = 0; x < oldGridRenderers.Length; x++)
+			{
+				oldGridRenderers[x].material.color = (oldGCStates[iteractionCount] >> (oldGridRenderers.Length - 1 - x)) % 2 == 1 ? Color.white : Color.black;
+			}
 		flashingRed = false;
 	}
 
@@ -327,14 +427,16 @@ public class GameChangerScript : MonoBehaviour {
 		var displayedIterCount = iteractionCount - 1;
         for (var x = 0; x < LEDRenderers.Length; x++)
         {
-			var y = 1;
-			for (var u = 0; u < x; u++)
-            {
-				y *= 2;
-            }
+			var y = 1 << x;
 			LEDRenderers[x].material.color = displayedIterCount / y % 2 == 1 ? Color.green : Color.black;
         }
-
+		if (allOldGridRenderers.activeSelf)
+        {
+            for (var x = 0; x < oldGridRenderers.Length; x++)
+            {
+				oldGridRenderers[x].material.color = ((iteractionCount < 0 ? oldGCStates.First() : iteractionCount >= oldGCStates.Length ? oldGCStates.Last() : oldGCStates[iteractionCount]) >> (oldGridRenderers.Length - 1 - x)) % 2 == 1 ? Color.white : Color.black;
+            }
+        }
     }
 	IEnumerator TwitchHandleForcedSolve()
     {
@@ -379,13 +481,15 @@ public class GameChangerScript : MonoBehaviour {
 			yield break;
         }
 		var allPossibleCommands = cmd.Trim().Split();
+		var allSelectablesToGo = new List<KMSelectable>();
 		for (var x = 0; x < allPossibleCommands.Length; x++)
         {
 			var curCmdPart = allPossibleCommands[x];
 			Match coordMatch = Regex.Match(curCmdPart, @"^[a-z][0-9]$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
 				submitMatch = Regex.Match(curCmdPart, @"^s(ubmit)?$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
 				clearMatch = Regex.Match(curCmdPart, @"^c(lear)?$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
-				resetMatch = Regex.Match(curCmdPart, @"^r(eset)?$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+				resetMatch = Regex.Match(curCmdPart, @"^r(eset)?", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
+				slMatch = Regex.Match(curCmdPart, @"^sl", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 			if (coordMatch.Success)
 			{
 				var curCoord = coordMatch.Value.ToLower().ToCharArray();
@@ -393,51 +497,52 @@ public class GameChangerScript : MonoBehaviour {
 				var idxRow = "123456".IndexOf(curCoord.Last());
 				if (idxCol == -1 || idxRow == -1)
                 {
-					yield return string.Format("sendtochaterror Your command has been interrupted after {0} press{1} due to a bad coordinate: \"{2}\".",
-						x, x == 1 ? "" : "es", curCoord.Join(""));
+					yield return string.Format("sendtochaterror Your command has been interrupted due to a bad coordinate: \"{0}\".",
+						curCoord.Join(""));
 					yield break;
 				}
-				yield return null;
-				gridSelectables[idxCol + idxRow * 3].OnInteract();
-				yield return new WaitForSeconds(0.1f);
+				allSelectablesToGo.Add(gridSelectables[idxCol + idxRow * 3]);
 			}
 			else if (submitMatch.Success)
 			{
-				yield return null;
-				var willStrike = !currentState.SequenceEqual(allExpectedStates[iteractionCount]);
-				yield return willStrike ? "strike" : "solve";
-                submitButton.OnInteract();
-                if (willStrike || x + 1 >= allPossibleCommands.Length)
-					yield break;
-				else
-				{
-					while (!interactable)
-						yield return string.Format("trycancel Your command has been interrupted after {0} press{1} in the command specified.", x, x == 1 ? "" : "es");
-				}
-				yield return new WaitForSeconds(0.1f);
+				allSelectablesToGo.Add(submitButton);
 			}
 			else if (clearMatch.Success)
 			{
-				yield return null;
 				var curStateToPress = currentState.ToArray();
 				for (var y = 0; y < curStateToPress.Length; y++)
 				{
 					if (curStateToPress[y])
-						gridSelectables[y].OnInteract();
+						allSelectablesToGo.Add(gridSelectables[y]);
 				}
-				yield return new WaitForSeconds(0.1f);
 			}
 			else if (resetMatch.Success)
             {
-				yield return null;
-				resetButton.OnInteract();
-				yield return new WaitForSeconds(0.1f);
+				allSelectablesToGo.Add(resetButton);
             }
+			else if (slMatch.Success)
+            {
+				allSelectablesToGo.Add(statusLight);
+			}
 			else
             {
-				yield return string.Format("sendtochaterror I do not know what \"{0}\" does. Command interrupted.",curCmdPart);
+				yield return string.Format("sendtochaterror I do not know what \"{0}\" does. Command interrupted.", curCmdPart);
 				yield break;
             }
+        }
+		for (var x = 0; x < allSelectablesToGo.Count; x++)
+        {
+			yield return null;
+			var curSelectable = allSelectablesToGo[x];
+			var willStrike = curSelectable == submitButton && !currentState.SequenceEqual(allExpectedStates[iteractionCount]);
+			curSelectable.OnInteract();
+			if (curSelectable == submitButton)
+				yield return willStrike ? "strike" : "solve";
+			if (willStrike)
+				yield break;
+			while (!interactable)
+				yield return string.Format("trycancel Your command has been interrupted after {0} press{1} in the command specified.", x, x == 1 ? "" : "es");
+			yield return new WaitForSeconds(0.1f);
         }
 	}
 }

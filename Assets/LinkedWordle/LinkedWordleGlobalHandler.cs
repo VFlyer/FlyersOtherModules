@@ -164,14 +164,14 @@ public partial class LinkedWordle
                     curUnsolvedWordle.allQueryVisuals[x].UpdateStatus(curUnsolvedWordle.allWordQueries[curIDxSeeResult], curUnsolvedWordle.allResponses[curIDxSeeResult]);
                 }
             }
-            yield return null;
+            var selectedRandomFailPhrase = new[] { "GAME OVER", "TOO BAD", "FAILED" }.PickRandom();
             var timeCooldown = 30f + 15 * failedAttempts;
             for (float t = 0f; t < 1f; t += Time.deltaTime * 2)
             {
                 for (var u = 0; u < unsolvedWordles.Count(); u++)
                 {
                     var curUnsolvedWordle = unsolvedWordles.ElementAt(u);
-                    curUnsolvedWordle.overlayTextMesh.text = string.Format("\nGAME OVER\nThe word was\n{0}\n{1}", curUnsolvedWordle.selectedCorrectWord, string.Format("{0}:{1}", Mathf.FloorToInt(timeCooldown / 60).ToString("0"), (timeCooldown % 60).ToString("00")));
+                    curUnsolvedWordle.overlayTextMesh.text = string.Format("\n{2}\nThe word was\n{0}\n{1}", curUnsolvedWordle.selectedCorrectWord, string.Format("{0}:{1}", Mathf.FloorToInt(timeCooldown / 60).ToString("0"), (timeCooldown % 60).ToString("00")), selectedRandomFailPhrase);
                     curUnsolvedWordle.overlayRenderer.material.color = Color.black * t * 0.5f;
                     curUnsolvedWordle.overlayTextMesh.color = new Color(1f, 1f, 1f, t);
                 }
@@ -188,7 +188,7 @@ public partial class LinkedWordle
                 for (var u = 0; u < unsolvedWordles.Count(); u++)
                 {
                     var curUnsolvedWordle = unsolvedWordles.ElementAt(u);
-                    curUnsolvedWordle.overlayTextMesh.text = string.Format("\nGAME OVER\nThe word was\n{0}\n{1}", curUnsolvedWordle.selectedCorrectWord, string.Format("{0}:{1}", Mathf.FloorToInt(t / 60).ToString("0"), (t % 60).ToString("00")));
+                    curUnsolvedWordle.overlayTextMesh.text = string.Format("\n{2}\nThe word was\n{0}\n{1}", curUnsolvedWordle.selectedCorrectWord, string.Format("{0}:{1}", Mathf.FloorToInt(t / 60).ToString("0"), (t % 60).ToString("00")), selectedRandomFailPhrase);
                 }
                 yield return null;
             }
