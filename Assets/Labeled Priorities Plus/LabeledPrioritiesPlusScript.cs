@@ -131,7 +131,7 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 			selectedDynamicScores = authorDynamicScoring;
 			
 		}
-		Debug.LogFormat("<Labeled Priorities Plus> Rollable Variants: {0}", selectedVariantIdxes.Select(a => new[] { "Labeled", "Unlabeled", "Relabeled", "Mislabeled" }.ElementAtOrDefault(a).Join(",")));
+		Debug.LogFormat("<Labeled Priorities Plus> Rollable Variants: {0}", selectedVariantIdxes.Select(a => new[] { "Labeled", "Unlabeled", "Relabeled", "Mislabeled" }.ElementAtOrDefault(a)).Join(", "));
 		if (variantsCountAll != null)
 			variantsCountAll = null;
 	}
