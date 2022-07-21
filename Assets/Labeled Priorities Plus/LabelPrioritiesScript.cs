@@ -62,10 +62,12 @@ public class LabelPrioritiesScript : MonoBehaviour {
 	};
 
 	List<int> correctInputs, currentInputs;
-	bool moduleSolved, interactable, playingAnim;
+	bool moduleSolved, interactable, playingAnim, allowFlickerAnim;
 	static int modIDCnt;
 	int modID;
 	int[] displayPhraseIdxes;
+	IEnumerator flickerAnim;
+	FlyersOtherSettings selfSettings;
 	/*
 	int[] ruleSeedIDxBase;
 	void HandleRuleSeed()
@@ -89,6 +91,21 @@ public class LabelPrioritiesScript : MonoBehaviour {
 		}
     }
 	*/
+	void Awake()
+	{
+		try
+		{
+			ModConfig<FlyersOtherSettings> universalConfig = new ModConfig<FlyersOtherSettings>("FlyersOtherSettings");
+			selfSettings = universalConfig.Settings;
+			universalConfig.Settings = selfSettings;
+			allowFlickerAnim = !selfSettings.LPDisableFlickerAnim;
+		}
+		catch
+		{
+			Debug.LogFormat("<SimonSettings> Settings do not work as intended! using default settings.");
+			allowFlickerAnim = false;
+		}
+	}
 	// Use this for initialization
 	void Start () {
 		modID = ++modIDCnt;
@@ -123,6 +140,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
 			if (currentInputs.Count >= correctInputs.Count)
 			{
 				Debug.LogFormat("[Label Priorities #{0}] The following button presses from top to bottom were made, where 1 is the top button: {1}", modID, currentInputs.Select(a => a + 1).Join());
+				StopCoroutine(flickerAnim);
 				if (currentInputs.SequenceEqual(correctInputs) || correctInputs.Count <= 0)
                 {
 					Debug.LogFormat("[Label Priorities #{0}] That sequence is correct. Module disarmed.", modID);
@@ -205,31 +223,40 @@ public class LabelPrioritiesScript : MonoBehaviour {
 		{
 			phraseDisplays[x].color = Color.white;
 		}
+		flickerAnim = allowFlickerAnim ? FlickerPhraseAnim() : DummyAnim();
+		StartCoroutine(flickerAnim);
 		playingAnim = false;
 	}
-	byte animDelay = 0;
-	void FixedUpdate()
+	IEnumerator FlickerPhraseAnim()
     {
-		if (playingAnim || !interactable) return;
-		animDelay++;
-		if (animDelay < 20)
+		while (playingAnim)
+			yield return null;
+		while (!playingAnim)
 		{
+			if (Random.value < 0.1f)
+			{
+				var randomIDxSelected = Random.Range(0, 4);
+				phraseDisplays[randomIDxSelected].color = (currentInputs.Contains(randomIDxSelected) ? Color.yellow : Color.white) * 0.5f;
+				yield return new WaitForSeconds(.05f);
+			}
 			for (var x = 0; x < phraseDisplays.Length; x++)
 			{
 				phraseDisplays[x].color = currentInputs.Contains(x) ? Color.yellow : Color.white;
 			}
-			return;
+			yield return new WaitForSeconds(1f);
 		}
-		animDelay = 0;
-		if (Random.value < 0.1f)
-        {
-			var randomIDxSelected = Random.Range(0, 4);
-			phraseDisplays[randomIDxSelected].color = Color.white * 0.5f;
-		}
+    }
+	IEnumerator DummyAnim()
+    {
+		while (playingAnim)
+			yield return null;
+		while (!playingAnim)
+			yield return new WaitForSeconds(1f);
+		yield break;
     }
     void CalculateSolution()
     {
-        correctInputs.Clear();
+		correctInputs.Clear();
         currentInputs.Clear();
         displayPhraseIdxes = Enumerable.Range(0, possibleQuotes.Length).ToArray().Shuffle().Take(4).ToArray();
         for (var x = 0; x < phraseDisplays.Length; x++)
@@ -247,6 +274,7 @@ public class LabelPrioritiesScript : MonoBehaviour {
         Debug.LogFormat("[Label Priorities #{0}] Have the following button presses from top to bottom where 1 is the top button: {1}", modID, correctInputs.Select(a => a + 1).Join());
         interactable = true;
 		StartCoroutine(HandleRevealAnim());
+
     }
 
 	IEnumerator TwitchHandleForcedSolve()

@@ -258,7 +258,7 @@ public class AssetBundler
         }
 
         managedReferences.Add(unityAssembliesLocation + "UnityEngine");
-
+        managedReferences.Add(unityAssembliesLocation + "../UnityExtensions/Unity/GUISystem/UnityEngine.UI");
         //Next we need to grab some type references and use reflection to build things the way Unity does.
         //Note that EditorUtility.CompileCSharp will do *almost* exactly the same thing, but it unfortunately
         //defaults to "unity" rather than "2.0" when selecting the .NET support for the classlib_profile.

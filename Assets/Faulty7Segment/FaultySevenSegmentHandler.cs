@@ -16,12 +16,17 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 	bool isActive = false, TPDetected, forceDisable = false;
 	private List<Vector3> localPosSeg = new List<Vector3>();
 	private List<Vector3> localRotSeg = new List<Vector3>();
-	private int[] segmentIDs = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 }; // Used for read-only assignment, generally used for importing
+	private readonly int[] segmentIDs = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 }; // Used for read-only assignment, generally used for importing
 	private List<int> curSegmentPos = new List<int>();
 
 	private int activationCount = 1;
 	private static int modID = 1;
 	private int curModID;
+	void QuickLog(string toLog, params object[] args)
+    {
+		Debug.LogFormat("[Faulty Seven Segment Display #{0}] {1}", curModID, string.Format(toLog, args));
+    }
+
 	// Use this for initialization
 	void Start() {
 		needyModule.OnNeedyActivation += delegate
@@ -41,7 +46,7 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 				tempSegmentsID.Remove(valueToAdd);
 			}
 			UpdateSegments();
-			Debug.LogFormat("[Faulty Seven Segment Display #{0}]: The set of the seven segments scrambled for {1} needy activation(s) are:", curModID, activationCount);
+			QuickLog("The set of the seven segments scrambled for {0} needy activation(s) are:", activationCount);
 			LogSegments(curSegmentPos.ToArray());
 			TPDetected = TwitchPlaysActive;
 			if (TPDetected)
@@ -56,7 +61,7 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 		needyModule.OnTimerExpired += delegate
 		{
 			isActive = false;
-			Debug.LogFormat("[Faulty Seven Segment Display #{0}]: The current set of the seven segments when the time ran out for {1} needy activation(s):", curModID, activationCount++);
+			QuickLog("The current set of the seven segments when the time ran out for {0} needy activation(s):", activationCount++);
 			LogSegments(curSegmentPos.ToArray());
 			if (!curSegmentPos.SequenceEqual(segmentIDs.ToList()))
 			{
@@ -109,7 +114,7 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 		}
 
 		curModID = modID++;
-		Debug.LogFormat("[Faulty Seven Segment Display #{0}]: The correct set of the seven segments are logged as the following:", curModID);
+		QuickLog("The correct set of the seven segments are logged as the following:");
 		LogSegments();
 	}
 	void SwapSegments(int a, int b)
@@ -145,7 +150,7 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 					else
 						log1LineOutput += logSegmentIDs[(int)loggingOrderIdx[x, y]].ToString("00");
 				}
-				Debug.LogFormat(log1LineOutput);
+				QuickLog(log1LineOutput);
 			}
 		}
 	}
@@ -162,7 +167,7 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 				else
 					log1LineOutput += ((int)loggingOrderIdx[x, y]).ToString("00");
 			}
-			Debug.LogFormat(log1LineOutput);
+			QuickLog(log1LineOutput);
 		}
 	}
 	void UpdateSegments()
@@ -230,8 +235,10 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 
 	void TwitchHandleForcedSolve()
 	{
-		Debug.LogFormat("[Faulty Seven Segment Display #{0}]: Forcably disabling the needy viva TP handler.", curModID);
-		needyModule.SetResetDelayTime(float.MaxValue, float.MaxValue);
+		QuickLog("[Forcably disabling the needy viva TP handler.");
+		needyModule.ResetDelayMin = float.MaxValue;
+		needyModule.ResetDelayMax = float.MaxValue;
+		//needyModule.SetResetDelayTime(float.MaxValue, float.MaxValue);
 		needyModule.HandlePass();
 		forceDisable = true;
 		isActive = false;

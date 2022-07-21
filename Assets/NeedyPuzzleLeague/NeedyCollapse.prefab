@@ -495,7 +495,6 @@ GameObject:
   - component: {fileID: 114602423214372846}
   - component: {fileID: 114254263427802082}
   - component: {fileID: 114653067213436074}
-  - component: {fileID: 114294519239712956}
   m_Layer: 0
   m_Name: NeedyCollapse
   m_TagString: Untagged
@@ -23639,7 +23638,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mAudio: {fileID: 114653067213436074}
-  gameCommands: {fileID: 114294519239712956}
   modSelfSelectable: {fileID: 114903174511617362}
   needySelf: {fileID: 114748906120810448}
   bombInfo: {fileID: 114602423214372846}
@@ -24054,17 +24052,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShaderNames:
   - Unlit/Transparent Colored
---- !u!114 &114294519239712956
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1082504603499644}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 759786898, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114300988617520172
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -27606,6 +27593,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CountdownTime: 99
+  ResetDelayMin: 3.402823e+38
+  ResetDelayMax: 3.402823e+38
   ModuleType: collapseBasic
   ModuleDisplayName: Collapse
   RequiresTimerVisibility: 0

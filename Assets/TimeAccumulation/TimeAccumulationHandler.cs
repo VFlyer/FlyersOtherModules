@@ -187,7 +187,9 @@ public class TimeAccumulationHandler : MonoBehaviour {
     void TwitchHandleForcedSolve()
     {
         canRun = false;
-        needyModule.SetResetDelayTime(float.MaxValue, float.MaxValue);
+        needyModule.ResetDelayMin = float.MaxValue;
+        needyModule.ResetDelayMax = float.MaxValue;
+        //needyModule.SetResetDelayTime(float.MaxValue, float.MaxValue);
         needyModule.HandlePass();
     }
     

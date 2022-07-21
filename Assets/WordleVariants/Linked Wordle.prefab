@@ -2077,6 +2077,7 @@ GameObject:
   - component: {fileID: 114757959875799410}
   - component: {fileID: 114264650851687864}
   - component: {fileID: 114777947552761210}
+  - component: {fileID: 114251971728606684}
   m_Layer: 0
   m_Name: Linked Wordle
   m_TagString: Untagged
@@ -14830,6 +14831,18 @@ MonoBehaviour:
   AllowSelectionWrapY: 0
   ForceSelectionHighlight: 0
   ForceInteractionHighlight: 0
+--- !u!114 &114251971728606684
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1534916520215864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1cfb889a07d5fd4e9baed7960bb397f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _colorblindMode: 0
 --- !u!114 &114260028107957340
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -16813,7 +16826,21 @@ MonoBehaviour:
   - {r: 0.33333334, g: 0.33333334, b: 0.33333334, a: 0}
   - {r: 0.6666667, g: 0.6666667, b: 0, a: 0}
   - {r: 0, g: 0.6666667, b: 0, a: 0}
+  colorblindKeyboardShowColors:
+  - {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 0}
+  - {r: 0.33333334, g: 0.33333334, b: 0.33333334, a: 0}
+  - {r: 0.20000002, g: 0.40000004, b: 1, a: 0}
+  - {r: 1, g: 0.33333334, b: 0, a: 0}
+  colorblindQueryColors:
+  - {r: 0.33333334, g: 0.33333334, b: 0.33333334, a: 0}
+  - {r: 1, g: 0.33333334, b: 0, a: 0}
+  - {r: 0.20000002, g: 0.40000004, b: 1, a: 0}
+  queryColors:
+  - {r: 0.33333334, g: 0.33333334, b: 0.33333334, a: 0}
+  - {r: 0, g: 0.6666667, b: 0, a: 0}
+  - {r: 0.6666667, g: 0.6666667, b: 0, a: 0}
   _3PartBar: {fileID: 114121012000506366}
+  colorblindMode: {fileID: 114251971728606684}
 --- !u!114 &114783377294232522
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -108,9 +108,28 @@ public class CruelModuloScript : MonoBehaviour {
 			if (listModValues.Contains(calculatedNextModuloValue)) break;
 			listModValues.Add(calculatedNextModuloValue);
 		}
-		QuickLog(string.Format("Using the alternative method, the pattern of values before repetition and before the exponent, starting at {1}%{2} are {0}", listModValues.Join(), startingValue, divisorValue));
+		QuickLog(string.Format("Using the Window method, the pattern of values before repetition and before the exponent, starting at {1}%{2} are {0}", listModValues.Join(), startingValue, divisorValue));
 		correctValue = listModValues.Min() == 0 ? 0 : listModValues.ElementAt((fixedExponent + listModValues.Count - 1) % listModValues.Count);
-
+		var binaryString = "";
+		var curExponent = fixedExponent;
+		listModValues.Clear();
+		do
+		{
+			binaryString = (curExponent % 2 == 1 ? "1" : "0") + binaryString;
+			curExponent >>= 1;
+		}
+		while (curExponent > 0);
+		QuickLog(string.Format("Using the Square and Multiply method, the binary representation of {0} is {1}.", fixedExponent, binaryString));
+		var finalResult = 1;
+		for (var x = 0; x < binaryString.Length; x++)
+        {
+			finalResult *= finalResult;
+			if (binaryString[x] == '1')
+				finalResult *= factoredValue;
+			finalResult %= divisorValue;
+			listModValues.Add(finalResult);
+        }
+		QuickLog(string.Format("The set of values obtained using this method is {0}", listModValues.Join()));
 		QuickLog(string.Format("The value you should submit is {0}. (From the expression: {1} ^ {2} % {3})", correctValue, startingValue, fixedExponent, divisorValue));
 		interactable = true;
 

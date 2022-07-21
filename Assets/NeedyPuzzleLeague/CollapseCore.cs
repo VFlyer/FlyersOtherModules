@@ -130,7 +130,7 @@ public class CollapseCore : MonoBehaviour {
 
     void HandleDeactivation()
     {
-        needySelf.SetResetDelayTime(float.PositiveInfinity, float.PositiveInfinity); // Makes it so that the needy is disabled forever.
+        //needySelf.SetResetDelayTime(float.MaxValue, float.MaxValue); // Makes it so that the needy is disabled forever.
         needySelf.HandlePass();
         isActive = false;
         permDeactivate = true;

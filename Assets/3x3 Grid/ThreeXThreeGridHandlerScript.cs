@@ -197,7 +197,9 @@ public class ThreeXThreeGridHandlerScript : MonoBehaviour {
     void TwitchHandleForcedSolve()
     {
         forceDisable = true;
-        needySelf.SetResetDelayTime(float.MaxValue, float.MaxValue);
+        needySelf.ResetDelayMin = float.MaxValue;
+        needySelf.ResetDelayMax = float.MaxValue;
+        //needySelf.SetResetDelayTime(float.MaxValue, float.MaxValue);
         needySelf.HandlePass();
         hasActivated = false;
     }

@@ -58,13 +58,22 @@ public partial class LinkedWordle : MonoBehaviour {
     public MeshRenderer[] keyboardRenderer;
     public KMAudio mAudio;
     public KMBombModule module;
-    public Color[] keyboardShowColors;
+    public Color[] keyboardShowColors, colorblindKeyboardShowColors, colorblindQueryColors, queryColors;
     public BarExtendedScript _3PartBar;
+    public KMColorblindMode colorblindMode;
     const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    bool modSolved, modFocused, disableImmediateSolve, allowInteractions = false, TwitchPlaysActive;
+    bool modSolved, modFocused, disableImmediateSolve, allowInteractions = false, TwitchPlaysActive, colorblindDetected;
     void Awake()
     {
         allGlobalHandlers.Clear();
+        try
+        {
+            colorblindDetected = colorblindMode.ColorblindModeActive;
+        }
+        catch
+        {
+            colorblindDetected = false;
+        }
     }
     void HandleQuery(string word)
     {
@@ -83,7 +92,7 @@ public partial class LinkedWordle : MonoBehaviour {
                 response[curSet] = 2;
         }
         allResponses.Add(response);
-        QuickLog("Queried {0}. Response: {1}", word, response.Select(a => new[] { "Gray", "Green", "Yellow" }[a]).Join(", "));
+        QuickLog("Queried {0}. Response: {1}", word, response.Select(a => new[] { "Absent", "Correct", "Almost" }[a]).Join(", "));
         if (word == selectedCorrectWord)
         {
             modSolved = true;
@@ -150,10 +159,10 @@ public partial class LinkedWordle : MonoBehaviour {
                     else if (idxesFiltered.Any(a => allResponses[curIdxScan][a] == 2))
                         markedIdx = 2;
                 }
-                keyboardRenderer[x].material.color = keyboardShowColors[markedIdx];
+                keyboardRenderer[x].material.color = (colorblindDetected ? colorblindKeyboardShowColors : keyboardShowColors)[markedIdx];
             }
             else
-                keyboardRenderer[x].material.color = keyboardShowColors[0];
+                keyboardRenderer[x].material.color = (colorblindDetected ? colorblindKeyboardShowColors : keyboardShowColors)[0];
         }
     }
     void QuickLog(string stuff, params object[] args)
@@ -166,6 +175,7 @@ public partial class LinkedWordle : MonoBehaviour {
         allWordQueries = new List<string>();
         allResponses = new List<int[]>();
         StartCoroutine(DelayActivation());
+        HandleColorblindModeToggle();
         foreach (QuerySet queryVis in allQueryVisuals)
         {
             queryVis.UpdateStatus("");
@@ -204,6 +214,26 @@ public partial class LinkedWordle : MonoBehaviour {
         overlayRenderer.enabled = false;
         overlayTextMeshRenderer.enabled = false;
     }
+    void HandleColorblindModeToggle()
+    {
+        for (var x = 0; x < allQueryVisuals.Length; x++)
+        {
+            allQueryVisuals[x].responseColors = colorblindDetected ? colorblindQueryColors : queryColors;
+        }
+        for (var x = 0; x < Mathf.Min(allWordQueries.Count, allQueryVisuals.Length); x++)
+        {
+            var curIDxSeeResult = curIDxQueryFirstVisible + x;
+            if (curIDxSeeResult < allWordQueries.Count)
+                allQueryVisuals[x].UpdateStatus(allWordQueries[curIDxSeeResult], allResponses[curIDxSeeResult]);
+            else
+                allQueryVisuals[x].UpdateStatus(globalHandler.curWordQuery);
+        }
+        var curQueryVisual = allQueryVisuals[positionedIdxInput];
+        for (var x = 0; x < curQueryVisual.displayTexts.Length; x++)
+            curQueryVisual.displayTexts[x].color = Color.white;
+        UpdateKeyboard();
+    }
+
     void HandleArrowPress(int delta)
     {
         curIDxQueryFirstVisible = Mathf.Min(Mathf.Max(curIDxQueryFirstVisible + delta, 0), Mathf.Max(allWordQueries.Count + 1 - allQueryVisuals.Length, 0));
@@ -339,13 +369,21 @@ public partial class LinkedWordle : MonoBehaviour {
         yield return null;
         keyboardSelectables.Union(scrollSelectable).PickRandom().OnInteract();
     }
-    readonly string TwitchHelpMessage = "Guess a word with \"!{0} <word>\" or \"!{0} guess/g <word>\". Seek the previous queries with \"!{0} query/q #\" (E.G. \"!{0} q 1\" will seek for the first query.) When the module is finished, do \"!{0} s\" to claim the solve.";
+    readonly string TwitchHelpMessage = "Guess a word with \"!{0} <word>\" or \"!{0} guess/g <word>\". Seek the previous queries with \"!{0} query/q #\" (E.G. \"!{0} q 1\" will seek for the first query.) When the module is finished, do \"!{0} s\" to claim the solve. Toggle colorblind mode with \"!{0} colorblind/colourblind\"";
     IEnumerator ProcessTwitchCommand(string cmd)
     {
         var remainingCmd = cmd;
         var matchQueryScan = Regex.Match(cmd, @"^q(uery)?\s\d+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         var matchQueryWord = Regex.Match(cmd, @"^g(uess)?\s+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-        if (matchQueryScan.Success)
+        var matchQueryColorblind = Regex.Match(cmd, @"^colou?rblind$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (matchQueryColorblind.Success)
+        {
+            yield return null;
+            colorblindDetected ^= true;
+            HandleColorblindModeToggle();
+            yield break;
+        }
+        else if (matchQueryScan.Success)
         {
             var matchedValue = matchQueryScan.Value.Split().Last();
             int selectedIDx;

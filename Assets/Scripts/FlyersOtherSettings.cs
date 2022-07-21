@@ -11,6 +11,7 @@
 	public bool SevenNoTPRecapping = false;
 	public float SimonSemibossDynamicScorePerFlash = 0.15f;
 	public int SimonSemibossMaxFlashes = 40;
+	public bool LPDisableFlickerAnim = true;
 	public bool LPPEnableLabeledPriorities = true;
 	public bool LPPEnableUnlabeledPriorities = true;
 	public bool LPPEnableRelabeledPriorities = true;

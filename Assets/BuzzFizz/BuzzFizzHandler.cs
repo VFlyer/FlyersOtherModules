@@ -63,6 +63,7 @@ public class BuzzFizzHandler : MonoBehaviour {
         {
             textnumber.text = "Pending...";
             textnumber.color = Color.white;
+            Debug.LogFormat("[BuzzFizz #{0}]: This module will only log incorrect answers upon deactivation. All correct answers will NOT be logged.", cmodID);
         };
         dialSelect.OnInteract += delegate ()
         {
@@ -103,7 +104,9 @@ public class BuzzFizzHandler : MonoBehaviour {
     {
         Debug.LogFormat("[BuzzFizz #{0}]: Forcably disabling the module viva TP Handler.", cmodID);
         forceDisable = true;
-        needyModule.SetResetDelayTime(float.MaxValue, float.MaxValue);
+        needyModule.ResetDelayMin = float.MaxValue;
+        needyModule.ResetDelayMax = float.MaxValue;
+        //needyModule.SetResetDelayTime(float.MaxValue, float.MaxValue);
         needyModule.HandlePass();
     }
 

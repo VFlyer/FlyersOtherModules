@@ -169,7 +169,9 @@ public class RapidSubtractionHandler : MonoBehaviour {
 	void ModifyDelay()
 	{
 		int streakCount = Mathf.Min(curStreak, 3);
-		needyHandler.SetResetDelayTime(streakNeedyActivateDelayMin[streakCount], streakNeedyActivateDelayMax[streakCount]);
+		needyHandler.ResetDelayMin = streakNeedyActivateDelayMin[streakCount];
+		needyHandler.ResetDelayMax = streakNeedyActivateDelayMax[streakCount];
+		//needyHandler.SetResetDelayTime(streakNeedyActivateDelayMin[streakCount], streakNeedyActivateDelayMax[streakCount]);
 	}
 	void PrepValues()
 	{
@@ -285,7 +287,9 @@ public class RapidSubtractionHandler : MonoBehaviour {
 	void TwitchHandleForcedSolve()
 	{
 		QuickLog("Forcably disabling the needy viva TP Handler.");
-		needyHandler.SetResetDelayTime(float.MaxValue, float.MaxValue);
+		needyHandler.ResetDelayMin = float.MaxValue;
+		needyHandler.ResetDelayMax = float.MaxValue;
+		//needyHandler.SetResetDelayTime(float.MaxValue, float.MaxValue);
 		needyHandler.HandlePass();
 		needyHandler.OnNeedyDeactivation();
 		forceDisable = true;
