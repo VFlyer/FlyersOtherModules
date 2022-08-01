@@ -257,6 +257,9 @@ public class ObscurdleScript : MonoBehaviour {
                 var isNotCorrectWord = curResponse.displayResponse.All(a => a == PossibleResponse.Correct) && !curResponse.actualResponses.Any(a => a.All(b => b == PossibleResponse.Correct));
                 huhText[x].text = "huh?";
                 huhText[x].enabled = isNotCorrectWord;
+                var curStatusRenderers = querySetUIs[x].statusRenderers;
+                for (var a = 0; a < curStatusRenderers.Length; a++)
+                    curStatusRenderers[a].sprite = colorblindDetected && selectedQuirk == PossibleQuirks.Symble ? possibleSprites[(int)curResponse.displayResponse.ElementAt(a)] : possibleSprites[0];
             }
             else
             {
@@ -351,12 +354,12 @@ public class ObscurdleScript : MonoBehaviour {
             var curIDxSeeResult = curIDxQueryFirstVisible + x;
             var curResponse = allResponses[curIDxSeeResult];
             querySetUIs[x].UpdateStatus(curResponse.wordQueried.ToCharArray(), curResponse.displayResponse.Select(a => (int)a).ToArray());
-            var curStatusRenderers = querySetUIs[x].statusRenderers;
-            for (var a = 0; a < curStatusRenderers.Length; a++)
-                curStatusRenderers[a].sprite = colorblindDetected && selectedQuirk == PossibleQuirks.Symble ? possibleSprites[(int)curResponse.displayResponse.ElementAt(a)] : possibleSprites[0];
             var isNotCorrectWord = curResponse.displayResponse.All(a => a == PossibleResponse.Correct) && !curResponse.actualResponses.Any(a => a.All(b => b == PossibleResponse.Correct));
             huhText[x].text = "huh?";
             huhText[x].enabled = isNotCorrectWord;
+            var curStatusRenderers = querySetUIs[x].statusRenderers;
+            for (var a = 0; a < curStatusRenderers.Length; a++)
+                curStatusRenderers[a].sprite = colorblindDetected && selectedQuirk == PossibleQuirks.Symble ? possibleSprites[(int)curResponse.displayResponse.ElementAt(a)] : possibleSprites[0];
         }
         _3PartBar.progressDelta = Mathf.Min(6f / (allResponses.Count + 1), 1f);
         _3PartBar.curProgress = allResponses.Count < 6 ? 0f : (float)(allResponses.Count - 5) / (allResponses.Count + 1);
@@ -477,7 +480,7 @@ public class ObscurdleScript : MonoBehaviour {
             }
         }
 	}
-    readonly string TwitchHelpMessage = "Guess a word with \"!{0} <word>\" or \"!{0} guess/g <word>\". Seek the previous queries with \"!{0} query/q #\" (E.G. \"!{0} q 1\" will seek for the first query.) When the module is finished, do \"!{0} s\" to claim the solve.";
+    readonly string TwitchHelpMessage = "Guess a word with \"!{0} <word>\" or \"!{0} guess/g <word>\". Seek the previous queries with \"!{0} query/q #\" (E.G. \"!{0} q 1\" will seek for the first query.) Toggle colorblind mode with \"!{0} colorblind/colourblind\"";
     IEnumerator ProcessTwitchCommand(string cmd)
     {
         var remainingCmd = cmd;
@@ -554,7 +557,8 @@ public class ObscurdleScript : MonoBehaviour {
             var remainingUnsolvedWords = Enumerable.Range(0, correctWords.Count).Except(blacklistIdxesCorrect).Select(a => correctWords[a]);
             foreach (var oneWord in remainingUnsolvedWords)
             {
-                for (var x = 0; x < curWord.Length; x++)
+                var curLength = curWord.Length;
+                for (var x = 0; x < curLength; x++)
                 {
                     keyboardSelectable[26].OnInteract();
                     yield return new WaitForSeconds(0.1f);

@@ -354,7 +354,8 @@ public partial class LinkedWordle : MonoBehaviour {
         while (!allowInteractions) yield return true;
         while (globalHandler.curWordQuery != selectedCorrectWord)
         {
-            for (var x = 0; x < globalHandler.curWordQuery.Length; x++)
+            var curLength = globalHandler.curWordQuery.Length;
+            for (var x = 0; x < curLength; x++)
             {
                 keyboardSelectables[27].OnInteract();
                 yield return new WaitForSeconds(0.1f);

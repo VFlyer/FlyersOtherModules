@@ -3498,6 +3498,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CountdownTime: 99
+  ResetDelayMin: 60
+  ResetDelayMax: 160
   ModuleType: faulty7SegmentDisplays
   ModuleDisplayName: Faulty Seven Segment Displays
   RequiresTimerVisibility: 0

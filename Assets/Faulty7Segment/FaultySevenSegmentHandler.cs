@@ -66,12 +66,13 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 			if (!curSegmentPos.SequenceEqual(segmentIDs.ToList()))
 			{
 				needyModule.HandleStrike();
-				needyModule.SetResetDelayTime(15f, 40f);
+				//needyModule.SetResetDelayTime(15f, 40f);
 			}
+			/*
 			else
             {
 				needyModule.SetResetDelayTime(60f, 160f);
-            }
+            }*/
 		};
 		foreach (GameObject objCom in segmentObjects)
 		{
