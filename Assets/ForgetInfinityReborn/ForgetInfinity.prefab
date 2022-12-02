@@ -1742,7 +1742,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1476077361405888}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.2, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4284761262395050}
@@ -5430,7 +5430,7 @@ MonoBehaviour:
   - {fileID: 114244858423630166}
   - {fileID: 114833321758913032}
   IsPassThrough: 0
-  ChildRowLength: 3
+  ChildRowLength: 5
   Highlight: {fileID: 114051912314075684}
   SelectableColliders: []
   DefaultSelectableIndex: 0
@@ -5931,7 +5931,6 @@ MonoBehaviour:
   ScreenStatus: {fileID: 102035332844151032}
   possibleStages: 
   input: 
-  modSettings: {fileID: 114090981709117726}
 --- !u!114 &114833321758913032
 MonoBehaviour:
   m_ObjectHideFlags: 1

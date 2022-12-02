@@ -11758,7 +11758,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b686d7548213564bb5f898cabddd082, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Audio: {fileID: 114033880526287918}
+  mAudio: {fileID: 114033880526287918}
   Module: {fileID: 114102872669951970}
   lightDevices:
   - {fileID: 114130072562871898}
@@ -11838,25 +11838,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 507fbebd2e55c46859e1c93a17e0c19c, type: 3}
   - {fileID: 8300000, guid: fcc0d5242d83543188e8fbd57d503f46, type: 3}
   - {fileID: 8300000, guid: 394f6f025b0e24346b0524bee934efd3, type: 3}
-  currentLevel: 0
-  sequences: 
-  solutionNames: []
-  sequenceLengths: 
-  solveLengths: 
-  startLocation: 
-  solutionStartLocation: 
-  currentSequence: 
-  currentSequenceNames: []
-  currentSolution: 
-  currentSolutionNames: []
-  indicatorColour: 
-  indicatorLetter: []
-  clearLights: 
-  completeLights: 
-  absoluteLevelPosition: 
-  increaser: 0
-  lightsSolved: 
-  stagesSolved: 
 --- !u!114 &114841028785949954
 MonoBehaviour:
   m_ObjectHideFlags: 1

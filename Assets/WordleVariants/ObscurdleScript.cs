@@ -34,7 +34,8 @@ public class ObscurdleScript : MonoBehaviour {
         Xordle,
         Symble,
         FiveOhOh,
-        Warmle
+        Warmle,
+        Peaks
     }
     readonly static int[] colorblindIdxColors = { 0, 3, 4 };
     readonly static PossibleQuirks[] allPossibleQuirks = {
@@ -43,6 +44,7 @@ public class ObscurdleScript : MonoBehaviour {
         PossibleQuirks.FiveOhOh,
         PossibleQuirks.Symble,
         PossibleQuirks.Warmle,
+        //PossibleQuirks.Peaks,
     };
     const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     protected class QueryResponse
@@ -57,7 +59,8 @@ public class ObscurdleScript : MonoBehaviour {
         { PossibleQuirks.Xordle, "Two words, that have no letters in common, will need to be guessed correctly. Each word guessed will show the \"xored\" result from the two correct words. Successfully finding one word will make the module behave like the original counterpart until the other word is found." },
         { PossibleQuirks.Symble, "The response is flipped so that the word you guessed is treated as the answer and the answer is treated as a guess. In addition, other colors may show up that do not accurately represent Wordle." },
         { PossibleQuirks.FiveOhOh, "Wordle, but it is Mastermind. If you know how Mastermind works, this is less of a challenge for you." },
-        { PossibleQuirks.Warmle, "When guessing the correct word, the response is modified so that the alphabetic position of the letter queried is compared to the alphabetic position of the letter of the correct word. The response wraps around." },
+        { PossibleQuirks.Warmle, "The response is modified so that the distance from the alphabetic position of the letter queried to the letter of the correct word is compared. The response wraps around." },
+        { PossibleQuirks.Peaks, "The response is modified so that the alphabetic position of the letter queried is compared higher or lower to the alphabetic position of the letter of the correct word. This response does NOT wrap around." },
     };
     PossibleQuirks selectedQuirk;
     List<QueryResponse> allResponses;
@@ -205,6 +208,17 @@ public class ObscurdleScript : MonoBehaviour {
                         var disABCGuessToCor = alphabet.IndexOf(guess[x]) - alphabet.IndexOf(correctWords.First()[x]);
                             toDisplayResponse[x] = correctWords.First()[x] == guess[x] ? PossibleResponse.Correct :
                             (disABCCorToGuess + 26) % 26 <= 3 || (disABCGuessToCor + 26) % 26 <= 3 ?
+                            PossibleResponse.Almost : PossibleResponse.Absent;
+                    }
+                }
+                goto default;
+            case PossibleQuirks.Peaks:
+                {
+                    for (var x = 0; x < toDisplayResponse.Length; x++)
+                    {
+                        var disABCGuessToCor = alphabet.IndexOf(guess[x]) - alphabet.IndexOf(correctWords.First()[x]);
+                            toDisplayResponse[x] = correctWords.First()[x] == guess[x] ? PossibleResponse.Correct :
+                            disABCGuessToCor > 0 ?
                             PossibleResponse.Almost : PossibleResponse.Absent;
                     }
                 }

@@ -3626,13 +3626,13 @@ MonoBehaviour:
   Parent: {fileID: 0}
   Children:
   - {fileID: 114142637961748752}
-  - {fileID: 114722913389210052}
-  - {fileID: 114271321629549018}
   - {fileID: 114084889562303598}
-  - {fileID: 114412768178539268}
-  - {fileID: 114681495016414850}
   - {fileID: 114137900811567100}
+  - {fileID: 114722913389210052}
+  - {fileID: 114412768178539268}
   - {fileID: 114439081294338080}
+  - {fileID: 114271321629549018}
+  - {fileID: 114681495016414850}
   - {fileID: 114885757590807970}
   IsPassThrough: 0
   ChildRowLength: 3
@@ -3803,6 +3803,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CountdownTime: 40
+  ResetDelayMin: 10
+  ResetDelayMax: 40
   ModuleType: 3x3Grid
   ModuleDisplayName: 3x3 Grid
   RequiresTimerVisibility: 0

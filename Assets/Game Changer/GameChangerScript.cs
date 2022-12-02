@@ -7,7 +7,7 @@ using UnityEngine;
 public class GameChangerScript : MonoBehaviour {
 	public KMSelectable[] gridSelectables;
 	public MeshRenderer[] gridRenderers, LEDRenderers, oldGridRenderers;
-	public KMSelectable statusLight, submitButton, resetButton;
+	public KMSelectable statusLight, submitButton, resetButton, clearButton;
 	public KMBombModule modSelf;
 	public KMAudio mAudio;
 	public GameObject allOldGridRenderers;
@@ -46,6 +46,18 @@ public class GameChangerScript : MonoBehaviour {
 			if (!moduleSolved && interactable)
 			{
 				currentState = lastFinishedState.ToArray();
+				UpdateVisuals();
+			}
+			return false;
+		};
+		clearButton.OnInteract += delegate
+		{
+			clearButton.AddInteractionPunch();
+			mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, clearButton.transform);
+			if (!moduleSolved && interactable)
+			{
+				for (var y = 0; y < currentState.Length; y++)
+					currentState[y] = false;
 				UpdateVisuals();
 			}
 			return false;
@@ -466,7 +478,7 @@ public class GameChangerScript : MonoBehaviour {
 #pragma warning disable IDE0051 // Remove unused private members
 	readonly string TwitchHelpMessage = "Toggle the following cell with \"!{0} [A-C][1-6]\" where columns are labeled A-C from left to right, rows are numbered 1-6 from top to bottom. " +
 		"Multiple cells can be toggled in one command. " +
-		"Submit the current board with \"!{0} submit\" or \"!{0} s\", reset the current board with \"!{0} reset\" or \"!{0} r\", or clear the current board with \"!{0} clear\" or \"!{0} c\". " +
+		"Submit the current board with \"!{0} submit\" or \"!{0} s\", reset the current board with \"!{0} reset\" or \"!{0} r\", or clear the current board with \"!{0} clear\" or \"!{0} c\". Press the status light once with \"!{0} sl\"" +
 		"All of the mentioned possible commands can be chained into one command using spaces, E.G: \"!{0} c A1 B4 r C3 D2 s\". Commands may be interrupted upon trying to chain past the submit command if the submitted grid is incorrect at any point.";
 #pragma warning restore IDE0051 // Remove unused private members
 	IEnumerator ProcessTwitchCommand(string cmd)
@@ -509,12 +521,7 @@ public class GameChangerScript : MonoBehaviour {
 			}
 			else if (clearMatch.Success)
 			{
-				var curStateToPress = currentState.ToArray();
-				for (var y = 0; y < curStateToPress.Length; y++)
-				{
-					if (curStateToPress[y])
-						allSelectablesToGo.Add(gridSelectables[y]);
-				}
+				allSelectablesToGo.Add(clearButton);
 			}
 			else if (resetMatch.Success)
             {

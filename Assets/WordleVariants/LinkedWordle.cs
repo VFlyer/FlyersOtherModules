@@ -352,7 +352,7 @@ public partial class LinkedWordle : MonoBehaviour {
         if (allWordQueries.Count + globalHandler.wordlesAll.Count(a => !a.modSolved) >= globalHandler.maxQueriesAllowed)
             globalHandler.maxQueriesAllowed++;
         while (!allowInteractions) yield return true;
-        while (globalHandler.curWordQuery != selectedCorrectWord)
+        while (globalHandler.curWordQuery != selectedCorrectWord && !modSolved)
         {
             var curLength = globalHandler.curWordQuery.Length;
             for (var x = 0; x < curLength; x++)
@@ -365,8 +365,8 @@ public partial class LinkedWordle : MonoBehaviour {
                 keyboardSelectables["ABCDEFGHIJKLMNOPQRSTUVWXYZ".IndexOf(selectedCorrectWord[x])].OnInteract();
                 yield return new WaitForSeconds(0.1f);
             }
+            keyboardSelectables[26].OnInteract();
         }
-        keyboardSelectables[26].OnInteract();
         yield return null;
         keyboardSelectables.Union(scrollSelectable).PickRandom().OnInteract();
     }

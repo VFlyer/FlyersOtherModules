@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class SimonStagesHandler : MonoBehaviour
 {
-    public KMAudio Audio;
+    public KMAudio mAudio;
     public KMBombModule Module;
 
     public LightInformation[] lightDevices;
@@ -17,230 +17,219 @@ public class SimonStagesHandler : MonoBehaviour
     public string[] lightTextOptions;
     public string[] lightNameOptions;
     public AudioClip[] sfxOptions;
-    private List<int> chosenIndices = new List<int>();
-    private List<int> chosenIndices2 = new List<int>();
+    private List<int> chosenIndicesDevices = new List<int>();
+    private List<int> chosenIndicesIndicators = new List<int>();
 
-    public int currentLevel = 0;
+    private int stagesCompleted = 0;
 
-    public List<int> sequences = new List<int>();
-    public List<string> solutionNames = new List<string>();
-    public List<int> sequenceLengths = new List<int>();
-    public List<int> solveLengths = new List<int>();
-    public List<int> startLocation = new List<int>();
-    public List<int> solutionStartLocation = new List<int>();
-    private int lastStartPosition = 0;
-    private int lastSolutionLocation = 0;
-    public List<int> currentSequence = new List<int>();
-    public List<string> currentSequenceNames = new List<string>();
-    public List<int> currentSolution = new List<int>();
-    public List<string> currentSolutionNames = new List<string>();
-    public List<int> indicatorColour = new List<int>();
-    public List<string> indicatorLetter = new List<string>();
-    private int indicator = 0;
-    string result = "";
+    List<int> selectedIndicatorIdx = new List<int>();
+    List<List<int>> selectedFlashesIdxAllStages = new List<List<int>>();
+    List<List<int>> expectedPressIdxesAllStages = new List<List<int>>();
 
-    public List<int> clearLights = new List<int>();
-    public List<int> completeLights = new List<int>();
-    public List<int> absoluteLevelPosition = new List<int>();
-
-    private int totalPresses = 0;
-    private int stagePresses = 0;
-    public int increaser = 0;
-    public List<bool> lightsSolved = new List<bool>();
-    public List<bool> stagesSolved = new List<bool>();
+    int curSequenceIdxInput = 0, curIdxInputInSequence = 0;
+    private bool isAllCorrect = true, isCurSeqCorrect = true;
 
     //Logging
     static int moduleIdCounter = 1;
     int moduleId;
     private bool moduleSolved = false;
     private bool moduleLocked = true;
-    private bool reverse = false;
+    private bool reverse = false; // Used for the animation.
     private bool gameOn = false;
-    private bool secondAttempt;
-    private bool hasStruck = false;
-    private bool checking;
+    private bool hasStruck = false, firstStrikeOnModule = false;
     private bool canPlaySound = false;
-
+    private bool isHoldingButton = false;
+    
+    IEnumerator[] enumsHandlersLightInfo;
+    IEnumerator flashHandler;
+    float timeHeld = 0f;
+    // Section for Souvenir Support. See https://github.com/Timwi/KtaneSouvenir/blob/master/Lib/ModulesS.cs#L677 for relevancy.
     public List<string> grabIndicatorColorsAll()
     {
+        /*
         List<string> output = new List<string>();
-        foreach (int oneIndCol in indicatorColour)
+        foreach (int oneIndCol in selectedIndicatorIdx)
         {
             output.Add(indicatorLights[oneIndCol].colorName);
         }
-        return output;
+        */
+        return selectedIndicatorIdx.Select(a => indicatorLights[a].colorName).ToList(); // Simpflied version of block above.
     }
     public List<string> grabSequenceColorsOneStage(int stageNum)
     {
-        List<string> output = new List<string>();
-        if (stageNum <= 0 || stageNum > startLocation.Count) return null; // Avoid an IndexOutOfBoundsException
-        for (int x = startLocation[stageNum - 1]; x < startLocation[stageNum - 1] + sequenceLengths[stageNum - 1]; x++)
-            output.Add(lightDevices[sequences[x]].colorName);
-        return output;
+        if (stageNum <= 0 || stageNum > selectedFlashesIdxAllStages.Count) return null; // Avoid an IndexOutOfBoundsException
+        return selectedFlashesIdxAllStages[stageNum - 1].Select(a => lightDevices[a].colorName).ToList();
     }
+    // End section for Souvenir Support
     void Awake()
     {
         moduleId = moduleIdCounter++;
-        foreach (LightInformation button in lightDevices)
+        enumsHandlersLightInfo = new IEnumerator[lightDevices.Length];
+        for (int i = 0; i < lightDevices.Length; i++)
         {
+            LightInformation button = lightDevices[i];
             LightInformation pressedButton = button;
-            button.connectedButton.OnInteract += delegate () { ButtonPress(pressedButton); return false; };
+            enumsHandlersLightInfo[i] = PressFlash(pressedButton);
+            var y = i;
+            button.connectedButton.OnInteract += delegate () {
+                ButtonPress(y);
+                isHoldingButton = true;
+                timeHeld = 0f;
+                return false; };
+            button.connectedButton.OnInteractEnded += delegate {
+                isHoldingButton = false;
+                if (timeHeld >= 1f && (curSequenceIdxInput > 0 || curIdxInputInSequence > 0))
+                {
+                    for (var x = 0; x < 10; x++)
+                        mAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, transform);
+                    curIdxInputInSequence = 0;
+                    curSequenceIdxInput = 0;
+                    isRepeating = false;
+                    Debug.LogFormat("[Simon Stages #{0}] User cleared all inputs.", moduleId);
+                }
+            };
         }
     }
-    void GenerateSequence()
+    bool HasInputted()
     {
-        absoluteLevelPosition.Add(absoluteLevelPosition.Last() + 1);
-        currentSequence.Clear();
-        currentSequenceNames.Clear();
-        stagesSolved.Add(false);
-        startLocation.Add(lastStartPosition);
-        int sequenceLength = Random.Range(3, 6);
-        sequenceLengths.Add(sequenceLength);
-        for (int i = 0; i < sequenceLength; i++)
-        {
-            int sequenceColour = Random.Range(0, 10);
-            sequences.Add(sequenceColour);
-            currentSequence.Add(sequenceColour);
-            currentSequenceNames.Add(lightDevices[sequenceColour].colorName);
-        }
-        currentLevel++;
-        indicator = Random.Range(0, 10);
-        indicatorColour.Add(indicator);
-        lastStartPosition = sequenceLength + startLocation[currentLevel - 1];
-        Debug.LogFormat("[Simon Stages #{0}]", moduleId, currentLevel);
-        Debug.LogFormat("[Simon Stages #{0}] Sequence #{1}: {2}.", moduleId, currentLevel, string.Join(", ", currentSequenceNames.Select((x) => x).ToArray()));
-        Debug.LogFormat("[Simon Stages #{0}] Indicator #{1}: {2}.", moduleId, currentLevel, indicatorLights[indicator].colorName);
-        CalculateSolution();
+        return curSequenceIdxInput > 0 || curIdxInputInSequence > 0;
     }
 
-    void CalculateSolution()
+    void GenerateSequenceWithSolution(int currentLevel = 1)
     {
-        if (indicatorLights[indicator].colorName == "red")
+        int sequenceLength = Random.Range(3, 6);
+        var newSequenceIdxFlashes = new List<int>();
+        for (int i = 0; i < sequenceLength; i++)
         {
-            for (int i = 0; i < currentSequence.Count; i++)
-            {
-                solutionNames.Add(lightDevices[currentSequence[i]].colorName);
-                currentSolution.Add(currentSequence[i]);
-                currentSolutionNames.Add(lightDevices[currentSequence[i]].colorName);
-            }
+            int sequenceColourIdx = Random.Range(0, 10);
+            newSequenceIdxFlashes.Add(sequenceColourIdx);
         }
-        else if (indicatorLights[indicator].colorName == "blue")
+        selectedFlashesIdxAllStages.Add(newSequenceIdxFlashes);
+        var indicatorIdx = currentLevel <= 1 ? Random.Range(0, 10) : Enumerable.Range(0, 10).Where(a => a != selectedIndicatorIdx.Last()).PickRandom();
+        selectedIndicatorIdx.Add(indicatorIdx);
+        Debug.LogFormat("[Simon Stages #{0}]", moduleId, currentLevel);
+        Debug.LogFormat("[Simon Stages #{0}] Stage #{1}: {2}.", moduleId, currentLevel, newSequenceIdxFlashes.Select(x => lightDevices[x].colorName).Join(", "));
+        Debug.LogFormat("[Simon Stages #{0}] Indicator #{1}: {2}.", moduleId, currentLevel, indicatorLights[indicatorIdx].colorName);
+        // Section to handle the solution, I.E. the expected inputs.
+        var newExpectedPressIdxes = new List<int>();
+        switch (indicatorLights[indicatorIdx].colorName)
         {
-            for (int i = currentSequence.Count - 1; i >= 0; i--)
-            {
-                solutionNames.Add(lightDevices[currentSequence[i]].colorName);
-                currentSolution.Add(currentSequence[i]);
-                currentSolutionNames.Add(lightDevices[currentSequence[i]].colorName);
-            }
+            case "red":
+                {
+                    for (int i = 0; i < newSequenceIdxFlashes.Count; i++)
+                    {
+                        newExpectedPressIdxes.Add(newSequenceIdxFlashes[i]);
+                    }
+                    break;
+                }
+
+            case "blue":
+                {
+                    for (int i = newSequenceIdxFlashes.Count - 1; i >= 0; i--)
+                    {
+                        newExpectedPressIdxes.Add(newSequenceIdxFlashes[i]);
+                    }
+
+                    break;
+                }
+
+            case "yellow":
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        newExpectedPressIdxes.Add(newSequenceIdxFlashes[i]);
+                    }
+
+                    break;
+                }
+
+            case "orange":
+                {
+                    for (int i = 1; i >= 0; i--)
+                    {
+                        newExpectedPressIdxes.Add(newSequenceIdxFlashes[i]);
+                    }
+
+                    break;
+                }
+
+            case "magenta":
+                {
+                    for (int i = newSequenceIdxFlashes.Count - 2; i < newSequenceIdxFlashes.Count; i++)
+                    {
+                        newExpectedPressIdxes.Add(newSequenceIdxFlashes[i]);
+                    }
+
+                    break;
+                }
+
+            case "green":
+                {
+                    for (int i = newSequenceIdxFlashes.Count - 1; i >= newSequenceIdxFlashes.Count - 2; i--)
+                    {
+                        newExpectedPressIdxes.Add(newSequenceIdxFlashes[i]);
+                    }
+
+                    break;
+                }
+
+            case "pink":
+                {
+                    for (int i = 0; i < newSequenceIdxFlashes.Count; i++)
+                    {
+                        newExpectedPressIdxes.Add((newSequenceIdxFlashes[i] + 5) % 10);
+                    }
+
+                    break;
+                }
+
+            case "lime":
+                {
+                    for (int i = newSequenceIdxFlashes.Count - 1; i >= 0; i--)
+                    {
+                        newExpectedPressIdxes.Add((newSequenceIdxFlashes[i] + 5) % 10);
+                    }
+
+                    break;
+                }
+
+            case "cyan":
+                {
+                    newExpectedPressIdxes.Add((newSequenceIdxFlashes.First() + 5) % 10);
+                    newExpectedPressIdxes.Add((newSequenceIdxFlashes.Last() + 5) % 10);
+                    break;
+                }
+
+            case "white":
+                {
+                    newExpectedPressIdxes.Add((newSequenceIdxFlashes[2] + 5) % 10);
+                    newExpectedPressIdxes.Add((newSequenceIdxFlashes[1] + 5) % 10);
+                }
+                break;
         }
-        else if (indicatorLights[indicator].colorName == "yellow")
-        {
-            for (int i = 0; i < 2; i++)
-            {
-                solutionNames.Add(lightDevices[currentSequence[i]].colorName);
-                currentSolution.Add(currentSequence[i]);
-                currentSolutionNames.Add(lightDevices[currentSequence[i]].colorName);
-            }
-        }
-        else if (indicatorLights[indicator].colorName == "orange")
-        {
-            for (int i = 1; i >= 0; i--)
-            {
-                solutionNames.Add(lightDevices[currentSequence[i]].colorName);
-                currentSolution.Add(currentSequence[i]);
-                currentSolutionNames.Add(lightDevices[currentSequence[i]].colorName);
-            }
-        }
-        else if (indicatorLights[indicator].colorName == "magenta")
-        {
-            for (int i = currentSequence.Count - 2; i < currentSequence.Count; i++)
-            {
-                solutionNames.Add(lightDevices[currentSequence[i]].colorName);
-                currentSolution.Add(currentSequence[i]);
-                currentSolutionNames.Add(lightDevices[currentSequence[i]].colorName);
-            }
-        }
-        else if (indicatorLights[indicator].colorName == "green")
-        {
-            for (int i = currentSequence.Count - 1; i >= (currentSequence.Count - 2); i--)
-            {
-                solutionNames.Add(lightDevices[currentSequence[i]].colorName);
-                currentSolution.Add(currentSequence[i]);
-                currentSolutionNames.Add(lightDevices[currentSequence[i]].colorName);
-            }
-        }
-        else if (indicatorLights[indicator].colorName == "pink")
-        {
-            for (int i = 0; i < currentSequence.Count; i++)
-            {
-                solutionNames.Add(lightDevices[(5 + currentSequence[i]) % 10].colorName);
-                currentSolution.Add(lightDevices[(5 + currentSequence[i]) % 10].colorIndex);
-                currentSolutionNames.Add(lightDevices[(5 + currentSequence[i]) % 10].colorName);
-            }
-        }
-        else if (indicatorLights[indicator].colorName == "lime")
-        {
-            for (int i = currentSequence.Count - 1; i >= 0; i--)
-            {
-                solutionNames.Add(lightDevices[(5 + currentSequence[i]) % 10].colorName);
-                currentSolution.Add(lightDevices[(5 + currentSequence[i]) % 10].colorIndex);
-                currentSolutionNames.Add(lightDevices[(5 + currentSequence[i]) % 10].colorName);
-            }
-        }
-        else if (indicatorLights[indicator].colorName == "cyan")
-        {
-            int last = currentSequence.Count - 1;
-            solutionNames.Add(lightDevices[(5 + currentSequence[0]) % 10].colorName);
-            solutionNames.Add(lightDevices[(5 + currentSequence[last]) % 10].colorName);
-            currentSolution.Add(lightDevices[(5 + currentSequence[0]) % 10].colorIndex);
-            currentSolution.Add(lightDevices[(5 + currentSequence[last]) % 10].colorIndex);
-            currentSolutionNames.Add(lightDevices[(5 + currentSequence[0]) % 10].colorName);
-            currentSolutionNames.Add(lightDevices[(5 + currentSequence[last]) % 10].colorName);
-        }
-        else if (indicatorLights[indicator].colorName == "white")
-        {
-            solutionNames.Add(lightDevices[(5 + currentSequence[2]) % 10].colorName);
-            solutionNames.Add(lightDevices[(5 + currentSequence[1]) % 10].colorName);
-            currentSolution.Add(lightDevices[(5 + currentSequence[2]) % 10].colorIndex);
-            currentSolution.Add(lightDevices[(5 + currentSequence[1]) % 10].colorIndex);
-            currentSolutionNames.Add(lightDevices[(5 + currentSequence[2]) % 10].colorName);
-            currentSolutionNames.Add(lightDevices[(5 + currentSequence[1]) % 10].colorName);
-        }
-        solutionStartLocation.Add(lastSolutionLocation);
-        lastSolutionLocation = currentSolutionNames.Count + lastSolutionLocation;
-        solveLengths.Add(currentSolution.Count);
-        for (int i = 0; i < currentSolution.Count; i++)
-        {
-            lightsSolved.Add(false);
-        }
-        Debug.LogFormat("[Simon Stages #{0}] Solution #{1}: {2}.", moduleId, currentLevel, string.Join(", ", currentSolutionNames.Select((x) => x).ToArray()));
-        currentSolution.Clear();
-        currentSolutionNames.Clear();
-        indicatorLetter.Add(lightTextOptions[indicatorLights[indicatorColour[currentLevel - 1]].colorIndex]);
+        expectedPressIdxesAllStages.Add(newExpectedPressIdxes);
+        Debug.LogFormat("[Simon Stages #{0}] Solution #{1}: {2}.", moduleId, currentLevel, newExpectedPressIdxes.Select(x => lightDevices[x].colorName).Join(", "));
     }
 
     void Start()
     {
-        absoluteLevelPosition.Add(0);
         indicatorText.text = "";
         moduleLocked = true;
-        foreach (LightInformation device in lightDevices)
+        // Setup the shuffled index arrangements for the indicators and selectables;
+        chosenIndicesDevices.AddRange(Enumerable.Range(0, 10));
+        chosenIndicesIndicators.AddRange(Enumerable.Range(0, 10));
+        chosenIndicesDevices.Shuffle();
+        chosenIndicesIndicators.Shuffle();
+        float scalar = transform.lossyScale.x;
+        var soundIdxesPicked = Enumerable.Range(0, 10).ToArray().Shuffle();
+
+        for (int i = 0; i < lightDevices.Length; i++)
         {
-            device.colorIndex = Random.Range(0, 10);
-            while (chosenIndices.Contains(device.colorIndex))
-            {
-                device.colorIndex = Random.Range(0, 10);
-            }
-            chosenIndices.Add(device.colorIndex);
+            LightInformation device = lightDevices[i];
+            device.colorIndex = chosenIndicesDevices[i];
+            device.soundIndex = soundIdxesPicked[i];
 
-            device.soundIndex = Random.Range(0, 10);
-            while (chosenIndices2.Contains(device.soundIndex))
-            {
-                device.soundIndex = Random.Range(0, 10);
-            }
-            chosenIndices2.Add(device.soundIndex);
-
-            float scalar = transform.lossyScale.x;
+            
             device.ledGlow.range *= scalar;
             device.ledGlow.color = lightDeviceColorOptions[device.colorIndex];
             device.colorBase.material = lightBaseOptions[device.colorIndex];
@@ -254,31 +243,22 @@ public class SimonStagesHandler : MonoBehaviour
             string.Join(", ", lightDevices.Take(5).Select(ld => ld.colorName).ToArray()),
             string.Join(", ", lightDevices.Skip(5).Select(ld => ld.colorName).ToArray()));
 
-        chosenIndices.Clear();
-        chosenIndices2.Clear();
-
-        foreach (IndicatorInformation indic in indicatorLights)
+        for (int i = 0; i < indicatorLights.Length; i++)
         {
-            indic.colorIndex = Random.Range(0, 10);
-            while (chosenIndices.Contains(indic.colorIndex))
-            {
-                indic.colorIndex = Random.Range(0, 10);
-            }
-            chosenIndices.Add(indic.colorIndex);
+            IndicatorInformation indic = indicatorLights[i];
+            indic.colorIndex = chosenIndicesIndicators[i];
 
-            float scalar = transform.lossyScale.x;
             indic.glow.range *= scalar;
             indic.glow.color = lightDeviceColorOptions[indic.colorIndex];
             indic.colorName = lightNameOptions[indic.colorIndex];
             indic.glow.enabled = false;
         }
-        chosenIndices.Clear();
-        StartCoroutine(StartFlash());
+        StartCoroutine(StartupFlash());
     }
 
-    IEnumerator StartFlash()
+    IEnumerator StartupFlash()
     {
-        Audio.PlaySoundAtTransform("scaryRiffREV", transform);
+        mAudio.PlaySoundAtTransform("scaryRiffREV", transform);
         int index = 0;
         int iterations = 0;
         int currentIdx = 0;
@@ -317,7 +297,7 @@ public class SimonStagesHandler : MonoBehaviour
                 iterations++;
                 index = 1;
             }
-            currentIdx = (currentIdx+1)%10;
+            currentIdx = (currentIdx + 1) % 10;
         }
         indicatorText.text = "";
         int counter = 0;
@@ -342,140 +322,105 @@ public class SimonStagesHandler : MonoBehaviour
             {
                 moduleLocked = false;
                 gameOn = true;
-                GenerateSequence();
+                for (var x = 1; x <= 5; x++)
+                    GenerateSequenceWithSolution(x);
             }
         }
     }
-
-    public void ButtonPress(LightInformation device)
+    void StopFlashingSequence()
     {
-        if (moduleSolved || moduleLocked || !gameOn || checking)
+        StopCoroutine(flashHandler);
+        foreach (LightInformation lightDev in lightDevices)
         {
-            return;
+            lightDev.ledGlow.enabled = false;
+            lightDev.greyBase.enabled = true;
         }
+        indicatorText.text = "";
+        foreach (IndicatorInformation indic in indicatorLights)
+        {
+            indic.glow.enabled = false;
+        }
+    }
+    private void ButtonPress(int idxDevice)
+    {
+        if (moduleSolved || moduleLocked || !gameOn) return;
+        var device = lightDevices[idxDevice];
         canPlaySound = true;
-        moduleLocked = true;
-        if (totalPresses == 0)
-            Debug.LogFormat("[Simon Stages #{0}] SEQUENCE {1} RESPONSE:", moduleId, absoluteLevelPosition[0] + 1, result);
-        Audio.PlaySoundAtTransform(device.connectedSound.name, transform);
-        StartCoroutine(PressFlash(device));
+        //moduleLocked = true;
+        if (curSequenceIdxInput == 0 && curIdxInputInSequence == 0)
+            Debug.LogFormat("[Simon Stages #{0}] STAGE {1} RESPONSE:", moduleId, curSequenceIdxInput + 1);
+        mAudio.PlaySoundAtTransform(device.connectedSound.name, transform);
+        StopFlashingSequence();
+        if (enumsHandlersLightInfo[idxDevice] != null)
+            StopCoroutine(enumsHandlersLightInfo[idxDevice]);
+        enumsHandlersLightInfo[idxDevice] = PressFlash(device);
+        StartCoroutine(enumsHandlersLightInfo[idxDevice]);
+        
 
-        if (device.colorName == solutionNames[totalPresses])
-        {
-            lightsSolved[totalPresses] = true;
-            clearLights.Add(totalPresses);
-            Debug.LogFormat("[Simon Stages #{0}] You pressed {1}. That is correct.", moduleId, device.colorName);
-        }
-        else
-        {
-            clearLights.Clear();
-            lightsSolved[totalPresses] = false;
-            Debug.LogFormat("[Simon Stages #{0}] You pressed {1}. That is incorrect.", moduleId, device.colorName);
-        }
-        stagePresses++;
-        totalPresses++;
-        if (stagePresses == solveLengths[increaser])
+        //StartCoroutine(PressFlash(device));
+
+        // Check if the current press is correct;
+        var isCurPressCorrect = idxDevice == expectedPressIdxesAllStages[curSequenceIdxInput][curIdxInputInSequence];
+        isAllCorrect &= isCurPressCorrect;
+        isCurSeqCorrect &= isCurPressCorrect;
+        Debug.LogFormat("[Simon Stages #{0}] You pressed {1}. That is {2}correct.", moduleId, device.colorName, isCurPressCorrect ? "" : "in");
+        curIdxInputInSequence++;
+
+        if (curIdxInputInSequence >= expectedPressIdxesAllStages[curSequenceIdxInput].Count)
         {
             device.connectedButton.AddInteractionPunch();
-            stagePresses = 0;
-            for (int i = solutionStartLocation[increaser]; i <= solutionStartLocation[increaser] + solveLengths[increaser] - 1; i++)
+            curIdxInputInSequence = 0;
+            var result = isCurSeqCorrect ? "correct" : "incorrect";
+            Debug.LogFormat("[Simon Stages #{0}] END OF STAGE {1}. The given sequence of inputs are {2}.", moduleId, curSequenceIdxInput + 1, result);
+            curSequenceIdxInput++;
+            if (curSequenceIdxInput <= stagesCompleted)
             {
-                if (!lightsSolved[i])
-                {
-                    stagesSolved[increaser] = false;
-                    break;
-                }
-                else
-                {
-                    stagesSolved[increaser] = true;
-                }
+                Debug.LogFormat("[Simon Stages #{0}] STAGE {1} RESPONSE:", moduleId, curSequenceIdxInput + 1);
             }
-            if (stagesSolved[increaser])
-            {
-                result = "correct";
-                for (int i = 0; i < clearLights.Count; i++)
-                {
-                    completeLights.Add(clearLights[i]);
-                }
-            }
-            else
-            {
-                result = "incorrect";
-            }
-            clearLights.Clear();
-            Debug.LogFormat("[Simon Stages #{0}] END OF SEQUENCE {1}. The given sequence of inputs are {2}.", moduleId, absoluteLevelPosition[increaser] + 1, result);
-            increaser++;
-            if (totalPresses < solutionNames.Count)
-            {
-                Debug.LogFormat("[Simon Stages #{0}] SEQUENCE {1} RESPONSE:", moduleId, absoluteLevelPosition[increaser] + 1, result);
-            }
+            isCurSeqCorrect = true;
         }
         else
         {
             device.connectedButton.AddInteractionPunch(0.25f);
         }
 
-        if (totalPresses >= solutionNames.Count)
+        if (curSequenceIdxInput > stagesCompleted)
         {
             moduleLocked = true;
-            checking = true;
             CheckEndGame();
         }
+        
     }
     void CheckEndGame()
     {
-        for (int i = 0; i < stagesSolved.Count; i++)
+        if (isAllCorrect)
         {
-            if (!stagesSolved[i])
+            stagesCompleted++;
+            if (stagesCompleted >= 5) // If the defuser has successfully done 5 stages on the module.
             {
-                secondAttempt = true;
-                break;
-            }
-            else
-            {
-                secondAttempt = false;
-            }
-        }
-
-        int endGameCheck = stagesSolved.Count;
-        if (endGameCheck == 1)
-        {
-            if (stagesSolved[0])
-            {
-                secondAttempt = false;
-            }
-        }
-
-        if (!secondAttempt)
-        {
-            if (currentLevel >= 5) // If the defuser has successfully done 5 stages on the module.
-            {
-                GetComponent<KMBombModule>().HandlePass();
+                Module.HandlePass();
                 Debug.LogFormat("[Simon Stages #{0}] Inputs correct. Module disarmed.", moduleId);
                 moduleSolved = true;
                 StartCoroutine(SolveLights());
             }
             else
             {
-                Debug.LogFormat("[Simon Stages #{0}] Inputs correct. However the module wants more.", moduleId);
-                totalPresses = 0;
-                stagePresses = 0;
-                increaser = 0;
-                GenerateSequence();
-                moduleLocked = true;
-                clearLights.Clear();
+                Debug.LogFormat("[Simon Stages #{0}] Inputs correct. However the module wants more. Advancing to stage {1}.", moduleId, stagesCompleted + 1);
+                curIdxInputInSequence = 0;
+                curSequenceIdxInput = 0;
             }
         }
         else
         {
-            totalPresses = 0;
-            stagePresses = 0;
-            increaser = 0;
+            curIdxInputInSequence = 0;
+            curSequenceIdxInput = 0;
             Debug.LogFormat("[Simon Stages #{0}] Strike! Your full sequence was incorrect.", moduleId);
-            GetComponent<KMBombModule>().HandleStrike();
+            Module.HandleStrike();
             hasStruck = true; // Send a strike detection to the TP handler if the module is still requiring inputs.
+            firstStrikeOnModule = true;
+            isAllCorrect = true;
         }
-        checking = false;
+        isRepeating = false;
     }
     int lastLevel = 0;
     bool isRepeating;
@@ -489,47 +434,36 @@ public class SimonStagesHandler : MonoBehaviour
             device.ledGlow.enabled = false;
             device.greyBase.enabled = true;
         }
-        lastLevel = currentLevel;
-        while (lastLevel == currentLevel && totalPresses <= 0)
+        lastLevel = stagesCompleted;
+        while (lastLevel == stagesCompleted && !HasInputted())
         {
-            moduleLocked = true;
-            int j = 0;
-            int k = 0;
-            for (int i = 0; i < sequences.Count; i++)
+            //moduleLocked = true;
+            for (int i = 0; i <= stagesCompleted; i++)
             {
+                var sequences = selectedFlashesIdxAllStages[i];
+                var selectedIndcIdx = selectedIndicatorIdx[i];
 
-                indicatorText.text = indicatorLetter[j];
-                indicatorLights[indicatorColour[j]].glow.enabled = true;
-                if (canPlaySound)
+                indicatorText.text = lightTextOptions[indicatorLights[selectedIndcIdx].colorIndex];
+                indicatorLights[selectedIndcIdx].glow.enabled = true;
+                for (var p = 0; p < sequences.Count; p++)
                 {
-                    Audio.PlaySoundAtTransform(lightDevices[sequences[i]].connectedSound.name, transform);
-                }
-                lightDevices[sequences[i]].ledGlow.enabled = true;
-                lightDevices[sequences[i]].greyBase.enabled = false;
-                yield return new WaitForSeconds(0.5f);
-                if (totalPresses > 0 || lastLevel != currentLevel)
-                {
-                    break;
-                }
-                lightDevices[sequences[i]].ledGlow.enabled = false;
-                lightDevices[sequences[i]].greyBase.enabled = true;
-                if (totalPresses > 0)
-                {
-                    break;
-                }
-                yield return new WaitForSeconds(0.25f);
-                if (sequenceLengths[j] - 1 == k)
-                {
-                    j++;
-                    k = 0;
-                    foreach (IndicatorInformation indic in indicatorLights)
+                    if (canPlaySound)
+                        mAudio.PlaySoundAtTransform(lightDevices[sequences[p]].connectedSound.name, transform);
+
+                    lightDevices[sequences[p]].ledGlow.enabled = true;
+                    lightDevices[sequences[p]].greyBase.enabled = false;
+                    yield return new WaitForSeconds(0.5f);
+                    lightDevices[sequences[p]].ledGlow.enabled = false;
+                    lightDevices[sequences[p]].greyBase.enabled = true;
+                    if (HasInputted() || lastLevel != stagesCompleted)
                     {
-                        indic.glow.enabled = false;
+                        yield break;
                     }
+                    yield return new WaitForSeconds(0.25f);
                 }
-                else
+                foreach (IndicatorInformation indic in indicatorLights)
                 {
-                    k++;
+                    indic.glow.enabled = false;
                 }
             }
             foreach (LightInformation device in lightDevices)
@@ -538,7 +472,6 @@ public class SimonStagesHandler : MonoBehaviour
                 device.greyBase.enabled = true;
             }
             indicatorText.text = "";
-            j = 0;
             foreach (IndicatorInformation indic in indicatorLights)
             {
                 indic.glow.enabled = false;
@@ -547,7 +480,7 @@ public class SimonStagesHandler : MonoBehaviour
             for (int x = 0; x < 20; x++)
             {
                 yield return new WaitForSeconds(0.25f);
-                if (totalPresses > 0 || lastLevel != currentLevel)
+                if (curSequenceIdxInput > 0 || lastLevel != stagesCompleted)
                 {
                     break;
                 }
@@ -558,12 +491,17 @@ public class SimonStagesHandler : MonoBehaviour
 
     void Update()
     {
-        if (totalPresses <= 0 && gameOn && !moduleLocked && !isRepeating)
+        if (!HasInputted() && gameOn && !moduleLocked && !isRepeating)
         {
-            StartCoroutine(RepeatSequence());
+            if (flashHandler != null)
+                StopCoroutine(flashHandler);
+            flashHandler = RepeatSequence();
+            StartCoroutine(flashHandler);
         }
+        if (isHoldingButton && timeHeld < 2f)
+            timeHeld += Time.deltaTime;
     }
-
+    
     IEnumerator PressFlash(LightInformation device)
     {
         device.greyBase.enabled = false;
@@ -576,7 +514,7 @@ public class SimonStagesHandler : MonoBehaviour
 
     IEnumerator SolveLights()
     {
-        Audio.PlaySoundAtTransform("solveRiff", transform);
+        mAudio.PlaySoundAtTransform("solveRiff", transform);
         int solveCounter = 0;
         while (solveCounter < 2)
         {
@@ -604,60 +542,84 @@ public class SimonStagesHandler : MonoBehaviour
             indicatorLights[i].glow.enabled = true;
         }
     }
-
+    
 #pragma warning disable IDE0051 // Remove unused private members
     public readonly string TwitchHelpMessage = "To press a button: \"!{0} press RBYOMGPLCW\" Letters are dependent on the location on the module and \"press\" is optional."+
         "\nUse \"!{0} zoom\" to get the layout of where each button is. Press commands will be voided upon a new stage, solve, or strike."+
-        "\nTo reset inputs on the module: \"!{0} resetinputs\" To mute the sound on this module: \"!{0} mute\" Certain phrases such as \"shuddup\",\"sush\" can be used to mute instead.";
+        "\nTo reset inputs on the module: \"!{0} resetinputs/clearinputs\" To mute the sound on this module: \"!{0} mute\" Certain phrases such as \"shuddup\",\"sush\" can be used to mute instead.";
 #pragma warning restore IDE0051 // Remove unused private members
     private string[] idxStrings;
+    /*
     IEnumerator HandleAutoSolve()
     {
-        if (idxStrings == null)
-        {// Grab where each button is located based on the button presses, if the variable is not assigned yet.
-            idxStrings = lightDevices.Select(device => device.colorName.Substring(0, 1)).ToArray();
-            //print(idxStrings.Join()); // Show the array of buttons given in the given layout.
-        }
         while (!gameOn)
-            yield return new WaitForSeconds(0);
-        totalPresses = 0;
-        stagePresses = 0;
-        clearLights.Clear();
+            yield return true;
+        curSequenceIdxInput = 0;
+        curIdxInputInSequence = 0;
         while (!moduleSolved)
         {
             while (moduleLocked)
-                yield return new WaitForSeconds(0);
+                yield return true;
 
-            lightDevices[idxStrings.ToList().IndexOf(solutionNames[totalPresses].Substring(0,1))].connectedButton.OnInteract();
-            yield return new WaitForSeconds(0);
+            lightDevices[expectedPressIdxesAllStages[curSequenceIdxInput][curIdxInputInSequence]].connectedButton.OnInteract();
+            yield return new WaitForSeconds(0.1f);
         }
-        yield return null;
+        yield return true;
     }
-    void TwitchHandleForcedSolve()
+    */
+    IEnumerator TwitchHandleForcedSolve()
     {
         Debug.LogFormat("[Simon Stages #{0}] A force solve has been issued viva TP handler.", moduleId);
-        StartCoroutine(HandleAutoSolve());
+        while (!gameOn)
+            yield return true;
+        curSequenceIdxInput = 0;
+        curIdxInputInSequence = 0;
+        while (!moduleSolved)
+        {
+            while (moduleLocked)
+                yield return true;
+
+            lightDevices[expectedPressIdxesAllStages[curSequenceIdxInput][curIdxInputInSequence]].connectedButton.OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+        yield return true;
+    }
+    int CountTotalPresses()
+    {
+        return expectedPressIdxesAllStages.Take(curSequenceIdxInput).Sum(a => a.Count) + curIdxInputInSequence;
     }
     IEnumerator ProcessTwitchCommand(string command)
     {
-        command = command.ToLower();
-        if (command.RegexMatch(@"^clear\s?inputs$")|| command.RegexMatch(@"^reset\s?inputs$"))
+        if (!gameOn)
         {
-            yield return null;
-            totalPresses = 0;
-            stagePresses = 0;
-            increaser = 0;
-            yield return "sendtochat Inputs cleared.";
-            Debug.LogFormat("[Simon Stages #{0}] Inputs resetted viva TP handler.", moduleId);
+            yield return "sendtochaterror The module is not ready yet. Please wait before sending this command.";
             yield break;
         }
-        else if (command.RegexMatch(@"^(mute|shut up|shuddup|sush|shut the fuck up)$"))
+
+        var intCommand = command.ToLower();
+        if (Regex.IsMatch(intCommand, @"^(reset|clear)\s?inputs$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            if (curSequenceIdxInput + 1 >= stagesCompleted && curIdxInputInSequence + 1 >= expectedPressIdxesAllStages.Take(1 + stagesCompleted).Last().Count)
+            {
+                yield return "sendtochaterror Resetting inputs require at least 1 button press to be held that would NOT cause a strike. The next input WILL cause a strike upon doing so.";
+                yield break;
+            }
+            yield return null;
+            var randomLight = lightDevices.PickRandom();
+            randomLight.connectedButton.OnInteract();
+            yield return new WaitWhile(delegate { return timeHeld < 1.5f; });
+            randomLight.connectedButton.OnInteractEnded();
+            yield return "sendtochat Inputs cleared.";
+            //Debug.LogFormat("[Simon Stages #{0}] Inputs resetted viva TP handler.", moduleId);
+            yield break;
+        }
+        else if (Regex.IsMatch(intCommand, @"^(mute|shut up|shuddup|sush|shut the fuck up)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
         {
             yield return null;
             canPlaySound = false;
             yield break;
         }
-        command = Regex.Replace(command.Trim(), "^(press|hit|enter|push) ", "", RegexOptions.IgnoreCase);
+        intCommand = Regex.Replace(intCommand.Trim(), "^(press|hit|enter|push) ", "", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         // If the command contains the following start commands, trim it off.
         List<KMSelectable> presses = new List<KMSelectable>();
         
@@ -666,7 +628,7 @@ public class SimonStagesHandler : MonoBehaviour
             idxStrings = lightDevices.Select(device => device.colorName.Substring(0, 1)).ToArray();
             //print(idxStrings.Join()); // Show the array of buttons given in the given layout.
         }
-        string[] segmentedCommand = command.Split(' ');
+        string[] segmentedCommand = intCommand.Split(' ');
         foreach (string part in segmentedCommand)
         {
             for (int x = 0; x < part.Length; x++)
@@ -682,26 +644,28 @@ public class SimonStagesHandler : MonoBehaviour
             }
         }
         hasStruck = false; // Detect if the module has struck from inputting at the end of the full required sequence before all inputs are processed.
-        int lastCurLv = currentLevel; // Required to detect if the module has to generate a new sequence after a correct set of inputs.
-        int lastTotalPresses = totalPresses; // Required to detect if the input was correctly processed.
+        int lastCurLv = stagesCompleted; // Required to detect if the module has to generate a new sequence after a correct set of inputs.
+        int lastTotalPresses = CountTotalPresses(); // Required to detect if the input was correctly processed.
         for (int x = 0; x < presses.Count; x++)
         {
+            yield return null;
             do
             {
-                if (hasStruck || lastCurLv != currentLevel || moduleSolved) {// Check if the module has struck, entered another stage, or has been solved.
+                if (hasStruck || lastCurLv != stagesCompleted || moduleSolved) {// Check if the module has struck, entered another stage, or has been solved.
                     yield break;
                 }
                 yield return "trycancel Your command have been canceled after " + x + "/" + presses.Count + " presses.";
             }
             while (moduleLocked);
-            yield return null;
             presses[x].OnInteract();
+            presses[x].OnInteractEnded();
             yield return new WaitForSeconds(0.1f);
-            if (lastTotalPresses == totalPresses) // Check if the input correctly got processed. 
+            if (lastTotalPresses == CountTotalPresses()) // Check if the input correctly got processed. 
                 x--;
             else
-                lastTotalPresses = totalPresses;
+                lastTotalPresses = CountTotalPresses();
         }
         yield break;
     }
+    
 }
