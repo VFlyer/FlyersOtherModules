@@ -85,6 +85,7 @@ public class SimonStagesHandler : MonoBehaviour
                     curIdxInputInSequence = 0;
                     curSequenceIdxInput = 0;
                     isRepeating = false;
+                    isAllCorrect = true;
                     Debug.LogFormat("[Simon Stages #{0}] User cleared all inputs.", moduleId);
                 }
             };

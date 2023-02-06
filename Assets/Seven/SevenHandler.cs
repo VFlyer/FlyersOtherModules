@@ -146,7 +146,7 @@ public class SevenHandler : MonoBehaviour {
 		}
 		catch (Exception error)
 		{
-			Debug.LogErrorFormat("<Labeled Priorities Plus #{0}> EXCEPTION OCCURED. USING SETTINGS INSTEAD. PLEASE SEEK OUT THE CREATOR ON HOW TO FIX THIS.", modID);
+			Debug.LogErrorFormat("<7 #{0}> EXCEPTION OCCURED. USING SETTINGS INSTEAD. PLEASE SEEK OUT THE CREATOR ON HOW TO FIX THIS.", modID);
 			Debug.LogException(error);
 
 		}
