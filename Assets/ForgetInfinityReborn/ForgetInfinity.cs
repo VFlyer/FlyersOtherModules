@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System;
-using System.Reflection;
+using Random = UnityEngine.Random;
 using KModkit;
 
 public class ForgetInfinity : MonoBehaviour {
@@ -24,7 +24,7 @@ public class ForgetInfinity : MonoBehaviour {
 
     public List<int[]> stages = new List<int[]>();// The displayed values for each of the given stages
     public List<int[]> solution = new List<int[]>();// The solution for each of the given stages
-    public List<int> possibleStages = new List<int>();
+    public List<int> possibleStages = new List<int>(), storedDecoyStages;
 
     public string input = "";
 
@@ -34,7 +34,7 @@ public class ForgetInfinity : MonoBehaviour {
     private static int modID = 1;
     private int curModID, earliestSolveCountOrgan = -1;
 
-    private float PPAScaling;
+    private float PPAScaling, timeCur;
     const float authorPPAScaling = 0.5f;
     private FlyersOtherSettings FIConfig = new FlyersOtherSettings();
 	// Use this for initialization
@@ -97,7 +97,6 @@ public class ForgetInfinity : MonoBehaviour {
     }
     void Start()
     {
-
         ModSelf.OnActivate += delegate
         {
             StartCoroutine(DelayActivation());
@@ -193,7 +192,7 @@ public class ForgetInfinity : MonoBehaviour {
             do
                 for (int a = 0; a < output.Length; a++)
                 {
-                    output[a] = UnityEngine.Random.Range(0, 10);
+                    output[a] = Random.Range(0, 10);
                 }
             while (stages.Count > 0 && stages.Contains(output));
             stages.Add(output);
@@ -288,11 +287,14 @@ public class ForgetInfinity : MonoBehaviour {
             // End Solution Calculations
             Debug.LogFormat("[Forget Infinity #{0}]: Stage {1}: Display = {2}, Answer = {3}", curModID, (x + 1).ToString("00"), stages[x].Join(""), solution[x].Join(""));
         }
+        storedDecoyStages = new List<int>();
         while (possibleStages.Count < Math.Min(stagestoGenerate, 3))// Memoryless Randomizer Starts Here
         {
-            int randomStage = UnityEngine.Random.Range(0, stagestoGenerate);
+            int randomStage = Random.Range(0, stagestoGenerate);
             if (!possibleStages.Contains(randomStage))
                 possibleStages.Add(randomStage);
+
+            storedDecoyStages.Add(Random.Range(0, 100));
         }
         Debug.LogFormat("[Forget Infinity #{0}]: Stages required to solve: {1}", curModID, FormatIntListWithCommas(possibleStages.ToArray()));
     }
@@ -361,7 +363,7 @@ public class ForgetInfinity : MonoBehaviour {
             {
                 if (!allModNames.Contains("Organization") || organIgnoredModNames.Contains("Forget Infinity"))
                 {
-                    stagestoGenerate = solvablemodNames.Count > 3 ? UnityEngine.Random.Range(3, Math.Min(solvablemodNames.Count, 100)) : solvablemodNames.Count - 1;
+                    stagestoGenerate = solvablemodNames.Count > 3 ? Random.Range(3, Math.Min(solvablemodNames.Count, 100)) : solvablemodNames.Count - 1;
 
                     if (solvablemodNames.Count <= 100)
                         Debug.LogFormat("[Forget Infinity #{0}]: Total stages generatable: {1}", curModID, solvablemodNames.Count - 1);
@@ -463,12 +465,12 @@ public class ForgetInfinity : MonoBehaviour {
         for (int x = 0; x < 5; x++)
         {
             selected.transform.localPosition += new Vector3(0, -.001f, 0);
-            yield return new WaitForSeconds(0);
+            yield return null;
         }
         for (int x = 5; x > 0; x--)
         {
             selected.transform.localPosition += new Vector3(0, +.001f, 0);
-            yield return new WaitForSeconds(0);
+            yield return null;
         }
     }
     IEnumerator AnimateSolveAnim()
@@ -483,20 +485,20 @@ public class ForgetInfinity : MonoBehaviour {
                 string outputDisplay = "";
                 for (int x = 0; x < ScreenStatus.text.Length; x++)
                 {
-                    outputDisplay += ScreenStatus.text.Substring(x, 1).RegexMatch(@"[0-9]") ? UnityEngine.Random.Range(0, 10).ToString("0") : ScreenStatus.text.Substring(x, 1);
+                    outputDisplay += ScreenStatus.text.Substring(x, 1).RegexMatch(@"[0-9]") ? Random.Range(0, 10).ToString("0") : ScreenStatus.text.Substring(x, 1);
                 }
                 ScreenStatus.text = outputDisplay;
             }
             if (ScreenStages.text.Length > 0)
                 ScreenStages.text = ScreenStages.text.Substring(0, ScreenStages.text.Length - 1).Trim();
-            yield return new WaitForSeconds(0f);
+            yield return new WaitForSeconds(0.02f);
         }
     }
     IEnumerator ProcessSubmittion()
     {
         bool canStrike = true;
         int crtStgIdx = 0;
-        int localDelay = 89;
+        int localDelay = 14;
         ScreenStages.text = input;
         
         foreach (int oneStg in possibleStages)
@@ -513,7 +515,7 @@ public class ForgetInfinity : MonoBehaviour {
         if (canStrike)
         {
             Debug.LogFormat("[Forget Infinity #{0}]: {1} does not match for any of the remaining stages required to solve.", curModID, input);
-            Debug.LogFormat("[Forget Infinity #{0}]: For reference, the remaining required stages to solve upon this strike are: {1}", curModID, FormatIntListWithCommas(possibleStages.Where(a => a >= 0 && a < stages.Count).ToArray()));
+            //Debug.LogFormat("[Forget Infinity #{0}]: For reference, the remaining required stages to solve upon this strike are: {1}", curModID, FormatIntListWithCommas(possibleStages.Where(a => a >= 0 && a < stages.Count).ToArray()));
             ModSelf.HandleStrike();
             hasStruck = true;
             ScreenStages.color = Color.red;
@@ -527,7 +529,7 @@ public class ForgetInfinity : MonoBehaviour {
                 solved = true;
                 ScreenStages.color = Color.yellow;
                 ScreenStatus.color = Color.yellow;
-                yield return new WaitForSeconds(0f);
+                yield return null;
                 StartCoroutine(AnimateSolveAnim());
                 yield break;
             }
@@ -542,10 +544,10 @@ public class ForgetInfinity : MonoBehaviour {
                 if (possibleStages[x] >= 0)
                     result += (possibleStages[x] + 1).ToString("00") + " ";
                 else
-                    result += UnityEngine.Random.Range(0, 100).ToString("00") + " ";
+                    result += Random.Range(0, 100).ToString("00") + " ";
             }
             ScreenStatus.text = result.Trim();
-            if (localDelay % 18 == 0)
+            if (localDelay % 3 == 0)
             {
                 input = input.Substring(0, input.Length - 1);
                 AudioHandler.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey,transform);
@@ -556,7 +558,7 @@ public class ForgetInfinity : MonoBehaviour {
                 inputSeq += "-";
             }
             ScreenStages.text = inputSeq + input;
-            yield return new WaitForSeconds(0);
+            yield return new WaitForSeconds(0.03f);
             localDelay--;
         }
         input = "";
@@ -612,6 +614,13 @@ public class ForgetInfinity : MonoBehaviour {
 
     void Update()
     {
+        timeCur += Time.deltaTime;
+        if (timeCur >= 0.05f)
+        {
+            timeCur = 0f;
+            for (var x = 0; x < storedDecoyStages.Count; x++)
+                storedDecoyStages[x] = Random.Range(0, 99);
+        }
         if (hasStarted && !solved)
         {
             if (inFinale)
@@ -623,7 +632,7 @@ public class ForgetInfinity : MonoBehaviour {
                     if (possibleStages[x] >= 0)
                         result += (possibleStages[x] + 1).ToString("00") + " ";
                     else
-                        result += UnityEngine.Random.Range(0, 100).ToString("00") + " ";
+                        result += (storedDecoyStages[x] + 1).ToString("00") + " ";
                 }
                 ScreenStatus.text = result.Trim();
                 string inputSeq = "";

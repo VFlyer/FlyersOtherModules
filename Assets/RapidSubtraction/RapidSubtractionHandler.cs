@@ -171,7 +171,7 @@ public class RapidSubtractionHandler : MonoBehaviour {
 		int streakCount = Mathf.Min(curStreak, 3);
 		needyHandler.ResetDelayMin = streakNeedyActivateDelayMin[streakCount];
 		needyHandler.ResetDelayMax = streakNeedyActivateDelayMax[streakCount];
-		//needyHandler.SetResetDelayTime(streakNeedyActivateDelayMin[streakCount], streakNeedyActivateDelayMax[streakCount]);
+		needyHandler.SetResetDelayTime(streakNeedyActivateDelayMin[streakCount], streakNeedyActivateDelayMax[streakCount]);
 	}
 	void PrepValues()
 	{

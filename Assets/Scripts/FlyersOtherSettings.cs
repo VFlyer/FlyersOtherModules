@@ -2,6 +2,7 @@
 	public bool UseAuthorSuggestedDynamicScoring = true;
 	public bool InstantMysticLights = false;
     public float FIPPAScaleFactor = 0.5f;
+	public bool FINInstantFinale = false;
 	public bool FINNumpadInputAllowed = true;
 	public bool SevenHardCapStageGeneration = true;
 	public bool SevenForceFastReads = false;

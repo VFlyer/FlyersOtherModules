@@ -135,7 +135,7 @@ public class CoprimeCheckerScript : MonoBehaviour {
 		}
 		displayText.text = givenNumA.ToString() + "\n" + givenNumB.ToString();
 		QuickLog("The 2 numbers now shown are {0} and {1}", givenNumA, givenNumB);
-		QuickLog("Using the reworded manual by Danny7007, the greatest common multiple of {0} and {1} is {2}", givenNumA, givenNumB, ObtainGCM(givenNumA, givenNumB));
+		QuickLog("The greatest common multiple of {0} and {1} is {2}", givenNumA, givenNumB, ObtainGCM(givenNumA, givenNumB));
 		QuickLog("These numbers are {0}coprime.", expectedCoprime ? "" : "not ");
 	}
 	// Old checking section to obtain prime factors of a certain number.

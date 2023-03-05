@@ -27,7 +27,7 @@ public class ForgetItNotHandler : MonoBehaviour {
     private int curModID;
     private bool canStart = false;
     FlyersOtherSettings universalSettings = new FlyersOtherSettings();
-    private bool acceptNumInput = true, focused = false;
+    private bool acceptNumInput = true, focused = false, instantFinale;
 
     private void Awake()
     {
@@ -42,12 +42,15 @@ public class ForgetItNotHandler : MonoBehaviour {
             universalConfig.Settings = universalSettings;
 
             acceptNumInput = universalSettings.FINNumpadInputAllowed;
+            instantFinale = universalSettings.FINInstantFinale;
             Debug.LogFormat("<Forget It Not> Keypad Input Allowed? {0}", acceptNumInput ? "YES" : "NO");
+            Debug.LogFormat("<Forget It Not> Activate instant finale on last non-ignored solve? {0}", instantFinale ? "YES" : "NO");
         }
         catch
         {
             Debug.LogFormat("<Forget It Not> Settings do not work as intended! Using default settings instead.");
             acceptNumInput = true;
+            instantFinale = false;
         }
     }
 
@@ -378,19 +381,13 @@ public class ForgetItNotHandler : MonoBehaviour {
                     curstagenum++;
                     if (curstagenum >= totalstages)
                     {
-                        if (bombInfo.GetTime() > Mathf.Max(totalstages * 5 / 2, 120))
-                        {
+                        if (bombInfo.GetTime() > Mathf.Max(totalstages * 5 / 2, 120) && !instantFinale)
                             StartCoroutine(ActivateFinalePhase());
-                        }
                         else
-                        {
                             ShowCurrentInput();
-                        }
                     }
                     else
-                    { 
                         AdvanceStage();
-                    }
                     cooldown = 1.4f;
                 }
             }
