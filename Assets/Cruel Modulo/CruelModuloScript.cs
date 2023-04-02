@@ -98,21 +98,21 @@ public class CruelModuloScript : MonoBehaviour {
 		startingDisplay.text = startingValue.ToString();
 		exponentDisplay.text = fixedExponent.ToString();
 
-		var listModValues = new List<int>();
+		var listModValuesWindow = new List<int>();
 		var factoredValue = startingValue % divisorValue;
-		listModValues.Add(factoredValue);
+		listModValuesWindow.Add(factoredValue);
 		for (var y = 1; y <= Mathf.Min(divisorValue, fixedExponent); y++)
 		{
-			var lastModuloValue = listModValues.Last();
+			var lastModuloValue = listModValuesWindow.Last();
 			var calculatedNextModuloValue = lastModuloValue * factoredValue % divisorValue;
-			if (listModValues.Contains(calculatedNextModuloValue)) break;
-			listModValues.Add(calculatedNextModuloValue);
+			if (listModValuesWindow.Contains(calculatedNextModuloValue)) break;
+			listModValuesWindow.Add(calculatedNextModuloValue);
 		}
-		QuickLog(string.Format("Using the Window method, the pattern of values before repetition and before the exponent, starting at {1}%{2} are {0}", listModValues.Join(), startingValue, divisorValue));
-		correctValue = listModValues.Min() == 0 ? 0 : listModValues.ElementAt((fixedExponent + listModValues.Count - 1) % listModValues.Count);
+		QuickLog(string.Format("Using the Window method, the pattern of values before repetition and before the exponent, starting at {1}%{2} are {0}", listModValuesWindow.Join(), startingValue, divisorValue));
+		//correctValue = listModValuesWindow.Min() == 0 ? 0 : listModValuesWindow.ElementAt((fixedExponent + listModValuesWindow.Count - 1) % listModValuesWindow.Count);
 		var binaryString = "";
 		var curExponent = fixedExponent;
-		listModValues.Clear();
+		var listModValuesSAndM = new List<int>();
 		do
 		{
 			binaryString = (curExponent % 2 == 1 ? "1" : "0") + binaryString;
@@ -127,10 +127,11 @@ public class CruelModuloScript : MonoBehaviour {
 			if (binaryString[x] == '1')
 				finalResult *= factoredValue;
 			finalResult %= divisorValue;
-			listModValues.Add(finalResult);
+			listModValuesSAndM.Add(finalResult);
         }
-		QuickLog(string.Format("The set of values obtained using this method is {0}", listModValues.Join()));
-		QuickLog(string.Format("The value you should submit is {0}. (From the expression: {1} ^ {2} % {3})", correctValue, startingValue, fixedExponent, divisorValue));
+		correctValue = listModValuesSAndM.Last();
+		QuickLog(string.Format("The set of values obtained using this method is {0}", listModValuesSAndM.Join()));
+		QuickLog(string.Format("The value you should submit is {0}. (From the expression: {1} ^ {2} % {3})", listModValuesSAndM.Last(), startingValue, fixedExponent, divisorValue));
 		interactable = true;
 
 	}
