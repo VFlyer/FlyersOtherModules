@@ -1072,6 +1072,8 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 			QuickLog(string.Format("That doesn't seems right. Strike incurred. And resetting..."));
 			modSelf.HandleStrike();
 			StartCoroutine(HandleAnimMislabeled(true));
+			rememberedIdxPhrases.Clear();
+			rememberedIdxPositions.Clear();
 		}
 
 	}
