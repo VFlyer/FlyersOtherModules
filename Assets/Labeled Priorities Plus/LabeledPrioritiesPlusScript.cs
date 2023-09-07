@@ -1257,23 +1257,25 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 			switch ((lastString ?? "").ToLowerInvariant())
             {
 				case "slow":
+					delayAmount = 1f;
+					break;
 				case "slower":
-					delayAmount = 0.5f;
+					delayAmount = 2f;
 					break;
 				case "veryslow":
-					delayAmount = 2f;
+					delayAmount = 3f;
 					break;
 				case "instant":
 					requireDelay = false;
 					break;
             }
-			yield return string.Format("awardpointsonsolve {0}", dynamicScoreToGive);
 			for (var x = 0; x < screenPresses.Count && interactable && !modSolved; x++)
             {
 				yield return null;
 				screenPresses[x].OnInteract();
 				if (modSolved)
 				{
+					yield return string.Format("awardpoints {0}", dynamicScoreToGive);
 					yield break;
 				}
 				else if (!interactable)
