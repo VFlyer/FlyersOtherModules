@@ -902,7 +902,7 @@ public class LabeledPrioritiesPlusScript : MonoBehaviour {
 					var selectedIdxRule = mislabeledPrioritiesGrid[currentCycleCnt[curStageCnt - 1]][rememberedIdxPositions[curStageCnt - 1]];
 					QuickLog(string.Format("Remembered position pressed {0}: {1}", new[] { "1st", "2nd", "3rd" }[curStageCnt - 1], rememberedIdxPositions[curStageCnt - 1] + 1));
 					QuickLog(string.Format("Remembered phrase pressed {0}: \"{1}\"", new[] { "1st", "2nd", "3rd" }[curStageCnt - 1], shuffledQuotes[rememberedIdxPhrases[curStageCnt - 1]].Replace("\n", " ")));
-					QuickLog(string.Format("Intersecting the {0} digit of the 4-digit code ({2}) and the {0} initial position pressed results in this letter: {1}", new[] { "1st", "2nd", "3rd" }[curStageCnt - 1], "ABCD"[selectedIdxRule], currentCycleCnt[curStageCnt - 1]));
+					QuickLog(string.Format("Intersecting the {0} digit of the 4-digit code ({2}) and the {0} initial position pressed results in this letter: {1}", new[] { "1st", "2nd", "3rd" }[curStageCnt - 1], "ABCD"[selectedIdxRule], currentCycleCnt[curStageCnt - 1] + 1));
 					for (var x = 0; x < idxCurrentQuotes.Length; x++)
 					{
 						var selectedIdx = filteredUnrememberedIdxesAll.ElementAt(x);

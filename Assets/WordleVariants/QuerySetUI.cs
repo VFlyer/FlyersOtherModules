@@ -22,6 +22,23 @@ public class QuerySetUI : MonoBehaviour {
             displayTexts[x].text = x >= letters.Length ? "" : letters[x].ToString();
         }
     }
+    public void UpdateResult(params int[] newResult)
+    {
+        resultingQueryIdxStatus = newResult;
+        for (var x = 0; x < statusRenderers.Length; x++)
+        {
+            var curResultStatus = x < resultingQueryIdxStatus.Length && resultingQueryIdxStatus != null ? resultingQueryIdxStatus[x] : -1;
+            statusRenderers[x].color = curResultStatus < 0 ? Color.white : responseColors[curResultStatus];
+            statusRenderers[x].fillCenter = curResultStatus >= 0;
+        }
+    }
+    public void UpdateText(char[] letters)
+    {
+        for (var x = 0; x < displayTexts.Length; x++)
+        {
+            displayTexts[x].text = x >= letters.Length ? "" : letters[x].ToString();
+        }
+    }
     public void UpdateStatus(string letters = "", params int[] newResult)
     {
         UpdateStatus(letters.ToCharArray(), newResult);
