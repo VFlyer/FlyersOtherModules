@@ -4,6 +4,56 @@
         <name>KeepCodingLite</name>
     </assembly>
     <members>
+        <member name="T:KeepCoding.ColorblindInfo">
+            <summary>
+            Contains information about the colorblind mod's info, this class can be used to deserialize "ColorblindMode.json".
+            </summary>
+        </member>
+        <member name="M:KeepCoding.ColorblindInfo.#ctor">
+            <summary>
+            Creates a <see cref="T:KeepCoding.ColorblindInfo"/> without read/writing the file.
+            </summary>
+        </member>
+        <member name="M:KeepCoding.ColorblindInfo.#ctor(System.String)">
+            <summary>
+            Creates a <see cref="T:KeepCoding.ColorblindInfo"/> while read/writing the file.
+            </summary>
+            <param name="moduleId">The module's id to grab information from.</param>
+        </member>
+        <member name="P:KeepCoding.ColorblindInfo.IsEnabled">
+            <summary>
+            Determines whether colorblind mode is on.
+            </summary>
+        </member>
+        <member name="P:KeepCoding.ColorblindInfo.IsModuleEnabled">
+            <summary>
+            Determines whether colorblind mode for the module is on.
+            </summary>
+        </member>
+        <member name="P:KeepCoding.ColorblindInfo.Modules">
+            <summary>
+            Contains module ids and their colorblind states.
+            </summary>
+        </member>
+        <member name="M:KeepCoding.ColorblindInfo.Equals(System.Object)">
+            <summary>
+            Determines if both objects are equal.
+            </summary>
+            <param name="obj">The comparison.</param>
+            <returns>True if both of them are <see cref="T:KeepCoding.ColorblindInfo"/> and contain the same <see cref="P:KeepCoding.ColorblindInfo.IsEnabled"/> and <see cref="P:KeepCoding.ColorblindInfo.Modules"/>.</returns>
+        </member>
+        <member name="M:KeepCoding.ColorblindInfo.GetHashCode">
+            <summary>
+            Gets the hash code.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="M:KeepCoding.ColorblindInfo.ToString">
+            <summary>
+            Converts the object to a string.
+            </summary>
+            <returns><see cref="P:KeepCoding.ColorblindInfo.Modules"/> unwrapped with <see cref="M:KeepCoding.Helper.Stringify``1(``0,KeepCoding.StringifyFormat)"/>.</returns>
+        </member>
         <member name="T:KeepCoding.Internal.ModuleScriptEditor">
             <summary>
             Custom inspector for <see cref="T:KeepCoding.ModuleScript"/>. 
@@ -361,58 +411,6 @@
             KMFramework extension methods that makes it easier to assign multiple events to a variable in one statement.
             </summary>
         </member>
-        <member name="M:KeepCoding.EventHelper.Assign(KMBombInfo,System.Action,System.Action)">
-            <summary>
-            Assigns events specified into <paramref name="bombInfo"/>. Reassigning them will replace their values.
-            </summary>
-            <remarks>
-            An event that is null will be skipped. This extension method simplifies all of the KMFramework events into Actions or Functions.
-            </remarks>
-            <exception cref="T:UnityEngine.UnassignedReferenceException"></exception>
-            <param name="bombInfo">The bomb info instance to assign events to.</param>
-            <param name="onBombExploded">Called when the bomb explodes.</param>
-            <param name="onBombSolved">Called when the bomb is defused.</param>
-        </member>
-        <member name="M:KeepCoding.EventHelper.Assign(KMBombModule,System.Action,System.Action,System.Action)">
-            <summary>
-            Assigns events specified into <paramref name="bombModule"/>. Reassigning them will replace their values.
-            </summary>
-            <remarks>
-            An event that is null will be skipped. This extension method simplifies all of the KMFramework events into Actions or Functions.
-            </remarks>
-            <param name="bombModule">The bomb instance to assign events to.</param>
-            <param name="onActivate">Called when the lights turn on.</param>
-            <param name="onPass">Called when the module is solved.</param>
-            <param name="onStrike">Called when the module strikes.</param>
-        </member>
-        <member name="M:KeepCoding.EventHelper.Assign(KMGameInfo,System.Action{KMGameInfo.State},System.Action{System.Boolean},System.Action{System.Boolean})">
-            <summary>
-            Assigns events specified into <paramref name="gameInfo"/>. Reassigning them will replace their values.
-            </summary>
-            <remarks>
-            An event that is null will be skipped. This extension method simplifies all of the KMFramework events into Actions.
-            </remarks>
-            <exception cref="T:UnityEngine.UnassignedReferenceException"></exception>
-            <param name="gameInfo">The game info instance to assign events to.</param>
-            <param name="onStateChange">Called when the state of the game changes.</param>
-            <param name="onAlarmClockChange">Called when the alarm clock changes state, and passes in whether it's on or off.</param>
-            <param name="onLightsChange">Called when the lights change state, and passes in whether it's on or off.</param>
-        </member>
-        <member name="M:KeepCoding.EventHelper.Assign(KMNeedyModule,System.Action,System.Action,System.Action,System.Action,System.Action,System.Action)">
-            <summary>
-            Assigns events specified into <paramref name="needyModule"/>. Reassigning them will replace their values.
-            </summary>
-            <remarks>
-            An event that is null will be skipped. This extension method simplifies all of the KMFramework events into Actions or Functions.
-            </remarks>
-            <param name="needyModule">The needy instance to assign events to.</param>
-            <param name="onActivate">Called when the lights turn on.</param>
-            <param name="onNeedyActivation">Called when the needy activates.</param>
-            <param name="onNeedyDeactivation">Called when the needy deactivates.</param>
-            <param name="onPass">Called when the needy is solved.</param>
-            <param name="onStrike">Called when the needy strikes.</param>
-            <param name="onTimerExpired">Called when the timer runs out of time.</param>
-        </member>
         <member name="M:KeepCoding.EventHelper.Assign(KMSelectable,System.Nullable{System.Boolean},System.Action,System.Action,System.Action,System.Action,System.Action,System.Action,System.Action,System.Action,System.Action{System.Single},System.Action,System.Action,System.Action,System.Action{KMSelectable})">
             <summary>
             Assigns events specified into <paramref name="selectable"/>. Reassigning them will replace their values.
@@ -501,62 +499,6 @@
             General extension class.
             </summary>
         </member>
-        <member name="M:KeepCoding.Helper.IsBetween(System.Char,System.Char,System.Char)">
-            <summary>
-            Determines whether the number is equal or in-between 2 values.
-            </summary>
-            <param name="comparison">The number to use as comparison.</param>
-            <param name="min">The minimum value required to return <see langword="true"/>.</param>
-            <param name="max">The maximum value required to return <see langword="true"/>.</param>
-            <returns>True if <paramref name="comparison"/> is more than or equal <paramref name="min"/> and less than or equal <paramref name="max"/>.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.IsBetween(System.Int32,System.Int32,System.Int32)">
-            <summary>
-            Determines whether the number is equal or in-between 2 values.
-            </summary>
-            <param name="comparison">The number to use as comparison.</param>
-            <param name="min">The minimum value required to return <see langword="true"/>.</param>
-            <param name="max">The maximum value required to return <see langword="true"/>.</param>
-            <returns>True if <paramref name="comparison"/> is more than or equal <paramref name="min"/> and less than or equal <paramref name="max"/>.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.IsBetween(System.Single,System.Single,System.Single)">
-            <summary>
-            Determines whether the number is equal or in-between 2 values.
-            </summary>
-            <param name="comparison">The number to use as comparison.</param>
-            <param name="min">The minimum value required to return <see langword="true"/>.</param>
-            <param name="max">The maximum value required to return <see langword="true"/>.</param>
-            <returns>True if <paramref name="comparison"/> is more than or equal <paramref name="min"/> and less than or equal <paramref name="max"/>.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.IsNullOrEmpty``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Determines if the <see cref="T:System.Collections.Generic.IEnumerable`1"/> is null or empty.
-            </summary>
-            <param name="source">The <see cref="T:System.Collections.Generic.IEnumerable`1"/> to check for.</param>
-            <returns>True if <paramref name="source"/> is equal to null, or empty.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.ToNumber(System.Char)">
-            <summary>
-            Converts a character to a number.
-            </summary>
-            <exception cref="T:KeepCoding.Internal.UnrecognizedValueException"></exception>
-            <param name="source">The character to convert.</param>
-            <returns><paramref name="source"/> as <see cref="T:System.Byte"/>.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.ToLower(System.Char)">
-            <summary>
-            Converts a character to lowercase.
-            </summary>
-            <param name="source">The character to convert.</param>
-            <returns><paramref name="source"/> as lowercase.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.ToUpper(System.Char)">
-            <summary>
-            Converts a character to uppercase.
-            </summary>
-            <param name="source">The character to convert.</param>
-            <returns><paramref name="source"/> as uppercase.</returns>
-        </member>
         <member name="M:KeepCoding.Helper.Modulo(System.Int32,System.Int32)">
             <summary>
             Calculates the rem-euclid modulo, which allows negative numbers to be properly calculated.
@@ -565,17 +507,6 @@
             <param name="number">The left-hand side operator</param>
             <param name="modulo">The right-hand side operator.</param>
             <returns><paramref name="number"/> mod <paramref name="modulo"/>.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.ToNumbers``1(``0[],System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32})">
-            <summary>
-            Parses each element of an array into a number. If it succeeds it returns the integer array, if it fails then it returns null.
-            </summary>
-            <param name="ts">The array to convert to an integer.</param>
-            <param name="min">The minimum acceptable value of any given index. (inclusive)</param>
-            <param name="max">The maximum acceptable value of any given index. (inclusive)</param>
-            <param name="minLength">The minimum acceptable length of the array. (inclusive)</param>
-            <param name="maxLength">The maximum acceptable length of the array. (inclusive)</param>
-            <returns>The array as integers, or null if it fails.</returns>
         </member>
         <member name="M:KeepCoding.Helper.BaseToLong(System.String,System.Int32)">
             <summary>
@@ -620,15 +551,6 @@
             <param name="fromBaseNumber">Which base it currently is.</param>
             <param name="toBaseNumber">Which base to convert it to.</param>
             <returns>The integer, but in the base specified.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.Combine``1(``0,System.String)">
-            <summary>
-            Conbines the iterator into one long <see cref="T:System.String"/>.
-            </summary>
-            <typeparam name="T">The type of the <paramref name="source"/>.</typeparam>
-            <param name="source">The iterator.</param>
-            <param name="delimiter">The separator between each element.</param>
-            <returns>A <see cref="T:System.String"/> representing all elements in <paramref name="source"/> with the separator <paramref name="delimiter"/>.</returns>
         </member>
         <member name="M:KeepCoding.Helper.InsertNewlines(System.String,System.Int32)">
             <summary>
@@ -695,37 +617,12 @@
             <param name="coroutines">The <see cref="T:UnityEngine.Coroutine"/>s to stop.</param>
             <returns>The array of <see cref="T:UnityEngine.Coroutine"/>s given.</returns>
         </member>
-        <member name="M:KeepCoding.Helper.AsEnumerable(System.Collections.IEnumerator)">
-            <summary>
-            Converts an <see cref="T:System.Collections.IEnumerator"/> to an <see cref="T:System.Collections.IEnumerable"/>.
-            </summary>
-            <exception cref="T:KeepCoding.Internal.NullIteratorException"></exception>
-            <param name="source">The <see cref="T:System.Collections.IEnumerator"/> to convert.</param>
-            <returns><paramref name="source"/> as an <see cref="T:System.Collections.IEnumerable"/>.</returns>
-        </member>
         <member name="M:KeepCoding.Helper.Range(System.Int32)">
             <summary>
             Creates an <see cref="T:System.Collections.Generic.IEnumerable`1"/> spanning from 0 to the number specified - 1.
             </summary>
             <param name="count">The length of the <see cref="T:System.Collections.IEnumerable"/>.</param>
             <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> from 0 to <paramref name="count"/> - 1.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.AsEnumerable``1(System.Collections.Generic.IEnumerator{``0})">
-            <summary>
-            Converts an <see cref="T:System.Collections.IEnumerator"/> to an <see cref="T:System.Collections.IEnumerable"/>.
-            </summary>
-            <exception cref="T:KeepCoding.Internal.NullIteratorException"></exception>
-            <typeparam name="T">The parameter and return type.</typeparam>
-            <param name="source">The <see cref="T:System.Collections.IEnumerator"/> to convert.</param>
-            <returns><paramref name="source"/> as an <see cref="T:System.Collections.IEnumerable"/>.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.Indistinct``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Filters an <see cref="T:System.Collections.Generic.IEnumerable`1"/>, only allowing duplicated items.
-            </summary>
-            <typeparam name="T">The type of the <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</typeparam>
-            <param name="source">The <see cref="T:System.Collections.Generic.IEnumerable`1"/> to filter through.</param>
-            <returns>A new instance of <paramref name="source"/> that only includes elements which are repeated in the array.</returns>
         </member>
         <member name="M:KeepCoding.Helper.Randomize``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
@@ -775,28 +672,6 @@
             <param name="func">The encapsulated method to return for each value, passing in the index of the for-loop.</param>
             <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of length <paramref name="times"/> where each element is the return of <paramref name="func"/> after the index is passed in.</returns>
         </member>
-        <member name="M:KeepCoding.Helper.Flatten(System.Collections.IEnumerator,System.Predicate{System.Object})">
-            <summary>
-            Flattens an <see cref="T:System.Collections.IEnumerator"/> such that nested <see cref="T:System.Collections.IEnumerator"/> calls get replaced with the output of those calls.
-            </summary>
-            <param name="source">The <see cref="T:System.Collections.IEnumerator"/> to flatten.</param>
-            <param name="except">If <see langword="false"/>, <see cref="M:KeepCoding.Helper.Flatten(System.Collections.IEnumerator,System.Predicate{System.Object})"/> gets called recursively and each item from that output gets returned individually, otherwise the item is simply returned.</param>
-            <returns><paramref name="source"/> where <see langword="yield"/> <see langword="return"/> <see cref="T:System.Collections.IEnumerator"/>s gets replaced with the output of those calls.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.GetUnsolvedModuleIDs(KMBombInfo)">
-            <summary>
-            Gives list of module names that are unsolved.
-            </summary>
-            <param name="bombInfo">The instance of <see cref="T:KMBombInfo"/> needed to get the modules.</param>
-            <returns>A list of unsolved module names.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.GetUnsolvedModuleNames(KMBombInfo)">
-            <summary>
-            Gives list of module names that are unsolved.
-            </summary>
-            <param name="bombInfo">The instance of <see cref="T:KMBombInfo"/> needed to get the modules.</param>
-            <returns>A list of unsolved modules.</returns>
-        </member>
         <member name="M:KeepCoding.Helper.Assert``1(``0)">
             <summary>
             Throws am <see cref="T:KeepCoding.Internal.AssertionException"/> if the <see cref="T:UnityEngine.Object"/> given is <see langword="null"/>, then returning the <see cref="T:UnityEngine.Object"/> <paramref name="obj"/>.
@@ -835,69 +710,6 @@
             <param name="comparison">The item to compare to.</param>
             <param name="name">The name of <paramref name="item"/>.</param>
             <returns><paramref name="item"/></returns>
-        </member>
-        <member name="M:KeepCoding.Helper.Call``1(``0,System.Action{``0})">
-            <summary>
-            Invokes a method of <typeparamref name="T"/> and then returns the argument provided.
-            </summary>
-            <remarks>
-            This can be used to intercept current variables or calculations by for example, printing the value as it is being passed as an argument.
-            </remarks>
-            <typeparam name="T">The type of <paramref name="item"/> and <paramref name="action"/>.</typeparam>
-            <param name="item">The item to use as reference and modify.</param>
-            <param name="action">The action to apply <paramref name="item"/> to.</param>
-            <returns>The item <paramref name="item"/>.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.Call``1(``0,UnityEngine.LogType)">
-            <summary>
-            Invokes a logging method and then returns the argument provided.
-            </summary>
-            <typeparam name="T">The type of logging.</typeparam>
-            <param name="item">The item to log</param>
-            <param name="logType">The type of logging.</param>
-            <returns>The item <paramref name="item"/>.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.ElementAtWrap``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
-            <summary>
-            Returns the element of an array, pretending that the array wraps around or is circular.
-            </summary>
-            <exception cref="T:KeepCoding.Internal.NullIteratorException"></exception>
-            <exception cref="T:KeepCoding.Internal.EmptyIteratorException"></exception>
-            <typeparam name="T">The type of the array.</typeparam>
-            <param name="source">The array itself.</param>
-            <param name="index">The index, which will wrap around if it's larger than the array.</param>
-            <returns>The element in <paramref name="source"/> using <paramref name="index"/> with rem-euclid modulo.</returns>
-        </member>
-        <member name="M:KeepCoding.Helper.NullOrEmptyCheck``1(``0,System.String)">
-            <summary>
-            Throws an exception if the <see cref="T:System.Collections.Generic.IEnumerable`1"/> is null or empty.
-            </summary>
-            <exception cref="T:KeepCoding.Internal.NullIteratorException"></exception>
-            <exception cref="T:KeepCoding.Internal.EmptyIteratorException"></exception>
-            <param name="source">The <see cref="T:System.Array"/> to check for null and empty.</param>
-            <param name="message">The optional message to throw if null or empty. Leaving it default will throw a default message.</param>
-        </member>
-        <member name="M:KeepCoding.Helper.NullOrEmptyCheck``1(System.Nullable{``0},System.String)">
-            <summary>
-            Throws an exception if the <see cref="T:System.Collections.Generic.IEnumerable`1"/> is null or empty.
-            </summary>
-            <exception cref="T:KeepCoding.Internal.NullIteratorException"></exception>
-            <exception cref="T:KeepCoding.Internal.EmptyIteratorException"></exception>
-            <param name="source">The <see cref="T:System.Array"/> to check for null and empty.</param>
-            <param name="message">The optional message to throw if null or empty. Leaving it default will throw a default message.</param>
-        </member>
-        <member name="M:KeepCoding.Helper.Apply``2(``0,System.Func{``0,``1})">
-            <summary>
-            Invokes a method of <typeparamref name="T"/> to <typeparamref name="TResult"/> and then returns the argument provided.
-            </summary>
-            <remarks>
-            This can be used to intercept current variables or calculations by for example, printing the value as it is being passed as an argument.
-            </remarks>
-            <typeparam name="T">The type of <paramref name="item"/>.</typeparam>
-            <typeparam name="TResult">The type to return.</typeparam>
-            <param name="item">The item to use as reference and modify.</param>
-            <param name="func">The function to apply <paramref name="item"/> to.</param>
-            <returns>The item <paramref name="item"/> after <paramref name="func"/>.</returns>
         </member>
         <member name="M:KeepCoding.Helper.GetValues``1">
             <summary>
@@ -1308,56 +1120,6 @@
             <param name="list">The list to shuffle.</param>
             <param name="isLogging">Determines whether it should log the result.</param>
             <returns><paramref name="list"/> shuffled using Fisher-Yates shuffle.</returns>
-        </member>
-        <member name="T:KeepCoding.ColorblindInfo">
-            <summary>
-            Contains information about the colorblind mod's info, this class can be used to deserialize "ColorblindMode.json".
-            </summary>
-        </member>
-        <member name="M:KeepCoding.ColorblindInfo.#ctor">
-            <summary>
-            Creates a <see cref="T:KeepCoding.ColorblindInfo"/> without read/writing the file.
-            </summary>
-        </member>
-        <member name="M:KeepCoding.ColorblindInfo.#ctor(System.String)">
-            <summary>
-            Creates a <see cref="T:KeepCoding.ColorblindInfo"/> while read/writing the file.
-            </summary>
-            <param name="moduleId">The module's id to grab information from.</param>
-        </member>
-        <member name="P:KeepCoding.ColorblindInfo.IsEnabled">
-            <summary>
-            Determines whether colorblind mode is on.
-            </summary>
-        </member>
-        <member name="P:KeepCoding.ColorblindInfo.IsModuleEnabled">
-            <summary>
-            Determines whether colorblind mode for the module is on.
-            </summary>
-        </member>
-        <member name="P:KeepCoding.ColorblindInfo.Modules">
-            <summary>
-            Contains module ids and their colorblind states.
-            </summary>
-        </member>
-        <member name="M:KeepCoding.ColorblindInfo.Equals(System.Object)">
-            <summary>
-            Determines if both objects are equal.
-            </summary>
-            <param name="obj">The comparison.</param>
-            <returns>True if both of them are <see cref="T:KeepCoding.ColorblindInfo"/> and contain the same <see cref="P:KeepCoding.ColorblindInfo.IsEnabled"/> and <see cref="P:KeepCoding.ColorblindInfo.Modules"/>.</returns>
-        </member>
-        <member name="M:KeepCoding.ColorblindInfo.GetHashCode">
-            <summary>
-            Gets the hash code.
-            </summary>
-            <returns>The hash code.</returns>
-        </member>
-        <member name="M:KeepCoding.ColorblindInfo.ToString">
-            <summary>
-            Converts the object to a string.
-            </summary>
-            <returns><see cref="P:KeepCoding.ColorblindInfo.Modules"/> unwrapped with <see cref="M:KeepCoding.Helper.Stringify``1(``0,KeepCoding.StringifyFormat)"/>.</returns>
         </member>
         <member name="T:KeepCoding.ComponentPool">
             <summary>
@@ -2026,6 +1788,13 @@
             <param name="ruleGeneration">Called when <see cref="M:KMBombModule.GetRuleGenerationSeed"/> or <see cref="M:KMNeedyModule.GetRuleGenerationSeed"/> is called.</param>
             <param name="needyTimerGet">Called when <see cref="M:KMNeedyModule.SetNeedyTimeRemaining(System.Single)"/> is called.</param>
         </member>
+        <member name="M:KeepCoding.ModuleContainer.GetRuleSeedId(System.Int32)">
+            <summary>
+            Gets the rule seed number, or a default value.
+            </summary>
+            <param name="editorValue">The value to <see langword="return"/> if played on the Unity Editor.</param>
+            <returns>If successful, the rule seed's number that is used as the seed in <see cref="T:KeepCoding.MonoRandom"/>. The default value is 1, or <paramref name="editorValue"/> if played in the Unity Editor.</returns>
+        </member>
         <member name="M:KeepCoding.ModuleContainer.Equals(System.Object)">
             <summary>
             Determines if both <see cref="T:KeepCoding.ModuleContainer"/> variables are equal.
@@ -2051,6 +1820,12 @@
             Gets the <see cref="P:KeepCoding.ModuleContainer.Name"/> and <see cref="P:KeepCoding.ModuleContainer.Id"/> of the module.
             </summary>
             <returns><see cref="P:KeepCoding.ModuleContainer.Name"/> and <see cref="P:KeepCoding.ModuleContainer.Id"/></returns>
+        </member>
+        <member name="M:KeepCoding.ModuleContainer.GetIgnoredModules">
+            <summary>
+            Retrieves the ignore list from the Boss Module Manager mod used primarily by boss modules.
+            </summary>
+            <returns>If successful, the boss module's ignore list, otherwise a new empty string array.</returns>
         </member>
         <member name="T:KeepCoding.Sound">
             <summary>
@@ -2530,132 +2305,6 @@
             </remarks>
             <param name="command">The user's command.</param>
             <returns>A series of instructions for the Twitch Plays mod to handle as requested by the user.</returns>
-        </member>
-        <member name="T:KeepCoding.IAwake">
-            <summary>
-            <see cref="M:KeepCoding.IAwake.Awake"/> is called when the script instance is being loaded.
-            </summary>
-            <remarks>
-            <see cref="M:KeepCoding.IAwake.Awake"/> is used to initialize any variables or game state before the game starts. <see cref="M:KeepCoding.IAwake.Awake"/> is called only once during the lifetime of the script instance. <see cref="M:KeepCoding.IAwake.Awake"/> is called after all objects are initialized so you can safely speak to other objects or query them using for example <see cref="M:UnityEngine.GameObject.FindWithTag(System.String)"/>. Each GameObject's <see cref="M:KeepCoding.IAwake.Awake"/> is called in a random order between objects. Because of this, you should use <see cref="M:KeepCoding.IAwake.Awake"/> to set up references between scripts, and use <see cref="M:KeepCoding.IStart.Start"/> to pass any information back and forth. <see cref="M:KeepCoding.IAwake.Awake"/> is always called before any <see cref="M:KeepCoding.IStart.Start"/> functions. This allows you to order initialization of scripts. <see cref="M:KeepCoding.IAwake.Awake"/> can not act as a coroutine. Note: Use <see cref="M:KeepCoding.IAwake.Awake"/> instead of the constructor for initialization, as the serialized state of the <see cref="T:UnityEngine.Component"/> is undefined at construction time. <see cref="M:KeepCoding.IAwake.Awake"/> is called once, just like the constructor.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/2017.4/Documentation/ScriptReference/MonoBehaviour.Awake.html"/>
-        </member>
-        <member name="M:KeepCoding.IAwake.Awake">
-            <summary>
-            <see cref="M:KeepCoding.IAwake.Awake"/> is called when the script instance is being loaded.
-            </summary>
-            <remarks>
-            <see cref="M:KeepCoding.IAwake.Awake"/> is used to initialize any variables or game state before the game starts. <see cref="M:KeepCoding.IAwake.Awake"/> is called only once during the lifetime of the script instance. <see cref="M:KeepCoding.IAwake.Awake"/> is called after all objects are initialized so you can safely speak to other objects or query them using for example <see cref="M:UnityEngine.GameObject.FindWithTag(System.String)"/>. Each GameObject's <see cref="M:KeepCoding.IAwake.Awake"/> is called in a random order between objects. Because of this, you should use <see cref="M:KeepCoding.IAwake.Awake"/> to set up references between scripts, and use <see cref="M:KeepCoding.IStart.Start"/> to pass any information back and forth. <see cref="M:KeepCoding.IAwake.Awake"/> is always called before any <see cref="M:KeepCoding.IStart.Start"/> functions. This allows you to order initialization of scripts. <see cref="M:KeepCoding.IAwake.Awake"/> can not act as a coroutine. Note: Use <see cref="M:KeepCoding.IAwake.Awake"/> instead of the constructor for initialization, as the serialized state of the <see cref="T:UnityEngine.Component"/> is undefined at construction time. <see cref="M:KeepCoding.IAwake.Awake"/> is called once, just like the constructor.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/2017.4/Documentation/ScriptReference/MonoBehaviour.Awake.html"/>
-        </member>
-        <member name="T:KeepCoding.IFixedUpdate">
-            <summary>
-            Frame-rate independent <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/> message for physics calculations.
-            </summary>
-            <remarks>
-            <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/> has the frequency of the physics system; it is called every fixed frame-rate frame. Compute <see cref="T:UnityEngine.Physics"/> system calculations after <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/>. 0.02 seconds (50 calls per second) is the default time between calls. Use <see cref="P:UnityEngine.Time.fixedDeltaTime"/> to access this value. Alter it by setting it to your preferred value within a script, or, navigate to <c>Edit > Settings > Time > Fixed Timestep</c> and set it there. The <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/> frequency is more or less than <see cref="M:KeepCoding.IUpdate.Update"/>. If the application runs at 25 frames per second (fps), Unity calls it approximately twice per frame, Alternatively, 100 fps causes approximately two rendering frames with one <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/>. Control the required frame rate and <c>Fixed Timestep</c> rate from <c>Time</c> settings. Use <see cref="P:UnityEngine.Application.targetFrameRate"/> to set the frame rate. Use <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/> when using <see cref="T:UnityEngine.Rigidbody"/>. Set a force to a <see cref="T:UnityEngine.Rigidbody"/> and it applies each fixed frame. <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/> occurs at a measured time step that typically does not coincide with <see cref="M:KeepCoding.IUpdate.Update"/>. In order to get the elapsed time since last call to <see cref="M:KeepCoding.IUpdate.Update"/>, use <see cref="P:UnityEngine.Time.deltaTime"/>. This function is only called if the <see cref="T:UnityEngine.Behaviour"/> is enabled. Override this function in order to provide your <see cref="T:UnityEngine.Component"/>'s functionality.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/2017.4/Documentation/ScriptReference/MonoBehaviour.FixedUpdate.html"/>
-        </member>
-        <member name="M:KeepCoding.IFixedUpdate.FixedUpdate">
-            <summary>
-            Frame-rate independent <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/> message for physics calculations.
-            </summary>
-            <remarks>
-            <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/> has the frequency of the physics system; it is called every fixed frame-rate frame. Compute <see cref="T:UnityEngine.Physics"/> system calculations after <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/>. 0.02 seconds (50 calls per second) is the default time between calls. Use <see cref="P:UnityEngine.Time.fixedDeltaTime"/> to access this value. Alter it by setting it to your preferred value within a script, or, navigate to <c>Edit > Settings > Time > Fixed Timestep</c> and set it there. The <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/> frequency is more or less than <see cref="M:KeepCoding.IUpdate.Update"/>. If the application runs at 25 frames per second (fps), Unity calls it approximately twice per frame, Alternatively, 100 fps causes approximately two rendering frames with one <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/>. Control the required frame rate and <c>Fixed Timestep</c> rate from <c>Time</c> settings. Use <see cref="P:UnityEngine.Application.targetFrameRate"/> to set the frame rate. Use <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/> when using <see cref="T:UnityEngine.Rigidbody"/>. Set a force to a <see cref="T:UnityEngine.Rigidbody"/> and it applies each fixed frame. <see cref="M:KeepCoding.IFixedUpdate.FixedUpdate"/> occurs at a measured time step that typically does not coincide with <see cref="M:KeepCoding.IUpdate.Update"/>. In order to get the elapsed time since last call to <see cref="M:KeepCoding.IUpdate.Update"/>, use <see cref="P:UnityEngine.Time.deltaTime"/>. This function is only called if the <see cref="T:UnityEngine.Behaviour"/> is enabled. Override this function in order to provide your <see cref="T:UnityEngine.Component"/>'s functionality.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/2017.4/Documentation/ScriptReference/MonoBehaviour.FixedUpdate.html"/>
-        </member>
-        <member name="T:KeepCoding.ILateUpdate">
-            <summary>
-            <see cref="M:KeepCoding.ILateUpdate.LateUpdate"/> is called every frame, if the <see cref="T:UnityEngine.Behaviour"/> is enabled.
-            </summary>
-            <remarks>
-            <see cref="M:KeepCoding.ILateUpdate.LateUpdate"/> is called after all <see cref="M:KeepCoding.IUpdate.Update"/> functions have been called. This is useful to order script execution. For example a follow <see cref="T:UnityEngine.Camera"/> should always be implemented in <see cref="M:KeepCoding.ILateUpdate.LateUpdate"/> because it tracks objects that might have moved inside <see cref="M:KeepCoding.IUpdate.Update"/>. In order to get the elapsed time since last call to <see cref="M:KeepCoding.ILateUpdate.LateUpdate"/>, use <see cref="P:UnityEngine.Time.deltaTime"/>. This function is only called if the <see cref="T:UnityEngine.Behaviour"/> is enabled. Override this function in order to provide your <see cref="T:UnityEngine.Component"/>'s functionality.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/2017.4/Documentation/ScriptReference/MonoBehaviour.LateUpdate.html"/>
-        </member>
-        <member name="M:KeepCoding.ILateUpdate.LateUpdate">
-            <summary>
-            <see cref="M:KeepCoding.ILateUpdate.LateUpdate"/> is called every frame, if the <see cref="T:UnityEngine.Behaviour"/> is enabled.
-            </summary>
-            <remarks>
-            <see cref="M:KeepCoding.ILateUpdate.LateUpdate"/> is called after all <see cref="M:KeepCoding.IUpdate.Update"/> functions have been called. This is useful to order script execution. For example a follow <see cref="T:UnityEngine.Camera"/> should always be implemented in <see cref="M:KeepCoding.ILateUpdate.LateUpdate"/> because it tracks objects that might have moved inside <see cref="M:KeepCoding.IUpdate.Update"/>. In order to get the elapsed time since last call to <see cref="M:KeepCoding.ILateUpdate.LateUpdate"/>, use <see cref="P:UnityEngine.Time.deltaTime"/>. This function is only called if the <see cref="T:UnityEngine.Behaviour"/> is enabled. Override this function in order to provide your <see cref="T:UnityEngine.Component"/>'s functionality.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/2017.4/Documentation/ScriptReference/MonoBehaviour.LateUpdate.html"/>
-        </member>
-        <member name="T:KeepCoding.IReset">
-            <summary>
-            Reset to default values.
-            </summary>
-            <remarks>
-            <see cref="M:KeepCoding.IReset.Reset"/> is called when the user hits the Reset button in the Inspector's context menu or when adding the <see cref="T:UnityEngine.Component"/> the first time. This function is only called in editor mode. <see cref="M:KeepCoding.IReset.Reset"/> is most commonly used to give good default values in the inspector.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/2017.4/Documentation/ScriptReference/MonoBehaviour.Reset.html"/>
-        </member>
-        <member name="M:KeepCoding.IReset.Reset">
-            <summary>
-            Reset to default values.
-            </summary>
-            <remarks>
-            <see cref="M:KeepCoding.IReset.Reset"/> is called when the user hits the Reset button in the Inspector's context menu or when adding the <see cref="T:UnityEngine.Component"/> the first time. This function is only called in editor mode. <see cref="M:KeepCoding.IReset.Reset"/> is most commonly used to give good default values in the inspector.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/2017.4/Documentation/ScriptReference/MonoBehaviour.Reset.html"/>
-        </member>
-        <member name="T:KeepCoding.IStart">
-            <summary>
-            <see cref="M:KeepCoding.IStart.Start"/> is called on the frame when a script is enabled just before any of the <see cref="M:KeepCoding.IUpdate.Update"/> methods is called the first time.
-            </summary>
-            <remarks>
-            Like the <see cref="M:KeepCoding.IAwake.Awake"/> function, <see cref="M:KeepCoding.IStart.Start"/> is called exactly once in the lifetime of the script. However, <see cref="M:KeepCoding.IAwake.Awake"/> is called when the script object is initialised, regardless of whether or not the script is enabled. <see cref="M:KeepCoding.IStart.Start"/> may not be called on the same frame as <see cref="M:KeepCoding.IAwake.Awake"/> if the script is not enabled at initialisation time. The <see cref="M:KeepCoding.IAwake.Awake"/> function is called on all objects in the scene before any object's <see cref="M:KeepCoding.IStart.Start"/> function is called. This fact is useful in cases where object A's initialisation code needs to rely on object B's already being initialised; B's initialisation should be done in <see cref="M:KeepCoding.IAwake.Awake"/> while A's should be done in <see cref="M:KeepCoding.IStart.Start"/>. Where objects are instantiated during gameplay, their <see cref="M:KeepCoding.IAwake.Awake"/> function will naturally be called after the <see cref="M:KeepCoding.IStart.Start"/> functions of scene objects have already completed.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html"/>
-        </member>
-        <member name="M:KeepCoding.IStart.Start">
-            <summary>
-            <see cref="M:KeepCoding.IStart.Start"/> is called on the frame when a script is enabled just before any of the <see cref="M:KeepCoding.IUpdate.Update"/> methods is called the first time.
-            </summary>
-            <remarks>
-            Like the <see cref="M:KeepCoding.IAwake.Awake"/> function, <see cref="M:KeepCoding.IStart.Start"/> is called exactly once in the lifetime of the script. However, <see cref="M:KeepCoding.IAwake.Awake"/> is called when the script object is initialised, regardless of whether or not the script is enabled. <see cref="M:KeepCoding.IStart.Start"/> may not be called on the same frame as <see cref="M:KeepCoding.IAwake.Awake"/> if the script is not enabled at initialisation time. The <see cref="M:KeepCoding.IAwake.Awake"/> function is called on all objects in the scene before any object's <see cref="M:KeepCoding.IStart.Start"/> function is called. This fact is useful in cases where object A's initialisation code needs to rely on object B's already being initialised; B's initialisation should be done in <see cref="M:KeepCoding.IAwake.Awake"/> while A's should be done in <see cref="M:KeepCoding.IStart.Start"/>. Where objects are instantiated during gameplay, their <see cref="M:KeepCoding.IAwake.Awake"/> function will naturally be called after the <see cref="M:KeepCoding.IStart.Start"/> functions of scene objects have already completed.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html"/>
-        </member>
-        <member name="T:KeepCoding.IStartCoroutine">
-            <summary>
-            <see cref="M:KeepCoding.IStartCoroutine.Start"/> is called on the frame when a script is enabled just before any of the <see cref="M:KeepCoding.IUpdate.Update"/> methods is called the first time.
-            </summary>
-            <remarks>
-            Like the <see cref="M:KeepCoding.IAwake.Awake"/> function, <see cref="M:KeepCoding.IStartCoroutine.Start"/> is called exactly once in the lifetime of the script. However, <see cref="M:KeepCoding.IAwake.Awake"/> is called when the script object is initialised, regardless of whether or not the script is enabled. <see cref="M:KeepCoding.IStartCoroutine.Start"/> may not be called on the same frame as <see cref="M:KeepCoding.IAwake.Awake"/> if the script is not enabled at initialisation time. The <see cref="M:KeepCoding.IAwake.Awake"/> function is called on all objects in the scene before any object's <see cref="M:KeepCoding.IStartCoroutine.Start"/> function is called. This fact is useful in cases where object A's initialisation code needs to rely on object B's already being initialised; B's initialisation should be done in <see cref="M:KeepCoding.IAwake.Awake"/> while A's should be done in <see cref="M:KeepCoding.IStartCoroutine.Start"/>. Where objects are instantiated during gameplay, their <see cref="M:KeepCoding.IAwake.Awake"/> function will naturally be called after the <see cref="M:KeepCoding.IStartCoroutine.Start"/> functions of scene objects have already completed.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html"/>
-        </member>
-        <member name="M:KeepCoding.IStartCoroutine.Start">
-            <summary>
-            <see cref="M:KeepCoding.IStartCoroutine.Start"/> is called on the frame when a script is enabled just before any of the <see cref="M:KeepCoding.IUpdate.Update"/> methods is called the first time.
-            </summary>
-            <remarks>
-            Like the <see cref="M:KeepCoding.IAwake.Awake"/> function, <see cref="M:KeepCoding.IStartCoroutine.Start"/> is called exactly once in the lifetime of the script. However, <see cref="M:KeepCoding.IAwake.Awake"/> is called when the script object is initialised, regardless of whether or not the script is enabled. <see cref="M:KeepCoding.IStartCoroutine.Start"/> may not be called on the same frame as <see cref="M:KeepCoding.IAwake.Awake"/> if the script is not enabled at initialisation time. The <see cref="M:KeepCoding.IAwake.Awake"/> function is called on all objects in the scene before any object's <see cref="M:KeepCoding.IStartCoroutine.Start"/> function is called. This fact is useful in cases where object A's initialisation code needs to rely on object B's already being initialised; B's initialisation should be done in <see cref="M:KeepCoding.IAwake.Awake"/> while A's should be done in <see cref="M:KeepCoding.IStartCoroutine.Start"/>. Where objects are instantiated during gameplay, their <see cref="M:KeepCoding.IAwake.Awake"/> function will naturally be called after the <see cref="M:KeepCoding.IStartCoroutine.Start"/> functions of scene objects have already completed.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html"/>
-        </member>
-        <member name="T:KeepCoding.IUpdate">
-            <summary>
-            <see cref="M:KeepCoding.IUpdate.Update"/> is called every frame, if the <see cref="T:UnityEngine.MonoBehaviour"/> is enabled.
-            </summary>
-            <remarks>
-            <see cref="M:KeepCoding.IUpdate.Update"/> is the most commonly used function to implement any kind of game script. Not every <see cref="T:UnityEngine.MonoBehaviour"/> script needs <see cref="M:KeepCoding.IUpdate.Update"/>. In order to get the elapsed time since last call to <see cref="M:KeepCoding.IUpdate.Update"/>, use <see cref="P:UnityEngine.Time.deltaTime"/>. This function is only called if the <see cref="T:UnityEngine.Behaviour"/> is enabled. Override this function in order to provide your <see cref="T:UnityEngine.Component"/>'s functionality.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Update.html"/>
-        </member>
-        <member name="M:KeepCoding.IUpdate.Update">
-            <summary>
-            <see cref="M:KeepCoding.IUpdate.Update"/> is called every frame, if the <see cref="T:UnityEngine.MonoBehaviour"/> is enabled.
-            </summary>
-            <remarks>
-            <see cref="M:KeepCoding.IUpdate.Update"/> is the most commonly used function to implement any kind of game script. Not every <see cref="T:UnityEngine.MonoBehaviour"/> script needs <see cref="M:KeepCoding.IUpdate.Update"/>. In order to get the elapsed time since last call to <see cref="M:KeepCoding.IUpdate.Update"/>, use <see cref="P:UnityEngine.Time.deltaTime"/>. This function is only called if the <see cref="T:UnityEngine.Behaviour"/> is enabled. Override this function in order to provide your <see cref="T:UnityEngine.Component"/>'s functionality.
-            </remarks>
-            <seealso href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Update.html"/>
         </member>
         <member name="T:KeepCoding.AudioScript">
             <summary>
@@ -3210,6 +2859,15 @@
             Called when the module destroys itself, after the bomb unloads.
             </summary>
         </member>
+        <member name="M:KeepCoding.ModuleScript.OnException(System.String)">
+            <summary>
+            Called when an unhandled exception relating to this module has been thrown.
+            </summary>
+            <remarks>
+            Unlike other virtual methods, this one has implementation. You may choose to invoke <c>base.OnException()</c> if you want the module to automatically log and solve.
+            </remarks>
+            <param name="message">The message of the exception.</param>
+        </member>
         <member name="M:KeepCoding.ModuleScript.OnModuleStrike(KeepCoding.ModuleContainer)">
             <summary>
             Called when any module on the current bomb has issued a strike.
@@ -3287,16 +2945,6 @@
             <exception cref="T:KeepCoding.Internal.UnrecognizedValueException"></exception>
             <param name="sounds">The sounds, these can either be <see cref="T:System.String"/>, <see cref="T:UnityEngine.AudioClip"/>, or <see cref="T:KMSoundOverride.SoundEffect"/>.</param>
             <returns>A <see cref="T:KMAudio.KMAudioRef"/> for each argument you provide.</returns>
-        </member>
-        <member name="M:KeepCoding.ModuleScript.ModulesOfBomb(KMBomb)">
-            <summary>
-            Allows you to get the collection of <see cref="T:KeepCoding.ModuleContainer"/> from a <see cref="T:KMBomb"/>.
-            </summary>
-            <remarks>
-            This collection also includes vanilla modules, including <see cref="F:KeepCoding.ComponentPool.ComponentTypeEnum.Empty"/> components and <see cref="F:KeepCoding.ComponentPool.ComponentTypeEnum.Timer"/>. You can filter the collection with <see cref="P:KeepCoding.ModuleContainer.IsVanilla"/>, <see cref="P:KeepCoding.ModuleContainer.IsModded"/>, <see cref="P:KeepCoding.ModuleContainer.IsSolvable"/>, or <see cref="P:KeepCoding.ModuleContainer.IsNeedy"/>, <see cref="P:KeepCoding.ModuleContainer.IsEmptyOrTimer"/>, or <see cref="P:KeepCoding.ModuleContainer.IsModule"/>.
-            </remarks>
-            <param name="bomb">The instance of <see cref="T:KMBomb"/> that has modules.</param>
-            <returns>All modules within <paramref name="bomb"/>.</returns>
         </member>
         <member name="M:KeepCoding.ModuleScript.OnDestroy">
             <summary>
@@ -3590,26 +3238,6 @@
             This method gets grabbed by Twitch Plays. It grabs <see cref="M:KeepCoding.TPScript`1.ForceSolve"/> and flattens it using <see cref="M:KeepCoding.Helper.Flatten(System.Collections.IEnumerator,System.Predicate{System.Object})"/>.
             </summary>
             <returns>A list of instructions for Twitch Plays.</returns>
-        </member>
-        <member name="T:KeepCoding.External">
-            <summary>
-            Provides methods to retrieve information from other external mods.
-            </summary>
-        </member>
-        <member name="M:KeepCoding.External.GetRuleSeedId(KeepCoding.ModuleContainer,System.Int32)">
-            <summary>
-            Gets the rule seed number, or a default value.
-            </summary>
-            <param name="module">The module to retrieve the id from.</param>
-            <param name="editorValue">The value to <see langword="return"/> if played on the Unity Editor.</param>
-            <returns>If successful, the rule seed's number that is used as the seed in <see cref="T:KeepCoding.MonoRandom"/>. The default value is 1, or <paramref name="editorValue"/> if played in the Unity Editor.</returns>
-        </member>
-        <member name="M:KeepCoding.External.GetIgnoredModules(KeepCoding.ModuleContainer)">
-            <summary>
-            Retrieves the ignore list from the Boss Module Manager mod used primarily by boss modules.
-            </summary>
-            <param name="module">The module to retrieve the name from.</param>
-            <returns>If successful, the boss module's ignore list, otherwise a new empty string array.</returns>
         </member>
         <member name="T:KeepCoding.Game">
             <summary>

@@ -266,15 +266,20 @@ public class RapidSubtractionHandler : MonoBehaviour {
 	// Update is called once per frame
 	float curDelay = 0f;
 	void Update () {
-		if (curDelay > 0.03f)
+		if (isActivated)
 		{
-			displayText.text = isActivated ?
-					(digitsHidden > 1 ? Random.Range(0, 10).ToString() : (currentValue / 10).ToString()) + (digitsHidden > 0 ? Random.Range(0, 10).ToString()
-					: (currentValue % 10).ToString()) : "";
-			curDelay = 0f;
+			if (curDelay > 0.1f)
+			{
+				displayText.text =
+						(digitsHidden > 1 ? Random.Range(0, 10).ToString() : (currentValue / 10).ToString()) + (digitsHidden > 0 ? Random.Range(0, 10).ToString()
+						: (currentValue % 10).ToString());
+				curDelay = 0f;
+			}
+			else
+				curDelay += Time.deltaTime;
 		}
 		else
-			curDelay += Time.deltaTime;
+			displayText.text = "";
 	}
 	// TP Handling
 #pragma warning disable IDE0051 // Remove unused private members
