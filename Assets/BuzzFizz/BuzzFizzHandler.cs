@@ -20,7 +20,7 @@ public class BuzzFizzHandler : MonoBehaviour {
 
     private static int modid = 1; // Changable Mod ID
     private int cmodID; // current mod ID
-    private bool iswarning = false, forceDisable = false;
+    private bool iswarning = false, forceDisable = false, needyActive;
     void Awake()
     {
         cmodID = modid++;
@@ -42,6 +42,7 @@ public class BuzzFizzHandler : MonoBehaviour {
 
             goalVal += targetnumber % 3 == 0 ? 1 : 0;
             goalVal += targetnumber % 5 == 0 ? 2 : 0;
+            needyActive = true;
         };
 
         needyModule.OnTimerExpired += delegate ()
@@ -53,16 +54,21 @@ public class BuzzFizzHandler : MonoBehaviour {
             }
             goalVal = 0;
             iswarning = false;
+            needyActive = false;
         };
         needyModule.OnNeedyDeactivation += delegate ()
         {
             textnumber.color = Color.white;
             iswarning = false;
+            needyActive = false;
         };
         needyModule.OnActivate += delegate ()
         {
-            textnumber.text = "Pending...";
-            textnumber.color = Color.white;
+            if (!needyActive)
+            {
+                textnumber.text = "Pending...";
+                textnumber.color = Color.white;
+            }
             Debug.LogFormat("[BuzzFizz #{0}]: This module will only log incorrect answers upon deactivation. All correct answers will NOT be logged.", cmodID);
         };
         dialSelect.OnInteract += delegate ()

@@ -4,6 +4,9 @@
     public float FIPPAScaleFactor = 0.5f;
 	public bool FINInstantFinale = false;
 	public bool FINNumpadInputAllowed = true;
+	public bool FINUseCustomColors = false;
+	public string FINBackingColor = "#ff0";
+	public string FINLEDColor = "#ff0";
 	public bool SevenHardCapStageGeneration = true;
 	public bool SevenForceFastReads = false;
 	public float SevenPPAScale = 1.25f;
