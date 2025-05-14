@@ -100,15 +100,21 @@ public class CruelModuloScript : MonoBehaviour {
 
 		var listModValuesWindow = new List<int>();
 		var factoredValue = startingValue % divisorValue;
+		var pos1IdxRepeat = -1;
 		listModValuesWindow.Add(factoredValue);
 		for (var y = 1; y <= Mathf.Min(divisorValue, fixedExponent); y++)
 		{
 			var lastModuloValue = listModValuesWindow.Last();
 			var calculatedNextModuloValue = lastModuloValue * factoredValue % divisorValue;
-			if (listModValuesWindow.Contains(calculatedNextModuloValue)) break;
+			if (listModValuesWindow.Contains(calculatedNextModuloValue))
+			{
+				pos1IdxRepeat = listModValuesWindow.IndexOf(calculatedNextModuloValue) + 1;
+				break;
+			}
 			listModValuesWindow.Add(calculatedNextModuloValue);
 		}
-		QuickLog(string.Format("Using the Window method, the pattern of values before repetition and before the exponent, starting at {1}%{2} are {0}", listModValuesWindow.Join(), startingValue, divisorValue));
+		QuickLog("Using the Window method, the pattern of values before repetition and before the exponent, starting at {1}%{2} are {0}", listModValuesWindow.Join(), startingValue, divisorValue);
+		QuickLogDebug("Window result: {0}", fixedExponent <= listModValuesWindow.Count() ? listModValuesWindow[fixedExponent - 1] : listModValuesWindow[(fixedExponent - pos1IdxRepeat) % (listModValuesWindow.Count - pos1IdxRepeat + 1) + pos1IdxRepeat - 1]);
 		//correctValue = listModValuesWindow.Min() == 0 ? 0 : listModValuesWindow.ElementAt((fixedExponent + listModValuesWindow.Count - 1) % listModValuesWindow.Count);
 		var binaryString = "";
 		var curExponent = fixedExponent;
@@ -119,7 +125,7 @@ public class CruelModuloScript : MonoBehaviour {
 			curExponent >>= 1;
 		}
 		while (curExponent > 0);
-		QuickLog(string.Format("Using the Square and Multiply method, the binary representation of {0} is {1}.", fixedExponent, binaryString));
+		QuickLog("Using the Square and Multiply method, the binary representation of {0} is {1}.", fixedExponent, binaryString);
 		var finalResult = 1;
 		for (var x = 0; x < binaryString.Length; x++)
         {
@@ -130,15 +136,19 @@ public class CruelModuloScript : MonoBehaviour {
 			listModValuesSAndM.Add(finalResult);
         }
 		correctValue = listModValuesSAndM.Last();
-		QuickLog(string.Format("The set of values obtained using this method is {0}", listModValuesSAndM.Join()));
-		QuickLog(string.Format("The value you should submit is {0}. (From the expression: {1} ^ {2} % {3})", listModValuesSAndM.Last(), startingValue, fixedExponent, divisorValue));
+		QuickLog("The set of values obtained using this method is {0}", listModValuesSAndM.Join());
+		QuickLog("The value you should submit is {0}. (From the expression: {1} ^ {2} % {3})", listModValuesSAndM.Last(), startingValue, fixedExponent, divisorValue);
 		interactable = true;
 
 	}
 
-	void QuickLog(string value)
+	void QuickLog(string value, params object[] args)
     {
-		Debug.LogFormat("[Cruel Modulo #{0}] {1}", modID, value);
+		Debug.LogFormat("[Cruel Modulo #{0}] {1}", modID, string.Format(value, args));
+    }
+	void QuickLogDebug(string value, params object[] args)
+    {
+		Debug.LogFormat("<Cruel Modulo #{0}> {1}", modID, string.Format(value, args));
     }
 	// TP Handler Begins Here
 	IEnumerator TwitchHandleForcedSolve()

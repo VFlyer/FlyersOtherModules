@@ -299,11 +299,16 @@ public class FaultySevenSegmentHandler : MonoBehaviour {
 		}
 		if (selectablesTPCMD.Count > 0)
 		{
+			yield return null;
+			if (segmentSelectables.Any(a => a.Highlight.GetComponent<MeshRenderer>().enabled))
+			{
+				segmentSelectables.First(a => a.Highlight.GetComponent<MeshRenderer>().enabled).OnInteract();
+				yield return new WaitForSeconds(0.05f);
+			}
 			foreach (KMSelectable selectable in selectablesTPCMD)
 			{
-				yield return null;
 				selectable.OnInteract();
-				yield return new WaitForSeconds(0.2f);
+				yield return new WaitForSeconds(0.05f);
 			}
 		}
 		yield break;
