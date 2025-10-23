@@ -13,18 +13,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: flyerModulesMisc
   title: Flyer's Other Modules
-  description: "A collection of 30 modules made by VFlyer with some modules from other
+  description: "A collection of 29 modules made by VFlyer with some modules from other
     ideas.\r\n\r\nMod contains 3x3 Grid, \u2756, Time Accumulation, BuzzFizz, Forget
     It Not, 15 Mystic Lights, Simon Stages, Forget Infinity, Faulty 7 Segment Displays,
     7, Rapid Subtraction, Logical Operators, Mastermind Restricted, Even Or Odd, Digital
     Grid, Venn Diagrams, Numbered Buttons, Hexiom, Collapse, Coprime Checker, Label
-    Priorities, Labeled Priorities Plus, Mastermind Restricted Cruel, Robit Programming,
-    Simon, Extended Boolean Venn Diagram, Cruel Modulo, Game Changer, Linked Wordle\r,
-    Obscurdle\nThe following original ideas are by the following users in this pack:\r\n3x3
-    Grid: Lumbud84\r\n\u2756: Mirage Xel\r\nTime Accumulation: Kusane\r\nBuzzFizz:
-    Blananas2\r\nForget It Not: RubyBfdi\r\nForget Infinity: Oshisure, Ry0001 (Revived
-    by VFlyer to be more suitable)\r\nSimon Stages: Madela\r\nDigital Grid: LeGeND\r\nEven
-    Or Odd: BigCrunch\r\nVenn Diagrams: Danny7007\r\nNumbered Buttons: Kusane (originally
+    Priorities, Labeled Priorities Plus, Mastermind Restricted Cruel, Simon, Extended
+    Boolean Venn Diagram, Cruel Modulo, Game Changer, Linked Wordle\r, Obscurdle\nThe
+    following original ideas are by the following users in this pack:\r\n3x3 Grid:
+    Lumbud84\r\n\u2756: Mirage Xel\r\nTime Accumulation: Kusane\r\nBuzzFizz: Blananas2\r\nForget
+    It Not: RubyBfdi\r\nForget Infinity: Oshisure, Ry0001 (Revived by VFlyer to be
+    more suitable)\r\nSimon Stages: Madela\r\nDigital Grid: LeGeND\r\nEven Or Odd:
+    BigCrunch\r\nVenn Diagrams: Danny7007\r\nNumbered Buttons: Kusane (originally
     developed by a departed author)\r\nLabel Priorities: Kusane (originally developed
     by a departed author)\r\nSimon: BigCrunch\r\nCruel Modulo: ktane1\r\nExtended
     Boolean Venn Diagram: Deaf\r\nGame Changer: Obvious\n\r\nNon-example assets used:
@@ -55,4 +55,4 @@ MonoBehaviour:
     Wordle[/url]\r\n[url=https://ktane.timwi.de/HTML/Obscurdle.html]Obscurdle[/url]\r\n"
   version: 2.4.4
   outputFolder: build
-  previewImage: {fileID: 2800000, guid: 1ef85429cc456814abc9b3a88838dab4, type: 3}
+  previewImage: {fileID: 2800000, guid: 10ebf9e7344ee1f44a6d0d3222e3e4a7, type: 3}
