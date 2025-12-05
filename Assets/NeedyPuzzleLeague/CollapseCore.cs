@@ -84,7 +84,7 @@ public class CollapseCore : MonoBehaviour {
 
 
         modSelfSelectable.Children = allSelectablesDefault.ToArray();
-        modSelfSelectable.UpdateChildren(); // Required for gamepad usage and updating.
+        modSelfSelectable.UpdateChildrenProperly(); // Required for gamepad usage and updating.
         StartCoroutine(delayRotation());
         needySelf.OnNeedyDeactivation += delegate {
             isActive = false;
@@ -318,7 +318,7 @@ public class CollapseCore : MonoBehaviour {
         }
         rowRenderersNextSet.gameObject.SetActive(true);
         modSelfSelectable.Children = allSelectablesDuringAnimation.ToArray();
-        modSelfSelectable.UpdateChildren(); // Required for gamepad usage and updating.
+        modSelfSelectable.UpdateChildrenProperly(); // Required for gamepad usage and updating.
         for (float x = 0; x < 1f; x += Time.deltaTime * dynamicRate * Mathf.Min(1f, (currentlySolved + 1f) / maxSolvables) * (pauseLift ? 0f : 1f))
         {
             yield return null;
@@ -360,7 +360,7 @@ public class CollapseCore : MonoBehaviour {
         rowRenderersNextSet.transform.localScale = new Vector3(1, 1, 0);
         rowRenderersNextSet.gameObject.SetActive(false);
         modSelfSelectable.Children = allSelectablesDefault.ToArray();
-        modSelfSelectable.UpdateChildren(); // Required for gamepad usage and updating.
+        modSelfSelectable.UpdateChildrenProperly(); // Required for gamepad usage and updating.
         UpdateGrid();
     }
     IEnumerator AnimateNextRowAnim(float speed = 1f)
@@ -374,7 +374,7 @@ public class CollapseCore : MonoBehaviour {
         }
         rowRenderersNextSet.gameObject.SetActive(true);
         modSelfSelectable.Children = allSelectablesDuringAnimation.ToArray();
-        modSelfSelectable.UpdateChildren(); // Required for gamepad usage and updating.
+        modSelfSelectable.UpdateChildrenProperly(); // Required for gamepad usage and updating.
         for (float x = 0; x < 1f; x += Time.deltaTime * speed)
         {
             yield return null;
@@ -414,7 +414,7 @@ public class CollapseCore : MonoBehaviour {
         rowRenderersNextSet.transform.localScale = new Vector3(1, 1, 0);
         rowRenderersNextSet.gameObject.SetActive(false);
         modSelfSelectable.Children = allSelectablesDefault.ToArray();
-        modSelfSelectable.UpdateChildren(); // Required for gamepad usage and updating.
+        modSelfSelectable.UpdateChildrenProperly(); // Required for gamepad usage and updating.
         UpdateGrid();
     }
 

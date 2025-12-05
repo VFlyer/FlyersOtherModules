@@ -53,6 +53,6 @@ MonoBehaviour:
     Boolean Venn Diagram[/url]\r\n[url=https://ktane.timwi.de/HTML/Cruel%20Modulo.html]Cruel
     Modulo[/url]\r\n[url=https://ktane.timwi.de/HTML/Game%20Changer.html]Game Changer[/url]\r\n[url=https://ktane.timwi.de/HTML/Linked%20Wordle.html]Linked
     Wordle[/url]\r\n[url=https://ktane.timwi.de/HTML/Obscurdle.html]Obscurdle[/url]\r\n"
-  version: 2.4.4
+  version: 2.4.5
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 10ebf9e7344ee1f44a6d0d3222e3e4a7, type: 3}
