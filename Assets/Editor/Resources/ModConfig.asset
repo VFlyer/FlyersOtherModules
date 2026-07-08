@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: flyerModulesMisc
   title: Flyer's Other Modules
-  description: "A collection of 29 modules made by VFlyer with some modules from other
+  description: "A collection of 30 modules made by VFlyer with some modules from other
     ideas.\r\n\r\nMod contains 3x3 Grid, \u2756, Time Accumulation, BuzzFizz, Forget
     It Not, 15 Mystic Lights, Simon Stages, Forget Infinity, Faulty 7 Segment Displays,
     7, Rapid Subtraction, Logical Operators, Mastermind Restricted, Even Or Odd, Digital
@@ -21,18 +21,18 @@ MonoBehaviour:
     Priorities, Labeled Priorities Plus, Mastermind Restricted Cruel, Simon, Extended
     Boolean Venn Diagram, Cruel Modulo, Game Changer, Linked Wordle\r, Obscurdle\nThe
     following original ideas are by the following users in this pack:\r\n3x3 Grid:
-    Lumbud84\r\n\u2756: Mirage Xel\r\nTime Accumulation: Kusane\r\nBuzzFizz: Blananas2\r\nForget
-    It Not: RubyBfdi\r\nForget Infinity: Oshisure, Ry0001 (Revived by VFlyer to be
-    more suitable)\r\nSimon Stages: Madela\r\nDigital Grid: LeGeND\r\nEven Or Odd:
-    BigCrunch\r\nVenn Diagrams: Danny7007\r\nNumbered Buttons: Kusane (originally
-    developed by a departed author)\r\nLabel Priorities: Kusane (originally developed
-    by a departed author)\r\nSimon: BigCrunch\r\nCruel Modulo: ktane1\r\nExtended
-    Boolean Venn Diagram: Deaf\r\nGame Changer: Obvious\n\r\nNon-example assets used:
-    Asset pack from Royal_Flu$h's tutorials, Simon's Stages assets, Modulo assets,
-    Divided Squares backing by Timwi, Old FMN model by Hexicube, Mastermind Simple
-    prefab by Eotall, custom dial and chip self-made\r\n, inspired by Bashly's Tangrams
-    chip model\r\n\r\nThe 30 Manuals can be found built-in or from these repository
-    links:\r\n[url=https://ktane.timwi.de/HTML/BuzzFizz.html]BuzzFizz[/url]\r\n[url=https://ktane.timwi.de/HTML/3x3%20Grid.html]3x3
+    Lumbud84\r\n\u2756: Panoptes (Xel)\nTime Accumulation: Kusane\r\nButton Memory:
+    Panoptes (Xel)\nBuzzFizz: Blananas2\r\nForget It Not: RubyBfdi\r\nForget Infinity:
+    Oshisure, Ry0001 (Revived by VFlyer to be more suitable)\r\nSimon Stages: Madela\r\nDigital
+    Grid: LeGeND\r\nEven Or Odd: BigCrunch\r\nVenn Diagrams: Danny7007\r\nNumbered
+    Buttons: Kusane (originally developed by a departed author)\r\nLabel Priorities:
+    Kusane (originally developed by a departed author)\r\nSimon: BigCrunch\r\nCruel
+    Modulo: ktane1\r\nExtended Boolean Venn Diagram: Deaf\r\nGame Changer: Obvious\n\r\nNon-example
+    assets used: Asset pack from Royal_Flu$h's tutorials, Simon's Stages assets, Modulo
+    assets, Divided Squares backing by Timwi, Old FMN model by Hexicube, Mastermind
+    Simple prefab by Eotall, custom dial and chip self-made\r\n, inspired by Bashly's
+    Tangrams chip model\r\n\r\nThe 30 Manuals can be found built-in or from these
+    repository links:\r\n[url=https://ktane.timwi.de/HTML/BuzzFizz.html]BuzzFizz[/url]\r\n[url=https://ktane.timwi.de/HTML/3x3%20Grid.html]3x3
     Grid[/url]\r\n[url=https://ktane.timwi.de/HTML/Forget%20It%20Not.html]Forget It
     Not[/url]\r\n[url=https://ktane.timwi.de/HTML/%E2%9D%96.html]\u2756[/url]\r\n[url=https://ktane.timwi.de/HTML/Time%20Accumulation.html]Time
     Accumulation[/url]\r\n[url=https://ktane.timwi.de/HTML/15%20Mystic%20Lights.html]15
@@ -53,6 +53,6 @@ MonoBehaviour:
     Boolean Venn Diagram[/url]\r\n[url=https://ktane.timwi.de/HTML/Cruel%20Modulo.html]Cruel
     Modulo[/url]\r\n[url=https://ktane.timwi.de/HTML/Game%20Changer.html]Game Changer[/url]\r\n[url=https://ktane.timwi.de/HTML/Linked%20Wordle.html]Linked
     Wordle[/url]\r\n[url=https://ktane.timwi.de/HTML/Obscurdle.html]Obscurdle[/url]\r\n"
-  version: 2.4.5
+  version: 2.5
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 10ebf9e7344ee1f44a6d0d3222e3e4a7, type: 3}

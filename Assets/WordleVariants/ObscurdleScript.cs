@@ -373,7 +373,7 @@ public class ObscurdleScript : MonoBehaviour {
             huhText[x].enabled = isNotCorrectWord;
             var curStatusRenderers = querySetUIs[x].statusRenderers;
             for (var a = 0; a < curStatusRenderers.Length; a++)
-                curStatusRenderers[a].sprite = colorblindDetected && selectedQuirk == PossibleQuirks.Symble ? possibleSprites[(int)curResponse.displayResponse.ElementAt(a)] : possibleSprites[0];
+                curStatusRenderers[a].sprite = colorblindDetected && selectedQuirk == PossibleQuirks.Symble ? possibleSprites[selectedSpriteIdxes.ElementAt((int)curResponse.displayResponse.ElementAt(a))] : possibleSprites[0];
         }
         _3PartBar.progressDelta = Mathf.Min(6f / (allResponses.Count + 1), 1f);
         _3PartBar.curProgress = allResponses.Count < 6 ? 0f : (float)(allResponses.Count - 5) / (allResponses.Count + 1);
@@ -393,7 +393,7 @@ public class ObscurdleScript : MonoBehaviour {
                 huhText[u].enabled = isNotCorrectWord;
                 var curStatusRenderers = querySetUIs[u].statusRenderers;
                 for (var a = 0; a < curStatusRenderers.Length; a++)
-                    curStatusRenderers[a].sprite = colorblindDetected && selectedQuirk == PossibleQuirks.Symble ? possibleSprites[(int)curResponse.displayResponse.ElementAt(a)] : possibleSprites[0];
+                    curStatusRenderers[a].sprite = colorblindDetected && selectedQuirk == PossibleQuirks.Symble ? possibleSprites[selectedSpriteIdxes.ElementAt((int)curResponse.displayResponse.ElementAt(a))] : possibleSprites[0];
             }
         }
         querySetUIs[positionedIdxInput].UpdateStatus(curWord);

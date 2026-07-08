@@ -102,11 +102,11 @@ public partial class LinkedWordle : MonoBehaviour {
             if (!disableImmediateSolve)
                 module.HandlePass();
             if (allWordQueries.Count > 6)
-            for (var x = 0; x < Mathf.Min(allWordQueries.Count - 6, allQueryVisuals.Length); x++)
-            {
-                var curIDxSeeResult = allWordQueries.Count - 6 + x;
-                allQueryVisuals[x].UpdateStatus(allWordQueries[curIDxSeeResult], allResponses[curIDxSeeResult]);
-            }
+                for (var x = 0; x < Mathf.Min(allWordQueries.Count - 6, allQueryVisuals.Length); x++)
+                {
+                    var curIDxSeeResult = allWordQueries.Count - 6 + x;
+                    allQueryVisuals[x].UpdateStatus(allWordQueries[curIDxSeeResult], allResponses[curIDxSeeResult]);
+                }
             allQueryVisuals[positionedIdxInput].UpdateStatus(word, response);
             _3PartBar.progressDelta = Mathf.Min(6f / allWordQueries.Count, 1f);
             _3PartBar.curProgress = allWordQueries.Count < 6 ? 0f : (float)(allWordQueries.Count - 6) / allWordQueries.Count;
@@ -142,7 +142,7 @@ public partial class LinkedWordle : MonoBehaviour {
         {
             var curLetter = alphabet[x];
             var rangesofQueriesWithGivenLetter = Enumerable.Range(0, allWordQueries.Count).Where(a => allWordQueries[a].Contains(curLetter));
-            
+
             if (rangesofQueriesWithGivenLetter.Any())
             {
                 var markedIdx = 1;
@@ -167,7 +167,7 @@ public partial class LinkedWordle : MonoBehaviour {
     }
     void QuickLog(string stuff, params object[] args)
     {
-        Debug.LogFormat("[Linked Wordle #{0}] {1}", modID, string.Format(stuff,args));
+        Debug.LogFormat("[Linked Wordle #{0}] {1}", modID, string.Format(stuff, args));
     }
     void Start()
     {
@@ -285,66 +285,50 @@ public partial class LinkedWordle : MonoBehaviour {
             curQueryVisual.displayTexts[x].color = Color.red;
         overlayInvalidWordMesh.enabled = true;
     }
+
     void Update()
     {
         if (modFocused)
         {
-            if (Input.GetKeyDown(KeyCode.A))
-                keyboardSelectables[0].OnInteract();
-            if (Input.GetKeyDown(KeyCode.B))
-                keyboardSelectables[1].OnInteract();
-            if (Input.GetKeyDown(KeyCode.C))
-                keyboardSelectables[2].OnInteract();
-            if (Input.GetKeyDown(KeyCode.D))
-                keyboardSelectables[3].OnInteract();
-            if (Input.GetKeyDown(KeyCode.E))
-                keyboardSelectables[4].OnInteract();
-            if (Input.GetKeyDown(KeyCode.F))
-                keyboardSelectables[5].OnInteract();
-            if (Input.GetKeyDown(KeyCode.G))
-                keyboardSelectables[6].OnInteract();
-            if (Input.GetKeyDown(KeyCode.H))
-                keyboardSelectables[7].OnInteract();
-            if (Input.GetKeyDown(KeyCode.I))
-                keyboardSelectables[8].OnInteract();
-            if (Input.GetKeyDown(KeyCode.J))
-                keyboardSelectables[9].OnInteract();
-            if (Input.GetKeyDown(KeyCode.K))
-                keyboardSelectables[10].OnInteract();
-            if (Input.GetKeyDown(KeyCode.L))
-                keyboardSelectables[11].OnInteract();
-            if (Input.GetKeyDown(KeyCode.M))
-                keyboardSelectables[12].OnInteract();
-            if (Input.GetKeyDown(KeyCode.N))
-                keyboardSelectables[13].OnInteract();
-            if (Input.GetKeyDown(KeyCode.O))
-                keyboardSelectables[14].OnInteract();
-            if (Input.GetKeyDown(KeyCode.P))
-                keyboardSelectables[15].OnInteract();
-            if (Input.GetKeyDown(KeyCode.Q))
-                keyboardSelectables[16].OnInteract();
-            if (Input.GetKeyDown(KeyCode.R))
-                keyboardSelectables[17].OnInteract();
-            if (Input.GetKeyDown(KeyCode.S))
-                keyboardSelectables[18].OnInteract();
-            if (Input.GetKeyDown(KeyCode.T))
-                keyboardSelectables[19].OnInteract();
-            if (Input.GetKeyDown(KeyCode.U))
-                keyboardSelectables[20].OnInteract();
-            if (Input.GetKeyDown(KeyCode.V))
-                keyboardSelectables[21].OnInteract();
-            if (Input.GetKeyDown(KeyCode.W))
-                keyboardSelectables[22].OnInteract();
-            if (Input.GetKeyDown(KeyCode.X))
-                keyboardSelectables[23].OnInteract();
-            if (Input.GetKeyDown(KeyCode.Y))
-                keyboardSelectables[24].OnInteract();
-            if (Input.GetKeyDown(KeyCode.Z))
-                keyboardSelectables[25].OnInteract();
-            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-                keyboardSelectables[26].OnInteract();
-            if (Input.GetKeyDown(KeyCode.Backspace))
-                keyboardSelectables[27].OnInteract();
+            KeyCode[][] keycodeBtns = new KeyCode[][] {
+                new[] { KeyCode.A },
+                new[] { KeyCode.B },
+                new[] { KeyCode.C },
+                new[] { KeyCode.D },
+                new[] { KeyCode.E },
+                new[] { KeyCode.F },
+                new[] { KeyCode.G },
+                new[] { KeyCode.H },
+                new[] { KeyCode.I },
+                new[] { KeyCode.J },
+                new[] { KeyCode.K },
+                new[] { KeyCode.L },
+                new[] { KeyCode.M },
+                new[] { KeyCode.N },
+                new[] { KeyCode.O },
+                new[] { KeyCode.P },
+                new[] { KeyCode.Q },
+                new[] { KeyCode.R },
+                new[] { KeyCode.S },
+                new[] { KeyCode.T },
+                new[] { KeyCode.U },
+                new[] { KeyCode.V },
+                new[] { KeyCode.W },
+                new[] { KeyCode.X },
+                new[] { KeyCode.Y },
+                new[] { KeyCode.Z },
+                new[] { KeyCode.KeypadEnter, KeyCode.Return },
+                new[] { KeyCode.Backspace },
+                new[] { KeyCode.UpArrow },
+                new[] { KeyCode.DownArrow },
+            };
+            var refButtons = keyboardSelectables.Concat(scrollSelectable).ToArray();
+            for (var x = 0; x < refButtons.Length; x++)
+                if (keycodeBtns[x].Any(a => Input.GetKeyDown(a)))
+                {
+                    refButtons[x].OnInteract();
+                    break;
+                }
         }
     }
     IEnumerator TwitchHandleForcedSolve()
