@@ -17,17 +17,30 @@ public class ButtonMemoryScript : MonoBehaviour {
 	public MeshRenderer displayRenderer;
 	public Transform[] btnTransforms;
 
+	enum BtnRelCon
+    {
+		LSD,
+		ContainsX,
+		SumSeconds
+    }
+
 	static int modIDCnt;
 	int moduleID;
-	
+
 	static readonly string[] labels = new[] { "ABORT", "DETONATE", "HOLD", "PRESS", },
 		colorNames = new[] { "Red", "Yellow", "Blue", "White" };
+	Dictionary<BtnRelCon, string> releaseConditons = new Dictionary<BtnRelCon, string> {
+		{BtnRelCon.LSD , "the last seconds digit of the countdown timer is" },
+		{BtnRelCon.ContainsX , "countdown timer displays the digit" },
+		{BtnRelCon.SumSeconds , "the last digit of the sum of the seconds digit of the countdown timer is" },
+	};
 	public Color[] possibleColorsBtns, possibleColorsLEDs;
 	bool[][] instructionIsHold;
 	string[][] encodedInstructions;
-	int[] lastDigitBtnExp;
+	int[] digitBtnExp;
+	BtnRelCon[] releaseConditions;
 
-	int idxButtonHeld = -1, stagesCompleted;
+	int idxButtonHeld = -1, stagesCompleted, reattemptCnt;
 	float timeHeld = 0f;
 	bool moduleSolved, confirmHold, interactable, heldInteractable = false, allStageGen;
 
@@ -59,15 +72,15 @@ public class ButtonMemoryScript : MonoBehaviour {
 		Debug.LogFormat("<{0} #{1}> {2}", modSelf.ModuleDisplayName, moduleID, string.Format(toLog, args));
     }
 	void HandleRuleSeed()
-    {
+	{
 		MonoRandom rsHandler = ruleSeed == null ? new MonoRandom(1) : ruleSeed.GetRNG();
 		if (ruleSeed == null)
 			QuickLog("Rule seed handler does not exist. Using default instructions.");
 		else
 			QuickLog("Using rule seed {0} to generate instructions.", rsHandler.Seed);
 		if (rsHandler.Seed == 1)
-        {
-			lastDigitBtnExp = new int[] { 6, 3, 8, 4 }; // Red, Yellow, Blue, White/Other
+		{
+			digitBtnExp = new int[] { 6, 3, 8, 4 }; // Red, Yellow, Blue, White/Other
 			instructionIsHold = new bool[][] {
 				new[] { true, false, false, true }, // Ordered with displays ABORT, DETONATE, HOLD, PRESS in that order.
 				new[] { false, true, false, true },
@@ -82,27 +95,42 @@ public class ButtonMemoryScript : MonoBehaviour {
 				new[] { "S2C", "S1P", "S1L", "S3P", },
 				new[] { "S4C", "S3C", "S1L", "S2L", },
 			};
+			releaseConditions = Enumerable.Repeat(BtnRelCon.LSD, 4).ToArray();
 			return;
-        }
+		}
+		// Shuffle 
 		instructionIsHold = new bool[5][];
 		encodedInstructions = new string[5][];
-		var allPossibleDigits = Enumerable.Range(0, 10).ToArray();
-		lastDigitBtnExp = rsHandler.ShuffleFisherYates(allPossibleDigits).Take(4).ToArray();
 		var allEncodedInstructions = new[] {
 			"P1", "P2", "P3", "P4", "L1", "L2", "L3", "L4", "C1", "C2", "C3", "C4",
 			"S1P", "S1L", "S1C", "S2P", "S2L", "S2C", "S3P", "S3L", "S3C", "S4P", "S4L", "S4C",
 		};
 		for (var x = 0; x < 5; x++)
-        {
-			var possibleInstructions =  rsHandler.ShuffleFisherYates(allEncodedInstructions.Take(12 + 3 * x).ToArray());
+		{
+			var possibleInstructions = allEncodedInstructions.Take(12 + 3 * x).ToArray();
 			if (x > 2)
 				possibleInstructions = possibleInstructions.Concat(possibleInstructions.Skip(12)).ToArray();
 			if (x == 4)
 				possibleInstructions = possibleInstructions.Skip(12).ToArray();
+			//Debug.Log(possibleInstructions.Join());
+			possibleInstructions = rsHandler.ShuffleFisherYates(possibleInstructions);
 			encodedInstructions[x] = possibleInstructions.Take(4).ToArray();
 			instructionIsHold[x] = rsHandler.ShuffleFisherYates(Enumerable.Range(0, 4).Select(a => a % 2 == 1).ToArray());
-        }
-    }
+		}
+		for (var x = 0; x < 5; x++)
+		{
+			var y = x;
+			QuickLogDebug("Stage {0}: {1}", x + 1, Enumerable.Range(0, 4).Select(a => string.Format("{0}{1}", encodedInstructions[y][a], instructionIsHold[y][a] ? "*" : "")).Join(", "));
+		}
+		var allPossibleDigits = Enumerable.Range(0, 10).ToArray();
+		digitBtnExp = rsHandler.ShuffleFisherYates(allPossibleDigits).Take(4).ToArray();
+		var newRelCon = new BtnRelCon[4];
+		for (var x = 0; x < 4; x++)
+			newRelCon[x] = (BtnRelCon) rsHandler.Next(3);
+		releaseConditions = newRelCon;
+		QuickLogDebug("Expected Digits Each (R, Y, B, W): {0}", digitBtnExp.Join(", "));
+		QuickLogDebug("Expected Release Conditions Each (R, Y, B, W): {0}", newRelCon.Join(", "));
+	}
 
 	void GenerateNewStage(bool allAtOnce = false)
     {
@@ -193,7 +221,12 @@ public class ButtonMemoryScript : MonoBehaviour {
         }
 		moduleID = ++modIDCnt;
 		HandleRuleSeed();
-        for (var x = 0; x < btnSelectables.Length; x++)
+		if (allStageGen)
+			QuickLog("This module will generate stages all at once for each attempt.");
+		else
+			QuickLog("This module will generate stages dynamically throughout the module.");
+		
+		for (var x = 0; x < btnSelectables.Length; x++)
         {
 			var y = x;
 			btnSelectables[x].OnInteract += delegate {
@@ -214,6 +247,7 @@ public class ButtonMemoryScript : MonoBehaviour {
 			btnSelectables[x].OnInteractEnded += HandleButtonRelease;
         }
 		modSelf.OnActivate += delegate {
+			QuickLog("--------------- Initial Attempt ---------------");
 			GenerateNewStage(allStageGen);
 			StartCoroutine(HandleRevealStage());
 		};
@@ -237,6 +271,22 @@ public class ButtonMemoryScript : MonoBehaviour {
 			statusRenderers[x].material.color = x < stagesCompleted ? possibleColorsLEDs[4] : x == stagesCompleted && confirmHold && idxButtonHeld != -1 ? possibleColorsLEDs[curStage.idxHoldLEDColor] :  possibleColorsLEDs[5];
     }
 
+	bool ReleasedCorrectly(int idxColorUsed)
+    {
+		var secondsTimer = (int)(bombInfo.GetTime() % 60);
+
+		switch (releaseConditions[idxColorUsed])
+        {
+			case BtnRelCon.LSD:
+				return secondsTimer % 10 == digitBtnExp[idxColorUsed];
+			case BtnRelCon.ContainsX:
+				return bombInfo.GetFormattedTime().Contains(digitBtnExp[idxColorUsed].ToString());
+			case BtnRelCon.SumSeconds:
+				return (secondsTimer / 10 + secondsTimer % 10) % 10 == digitBtnExp[idxColorUsed];
+		}
+		return true;
+    }
+
 	void HandleButtonRelease()
     {
 		if (!interactable || !heldInteractable) return;
@@ -248,7 +298,7 @@ public class ButtonMemoryScript : MonoBehaviour {
 		var curStage = allStages[stagesCompleted];
 		var correctButton = storedIdxBtnHeld == curStage.idxBtnExpected; // Start with checking if the button interacted is the right button.
 		var correctAction = curStage.isHold ?
-			confirmHold && (int)(bombInfo.GetTime() % 10) == lastDigitBtnExp[curStage.idxHoldLEDColor]
+			confirmHold && ReleasedCorrectly(curStage.idxHoldLEDColor)
 			: !confirmHold; // If the button needs to be held, check if it's held and released correctly.
 		if (correctAction && correctButton)
         {
@@ -270,10 +320,12 @@ public class ButtonMemoryScript : MonoBehaviour {
 			allStageGen ? string.Format(" on stage {0}", stagesCompleted + 1) : "");
 
 			if (confirmHold)
-				QuickLog("Button released when the last seconds digit was {0}", (int)(bombInfo.GetTime() % 10));
+				QuickLog("Button released at {0}.", bombInfo.GetFormattedTime());
 			stagesCompleted = 0;
 			modSelf.HandleStrike();
 			allStages.Clear();
+			QuickLog("--------------- Reattempt #{0} ---------------", ++reattemptCnt);
+			
 			GenerateNewStage(allStageGen);
         }
 		interactable = false;
@@ -306,7 +358,7 @@ public class ButtonMemoryScript : MonoBehaviour {
 			for (var x = 0; x < btnRenderers.Length; x++)
 				btnRenderers[x].material.color = possibleColorsBtns[curStage.btnColorIdx[x]];
 			for (var x = 0; x < btnTexts.Length; x++)
-				btnTexts[x].text = labels[curStage.btnLabelIdx[x]];
+				btnTexts[x].text = labels[curStage.btnLabelIdx[x]].Substring(0, 1);
 			displayText.text = labels[curStage.idxDisplay];
 		}
 
@@ -334,9 +386,11 @@ public class ButtonMemoryScript : MonoBehaviour {
             {
 				confirmHold = true;
 				var curStage = allStages.ElementAtOrDefault(stagesCompleted);
-				QuickLog("Holding the button{2} emitted a {0} LED. Release the button when the last seconds digit of the countdown timer is {1}.",
-					colorNames[curStage.idxHoldLEDColor],
-					lastDigitBtnExp[curStage.idxHoldLEDColor],
+				var curIdxLEDColor = curStage.idxHoldLEDColor;
+				QuickLog("Holding the button{3} emitted a {0} LED. Release the button when {2} {1}.",
+					colorNames[curIdxLEDColor],
+					digitBtnExp[curIdxLEDColor],
+					releaseConditons[releaseConditions[curIdxLEDColor]],
 					allStageGen ? string.Format(" on stage {0}", stagesCompleted + 1) : "");
 				UpdateStageLEDs();
             }
@@ -360,6 +414,25 @@ public class ButtonMemoryScript : MonoBehaviour {
 		}
 
 		if (Regex.IsMatch(cmd, @"^release\s[0-9]$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+		{
+			var lastPart = cmd.Split().Last();
+			int lastDigitCmd;
+			if (!int.TryParse(lastPart, out lastDigitCmd))
+			{
+				yield return string.Format("sendtochaterror The specified digit \"{0}\" is not valid!", lastPart);
+				yield break;
+			}
+			else if (idxButtonHeld == -1)
+			{
+				yield return "sendtochaterror You are not holding a button right now! Specify a button to hold first!";
+				yield break;
+			}
+			yield return null;
+			while ((int)(bombInfo.GetTime() % 10) != lastDigitCmd)
+				yield return "trycancel Button release command has been canceled!";
+			btnSelectables[idxButtonHeld].OnInteractEnded();
+		}
+		else if (Regex.IsMatch(cmd, @"^release\s[0-5][0-9]$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
 		{
 			var lastPart = cmd.Split().Last();
 			int lastDigitCmd;
@@ -412,12 +485,26 @@ public class ButtonMemoryScript : MonoBehaviour {
 			var curStage = allStages[stagesCompleted];
 			btnSelectables[curStage.idxBtnExpected].OnInteract();
 			if (curStage.isHold)
-            {
+			{
 				while (!confirmHold)
 					yield return true;
-				var lsdExpected = lastDigitBtnExp[curStage.idxHoldLEDColor];
-				while ((int)(bombInfo.GetTime() % 10) != lsdExpected)
-					yield return true;
+				var curDigitExp = digitBtnExp[curStage.idxHoldLEDColor];
+				var curRelCon = releaseConditions[curStage.idxHoldLEDColor];
+				switch (curRelCon)
+				{
+					case BtnRelCon.LSD:
+						while ((int)(bombInfo.GetTime() % 10) != curDigitExp)
+							yield return true;
+						break;
+					case BtnRelCon.ContainsX:
+						while (!bombInfo.GetFormattedTime().Contains(curDigitExp.ToString()))
+							yield return true;
+						break;
+					case BtnRelCon.SumSeconds:
+						while (((int)(bombInfo.GetTime() % 10) + (int)(bombInfo.GetTime() % 60) / 10) % 10 != curDigitExp)
+							yield return true;
+						break;
+				}
 			}
 			btnSelectables[curStage.idxBtnExpected].OnInteractEnded();
 			yield return new WaitForSeconds(0.1f);
