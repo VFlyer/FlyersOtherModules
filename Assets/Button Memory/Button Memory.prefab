@@ -1432,7 +1432,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 5b116f5050c4d404b98f3fc5e687dc3f, type: 2}
+  - {fileID: 2100000, guid: accbafc805222674eb518e10f1c1e381, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1670,7 +1670,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 5b116f5050c4d404b98f3fc5e687dc3f, type: 2}
+  - {fileID: 2100000, guid: accbafc805222674eb518e10f1c1e381, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1806,7 +1806,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 5b116f5050c4d404b98f3fc5e687dc3f, type: 2}
+  - {fileID: 2100000, guid: accbafc805222674eb518e10f1c1e381, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2214,7 +2214,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 5b116f5050c4d404b98f3fc5e687dc3f, type: 2}
+  - {fileID: 2100000, guid: accbafc805222674eb518e10f1c1e381, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2534,15 +2534,15 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1556299518288560}
-  m_Text: 'DETONATE
+  m_Text: 'D
 
-    ABORT
+    A
 
-    PRESS
+    H
 
-    HOLD'
+    P'
   m_OffsetZ: 0
-  m_CharacterSize: 0.003
+  m_CharacterSize: 0.01
   m_LineSpacing: 0
   m_Anchor: 4
   m_Alignment: 1
@@ -2561,15 +2561,15 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1926411160221564}
-  m_Text: 'DETONATE
+  m_Text: 'D
 
-    ABORT
+    A
 
-    PRESS
+    H
 
-    HOLD'
+    P'
   m_OffsetZ: 0
-  m_CharacterSize: 0.003
+  m_CharacterSize: 0.01
   m_LineSpacing: 0
   m_Anchor: 4
   m_Alignment: 1
@@ -2588,15 +2588,15 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1444513816865904}
-  m_Text: 'DETONATE
+  m_Text: 'D
 
-    ABORT
+    A
 
-    PRESS
+    H
 
-    HOLD'
+    P'
   m_OffsetZ: 0
-  m_CharacterSize: 0.003
+  m_CharacterSize: 0.01
   m_LineSpacing: 0
   m_Anchor: 4
   m_Alignment: 1
@@ -2615,15 +2615,15 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1514026125768884}
-  m_Text: 'DETONATE
+  m_Text: 'D
 
-    ABORT
+    A
 
-    PRESS
+    H
 
-    HOLD'
+    P'
   m_OffsetZ: 0
-  m_CharacterSize: 0.003
+  m_CharacterSize: 0.01
   m_LineSpacing: 0
   m_Anchor: 4
   m_Alignment: 1
@@ -2943,7 +2943,8 @@ MonoBehaviour:
   IsPassThrough: 0
   ChildRowLength: 0
   Highlight: {fileID: 114769512965128772}
-  SelectableColliders: []
+  SelectableColliders:
+  - {fileID: 64398324561166920}
   DefaultSelectableIndex: 0
   AllowSelectionWrapX: 0
   AllowSelectionWrapY: 0
@@ -2965,7 +2966,8 @@ MonoBehaviour:
   IsPassThrough: 0
   ChildRowLength: 0
   Highlight: {fileID: 114207841389369316}
-  SelectableColliders: []
+  SelectableColliders:
+  - {fileID: 64062074425591116}
   DefaultSelectableIndex: 0
   AllowSelectionWrapX: 0
   AllowSelectionWrapY: 0
@@ -3157,7 +3159,8 @@ MonoBehaviour:
   IsPassThrough: 0
   ChildRowLength: 0
   Highlight: {fileID: 114388006924399388}
-  SelectableColliders: []
+  SelectableColliders:
+  - {fileID: 64776466300418172}
   DefaultSelectableIndex: 0
   AllowSelectionWrapX: 0
   AllowSelectionWrapY: 0
@@ -3216,7 +3219,8 @@ MonoBehaviour:
   IsPassThrough: 0
   ChildRowLength: 0
   Highlight: {fileID: 114874408234495400}
-  SelectableColliders: []
+  SelectableColliders:
+  - {fileID: 64543952788607440}
   DefaultSelectableIndex: 0
   AllowSelectionWrapX: 0
   AllowSelectionWrapY: 0
