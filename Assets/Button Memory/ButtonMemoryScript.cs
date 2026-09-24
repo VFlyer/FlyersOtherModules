@@ -42,9 +42,11 @@ public class ButtonMemoryScript : MonoBehaviour {
 
 	int idxButtonHeld = -1, stagesCompleted, reattemptCnt;
 	float timeHeld = 0f;
-	bool moduleSolved, confirmHold, interactable, heldInteractable = false, allStageGen;
+	bool moduleSolved, confirmHold, interactable, heldInteractable = false, allStageGen, rs1TPHandling = true;
 
 	const string chrProps = "PLC", digits = "1234567890";
+
+	private string TwitchHelpMessage = "\"!{0} hold/tap #\" [Holds/Taps the button in the #th position; positions numbered 1-4 from left to right.] | \"!{0} release #\" [Releases the button when the last seconds digit is #]";
 
 	List<BtnMemStage> allStages = new List<BtnMemStage>();
 
@@ -98,7 +100,8 @@ public class ButtonMemoryScript : MonoBehaviour {
 			releaseConditions = Enumerable.Repeat(BtnRelCon.LSD, 4).ToArray();
 			return;
 		}
-		// Shuffle 
+		rs1TPHandling = false;
+		// Shuffle the given rules here.
 		instructionIsHold = new bool[5][];
 		encodedInstructions = new string[5][];
 		var allEncodedInstructions = new[] {
@@ -130,6 +133,7 @@ public class ButtonMemoryScript : MonoBehaviour {
 		releaseConditions = newRelCon;
 		QuickLogDebug("Expected Digits Each (R, Y, B, W): {0}", digitBtnExp.Join(", "));
 		QuickLogDebug("Expected Release Conditions Each (R, Y, B, W): {0}", newRelCon.Join(", "));
+		TwitchHelpMessage = TwitchHelpMessage.Replace("the last seconds digit is #","the countdown timer contains the digit #") + "\"!{0} release ## ##\" [Release when the seconds timer displays any of these values]";
 	}
 
 	void GenerateNewStage(bool allAtOnce = false)
@@ -402,9 +406,7 @@ public class ButtonMemoryScript : MonoBehaviour {
 			}
         }
 	}
-#pragma warning disable IDE0051 // Remove unused private members
-	readonly string TwitchHelpMessage = "\"!{0} hold/tap #\" [Holds/Taps the button in the #th position; positions numbered 1-4 from left to right.] | \"!{0} release #\" [Releases the button when the last seconds digit is #]";
-#pragma warning restore IDE0051 // Remove unused private members
+	// TP Handling
 	IEnumerator ProcessTwitchCommand(string cmd)
     {
 		if (!interactable)
@@ -428,26 +430,32 @@ public class ButtonMemoryScript : MonoBehaviour {
 				yield break;
 			}
 			yield return null;
-			while ((int)(bombInfo.GetTime() % 10) != lastDigitCmd)
-				yield return "trycancel Button release command has been canceled!";
+			if (rs1TPHandling)
+				while ((int)(bombInfo.GetTime() % 10) != lastDigitCmd)
+					yield return "trycancel Button release command has been canceled!";
+			else
+				while (bombInfo.GetFormattedTime().Contains(lastDigitCmd.ToString()))
+					yield return "trycancel Button release command has been canceled!";
 			btnSelectables[idxButtonHeld].OnInteractEnded();
 		}
-		else if (Regex.IsMatch(cmd, @"^release\s[0-5][0-9]$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+		else if (Regex.IsMatch(cmd, @"^release(\s[0-5]?[0-9])+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
 		{
-			var lastPart = cmd.Split().Last();
-			int lastDigitCmd;
-			if (!int.TryParse(lastPart, out lastDigitCmd))
-			{
-				yield return string.Format("sendtochaterror The specified digit \"{0}\" is not valid!", lastPart);
-				yield break;
-			}
-			else if (idxButtonHeld == -1)
+			if (idxButtonHeld == -1)
 			{
 				yield return "sendtochaterror You are not holding a button right now! Specify a button to hold first!";
 				yield break;
 			}
+			else if (rs1TPHandling)
+            {
+				yield return "sendtochaterror All of the release instructions rely on releasing the last second digit, this command is not needed for rule seed 1.";
+				yield break;
+			}
+			var lastParts = cmd.Split().Skip(1);
+			var secondsDigitExp = new List<int>();
+			foreach (var part in lastParts)
+				secondsDigitExp.Add(int.Parse(part));
 			yield return null;
-			while ((int)(bombInfo.GetTime() % 10) != lastDigitCmd)
+			while (!secondsDigitExp.Contains((int)(bombInfo.GetTime() % 60)))
 				yield return "trycancel Button release command has been canceled!";
 			btnSelectables[idxButtonHeld].OnInteractEnded();
 		}
